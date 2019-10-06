@@ -1,26 +1,23 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Button, Container, Row, Col, Form } from 'react-bootstrap';
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App: React.FC = () => (
+  <Container>
+    <Row>
+      <Col className="m-3">
+        <h1 className="text-center">ヒトリジャン</h1>
+      </Col>
+    </Row>
+    <Row>
+      <Col xs={12} md={6} className="my-3 mx-auto">
+        <Form className="border p-3">
+          <Button className="w-100">スタート</Button>
+        </Form>
+      </Col>
+    </Row>
+  </Container>
+);
 
 export default App;
