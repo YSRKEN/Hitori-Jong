@@ -6,13 +6,13 @@ import { Button, Container, Row, Col, Form } from 'react-bootstrap';
 const App: React.FC = () => (
   <Container>
     <Row>
-      <Col className="m-3">
+      <Col className="my-5">
         <h1 className="text-center">ヒトリジャン</h1>
       </Col>
     </Row>
     <Row>
-      <Col xs={12} md={6} className="my-3 mx-auto">
-        <Form className="border p-3">
+      <Col xs={12} sm={8} md={4} className="my-3 mx-auto">
+        <Form>
           <Button className="w-100">スタート</Button>
         </Form>
       </Col>
