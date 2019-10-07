@@ -71,6 +71,15 @@ export const IDOL_LIST: IdolInfo[] = [
   { name: 'そら', type: 'Sora' },
 ];
 
+// 手役一覧
+export const UNIT_LIST: { name: string; member: string[] }[] = [
+  { name: '', member: [] },
+  { name: '', member: [] },
+  { name: '', member: [] },
+  { name: '', member: [] },
+  { name: '', member: [] },
+];
+
 // アイドルの種類数
 export const IDOL_LIST_LENGTH = IDOL_LIST.length;
 
