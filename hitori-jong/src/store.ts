@@ -47,12 +47,14 @@ const useStore = () => {
 
   // 手札を設定する
   useEffect(() => {
-    const temp = Array(HANDS_SIZE);
-    for (let i = 0; i < HANDS_SIZE; i += 1) {
-      temp[i] = tileDeck[i];
+    if (tileDeck.length > 0) {
+      const temp = Array(HANDS_SIZE);
+      for (let i = 0; i < HANDS_SIZE; i += 1) {
+        temp[i] = tileDeck[i];
+      }
+      setMyHands(temp);
+      setTileDeckPointer(HANDS_SIZE);
     }
-    setMyHands(temp);
-    setTileDeckPointer(HANDS_SIZE);
   }, [tileDeck]);
 
   const dispatch = (action: Action) => {

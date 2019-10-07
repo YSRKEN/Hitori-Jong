@@ -3,7 +3,11 @@ import { IDOL_LIST } from 'constant';
 
 const TileParts: React.FC<{ idolNumber: number }> = ({ idolNumber }) => {
   return (
-    <span className="vertical-writing border p-1">{IDOL_LIST[idolNumber]}</span>
+    <span
+      className={`vertical-writing border p-1 tile-style mr-1 color-${IDOL_LIST[idolNumber].type}`}
+    >
+      {IDOL_LIST[idolNumber].name}
+    </span>
   );
 };
 

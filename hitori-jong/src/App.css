@@ -4,3 +4,28 @@
   -ms-writing-mode: tb-rl;
   writing-mode: vertical-rl;
 }
+
+.tile-style {
+  height: 80px;
+  width: 32px;
+}
+
+.color-Princess {
+  background-color: pink;
+}
+
+.color-Fairy {
+  background-color: lightblue;
+}
+
+.color-Angel {
+  background-color: lemonchiffon;
+}
+
+.color-Extra {
+  background-color: lightgreen;
+}
+
+.color-Sora {
+  background-color: skyblue;
+}
