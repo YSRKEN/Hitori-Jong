@@ -6,6 +6,8 @@ import {
   TILE_DECK_SIZE,
   IDOL_LIST_LENGTH,
   MAX_IDOL_COUNTS,
+  IDOL_LIST,
+  UNIT_LIST,
 } from './constant';
 
 const getShuffledTileDeck = () => {
@@ -42,8 +44,9 @@ const useStore = () => {
     'GameForm',
   );
   const [myHands, setMyHands] = useState<number[]>([]);
-  const [, setTileDeck] = useState<number[]>([]);
-  const [, setTileDeckPointer] = useState<number>(0);
+  const [tileDeck, setTileDeck] = useState<number[]>([]);
+  const [tileDeckPointer, setTileDeckPointer] = useState<number>(0);
+  const [unitText, setUnitText] = useState<string>('');
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -65,6 +68,36 @@ const useStore = () => {
     resetTileDeck();
   }, [applicationMode]);
 
+  // 役判定
+  useEffect(() => {
+    // 手役をハッシュ化
+    const handSet = new Set<string>();
+    for (let hand of myHands) {
+      handSet.add(IDOL_LIST[hand].name);
+    }
+
+    // 確認
+    let output: string = '';
+    for (let record of UNIT_LIST) {
+      let flg = true;
+      for (let member of record.member) {
+        if (!(handSet.has(member))) {
+          flg = false;
+          break;
+        }
+      }
+      if (flg) {
+        output += record.name + ' : ' + record.member[0];
+        for (let i = 1; i < record.member.length; ++i) {
+          output += ', ' + record.member[i];
+        }
+        output += "\n";
+      }
+    }
+    output = '【成立役】' + "\n" + output;
+    setUnitText(output);
+  }, [myHands]);
+
   const dispatch = (action: Action) => {
     switch (action.type) {
       case 'setApplicationMode':
@@ -73,12 +106,20 @@ const useStore = () => {
       case 'resetTileDeck':
         resetTileDeck();
         break;
+      case 'drawTile': {
+        const clickIndex = parseInt(action.message);
+        const newMyHands = [...myHands];
+        newMyHands[clickIndex] = tileDeck[tileDeckPointer];
+        setMyHands(newMyHands);
+        setTileDeckPointer(tileDeckPointer + 1);
+        break;
+      }
       default:
         break;
     }
   };
 
-  return { applicationMode, myHands, dispatch };
+  return { applicationMode, myHands, unitText, dispatch };
 };
 
 export default useStore;

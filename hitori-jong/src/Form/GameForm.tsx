@@ -4,7 +4,7 @@ import StateContext from 'context';
 import MyHandTileControl from 'Control/MyHandTileControl';
 
 const GameForm: React.FC = () => {
-  const { dispatch } = useContext(StateContext);
+  const { unitText, dispatch } = useContext(StateContext);
 
   const onClickReturnButton = () => {
     if (window.confirm('スタート画面に戻りますか？')) {
@@ -50,6 +50,9 @@ const GameForm: React.FC = () => {
         </Col>
       </Row>
       <Row>
+        <Col>
+          <pre>{unitText}</pre>
+        </Col>
         <Col>
           <Form>
             <Form.Group className="text-center my-3">

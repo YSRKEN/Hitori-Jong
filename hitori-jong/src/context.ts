@@ -4,6 +4,7 @@ import { ApplicationMode, Action } from './constant';
 interface ApplicationState {
   applicationMode: ApplicationMode;
   myHands: number[];
+  unitText: string;
   dispatch: (action: Action) => void;
 }
 
