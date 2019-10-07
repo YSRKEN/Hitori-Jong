@@ -23,7 +23,7 @@ const GameForm: React.FC = () => {
   };
 
   return (
-    <Container>
+    <Container className="px-0">
       <Row>
         <Col>
           <Form>
