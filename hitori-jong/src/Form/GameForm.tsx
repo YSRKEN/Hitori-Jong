@@ -15,6 +15,13 @@ const GameForm: React.FC = () => {
     }
   };
 
+  const onClickResetButton = () => {
+    dispatch({
+      type: 'resetTileDeck',
+      message: '',
+    });
+  };
+
   return (
     <Container>
       <Row>
@@ -38,6 +45,17 @@ const GameForm: React.FC = () => {
           <Form>
             <Form.Group className="text-center my-3">
               <MyHandTileControl />
+            </Form.Group>
+          </Form>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Form>
+            <Form.Group className="text-center my-3">
+              <Button className="text-nowrap" onClick={onClickResetButton}>
+                牌山と手札をリセット
+              </Button>
             </Form.Group>
           </Form>
         </Col>

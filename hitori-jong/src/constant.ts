@@ -1,5 +1,5 @@
 // Actionの種類
-export type ActionType = 'setApplicationMode';
+export type ActionType = 'setApplicationMode' | 'resetTileDeck';
 
 // アプリケーションの動作モード
 export type ApplicationMode = 'StartForm' | 'GameForm';
