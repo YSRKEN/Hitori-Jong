@@ -1,8 +1,9 @@
-import { ApplicationMode, Action } from "./constant";
-import { createContext } from "react";
+import { createContext } from 'react';
+import { ApplicationMode, Action } from './constant';
 
 interface ApplicationState {
-	applicationMode: ApplicationMode;
+  applicationMode: ApplicationMode;
+  myHands: number[];
   dispatch: (action: Action) => void;
 }
 
