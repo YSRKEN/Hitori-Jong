@@ -4,7 +4,7 @@ import StateContext from 'context';
 import MyHandTileControl from 'Control/MyHandTileControl';
 
 const GameForm: React.FC = () => {
-  const { unitText, dispatch } = useContext(StateContext);
+  const { unitText, turnCount, dispatch } = useContext(StateContext);
 
   const onClickReturnButton = () => {
     if (window.confirm('スタート画面に戻りますか？')) {
@@ -39,6 +39,33 @@ const GameForm: React.FC = () => {
             </Form.Group>
           </Form>
         </Col>
+        <Col>
+          <Form>
+            <Form.Group className="text-center my-3">
+              <Button
+                size="lg"
+                variant="outline-primary"
+                className="text-nowrap"
+                disabled
+              >
+                {turnCount}順目
+              </Button>
+            </Form.Group>
+          </Form>
+        </Col>
+        <Col>
+          <Form>
+            <Form.Group className="text-center my-3">
+              <Button
+                size="lg"
+                className="text-nowrap"
+                onClick={onClickResetButton}
+              >
+                牌山と手札をリセット
+              </Button>
+            </Form.Group>
+          </Form>
+        </Col>
       </Row>
       <Row>
         <Col>
@@ -52,15 +79,6 @@ const GameForm: React.FC = () => {
       <Row>
         <Col>
           <pre>{unitText}</pre>
-        </Col>
-        <Col>
-          <Form>
-            <Form.Group className="text-center my-3">
-              <Button className="text-nowrap" onClick={onClickResetButton}>
-                牌山と手札をリセット
-              </Button>
-            </Form.Group>
-          </Form>
         </Col>
       </Row>
     </Container>

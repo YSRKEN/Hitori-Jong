@@ -18,6 +18,7 @@ const useStore = () => {
   const [tileDeckPointer, setTileDeckPointer] = useState<number>(0);
   const [unitText, setUnitText] = useState<string>('');
   const [handsBoldFlg, setHandsBoldFlg] = useState<boolean[]>([]);
+  const [turnCount, setTurnCount] = useState<number>(1);
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -32,6 +33,7 @@ const useStore = () => {
     }
     setMyHands(temp2);
     setTileDeckPointer(HANDS_SIZE);
+    setTurnCount(1);
   };
 
   // 牌山と手札を設定する
@@ -91,6 +93,7 @@ const useStore = () => {
         newMyHands[clickIndex] = tileDeck[tileDeckPointer];
         setMyHands(newMyHands);
         setTileDeckPointer(tileDeckPointer + 1);
+        setTurnCount(turnCount + 1);
         break;
       }
       default:
@@ -98,7 +101,14 @@ const useStore = () => {
     }
   };
 
-  return { applicationMode, myHands, unitText, handsBoldFlg, dispatch };
+  return {
+    applicationMode,
+    myHands,
+    unitText,
+    handsBoldFlg,
+    turnCount,
+    dispatch,
+  };
 };
 
 export default useStore;

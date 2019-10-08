@@ -6,6 +6,7 @@ interface ApplicationState {
   myHands: number[];
   unitText: string;
   handsBoldFlg: boolean[];
+  turnCount: number;
   dispatch: (action: Action) => void;
 }
 
