@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import {
   getShuffledTileDeck,
-  calcUnitList,
+  calcUnitListWithSora,
   unitListToString,
   unitListToScore,
-  unitMemberToStringArray,
+  unitListToStringArray,
 } from 'algorithm';
 import { ApplicationMode, Action, HANDS_SIZE, IDOL_LIST } from './constant';
 
@@ -41,7 +41,7 @@ const useStore = () => {
   // 役判定とフラグ処理
   useEffect(() => {
     // 役判定
-    const result = calcUnitList(myHands);
+    const result = calcUnitListWithSora(myHands);
     const score = unitListToScore(result.unit);
     const soraChangeList: string[] = [];
     for (let i = 0; i < myHands.length; i += 1) {
@@ -62,13 +62,7 @@ const useStore = () => {
     }
 
     // フラグ処理
-    const memberSet = new Set<string>();
-    for (const unitInfo of result.unit) {
-      for (const member of unitMemberToStringArray(unitInfo.member)) {
-        memberSet.add(member);
-      }
-    }
-    memberSet.add('そら');
+    const memberSet = unitListToStringArray(result.unit);
     setHandsBoldFlg(myHands.map(hand => memberSet.has(IDOL_LIST[hand].name)));
   }, [myHands]);
 

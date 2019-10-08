@@ -136,60 +136,82 @@ export const convertUnitList = () => {
 };
 const UNIT_LIST2 = convertUnitList();
 
-// 手役から、どのユニットが作れるかを調べる
-let cache: { [key: string]: UnitInfo[] } = {};
-export const calcUnitListImpl = (myHands: number[]) => {
-  // 手役をビット化
+// 手役をInt64型に変換する
+const calcHandsBit = (myHands: number[]) => {
   let myHandsBit: Int64 = INT64_ZERO;
   for (const hand of myHands) {
     myHandsBit = orInt64(myHandsBit, getShiftedValue(hand));
   }
-  const key = `${myHandsBit.upper},${myHandsBit.lower}`;
-  if (key in cache) {
-    return cache[key];
-  }
 
+  return myHandsBit;
+};
+
+// 手役から、どのユニットが作れるかを調べる
+const calcUnitListRough = (myHandsBit: Int64) => {
   // 役を確認
-  const output: UnitInfo[] = [];
-  for (const record of UNIT_LIST2) {
-    if (equalInt64(andInt64(myHandsBit, record.member), record.member)) {
-      output.push({
-        name: record.name,
-        member: record.member,
-        score: record.score,
-      });
+  const output: number[] = [];
+  for (let i = 0; i < UNIT_LIST2.length; i += 1) {
+    if (
+      equalInt64(
+        andInt64(myHandsBit, UNIT_LIST2[i].member),
+        UNIT_LIST2[i].member,
+      )
+    ) {
+      output.push(i);
     }
   }
-
-  cache[key] = output;
 
   return output;
 };
 
+// 手役から、どのユニットの組み合わせを取るべきかを調べる
+let cache: { [key: string]: number[] } = {};
+export const calcUnitList = (myHands: number[]) => {
+  // キャッシュを確認する
+  const key = [...myHands]
+    .sort()
+    .map(i => i.toString())
+    .join(',');
+  if (key in cache) {
+    return cache[key];
+  }
+
+  // 可能な手役の一覧を列挙する
+  const myHandsBit = calcHandsBit(myHands);
+  const roughList = calcUnitListRough(myHandsBit);
+
+  // どの手役を使うと最高得点が取れるかを判断する
+
+  // キャッシュに追加する
+  cache[key] = [...roughList];
+
+  return roughList;
+};
+
 // ユニット一覧からスコア計算する
-export const unitListToScore = (unitList: UnitInfo[]) => {
+export const unitListToScore = (unitList: number[]) => {
   if (unitList.length === 0) {
     return 0;
   }
 
   return unitList
-    .map(unit => unit.score)
+    .map(unit => UNIT_LIST2[unit].score)
     .reduce((sum: number, val: number) => sum + val);
 };
 
 // 手役から、どのユニットが作れるかを調べる(そら考慮版)
 // minSora……そらが複数枚入っていた際、それぞれS1・S2……とすると、アイドルIDが必ずS1≦S2≦……となるようにするための補正
-export const calcUnitList = (
+export const calcUnitListWithSora = (
   myHands: number[],
   minSora = 0,
-): { unit: UnitInfo[]; hands: number[] } => {
+): { unit: number[]; hands: number[] } => {
   cache = {};
   // そらが含まれているかどうかで場合分け
   const soraIndex = myHands.indexOf(SORA_INDEX);
   if (soraIndex >= 0) {
     // 含まれている場合は、全通り調べて最高得点のものを返す
     let maxScore = 0;
-    let maxResult: { unit: UnitInfo[]; hands: number[] } = {
+    let maxResult: { unit: number[]; hands: number[] } = {
       unit: [],
       hands: [],
     };
@@ -199,7 +221,7 @@ export const calcUnitList = (
       myHandsTemp[soraIndex] = i;
 
       // 再帰的にスコア計算
-      const result = calcUnitList(myHandsTemp, i);
+      const result = calcUnitListWithSora(myHandsTemp, i);
       const score = unitListToScore(result.unit);
       if (maxScore < score) {
         maxScore = score;
@@ -210,11 +232,11 @@ export const calcUnitList = (
     return maxResult;
   }
 
-  return { unit: calcUnitListImpl(myHands), hands: myHands };
+  return { unit: calcUnitList(myHands), hands: myHands };
 };
 
 // 表示用に、ユニットメンバーを文字列配列に変換
-export const unitMemberToStringArray = (members: Int64) => {
+const unitMemberToStringArray = (members: Int64) => {
   const memberArray: number[] = [];
   for (let i = 0; i < 53; i += 1) {
     if (!equalInt64(andInt64(members, getShiftedValue(i)), INT64_ZERO)) {
@@ -225,14 +247,27 @@ export const unitMemberToStringArray = (members: Int64) => {
   return memberArray.map(id => IDOL_LIST[id].name);
 };
 
+// 表示用に、ユニット一覧を文字列配列に変換
+export const unitListToStringArray = (unitList: number[]) => {
+  const memberSet = new Set<string>();
+  for (const unitInfo of unitList) {
+    for (const member of unitMemberToStringArray(UNIT_LIST2[unitInfo].member)) {
+      memberSet.add(member);
+    }
+  }
+  memberSet.add('そら');
+
+  return memberSet;
+};
+
 // ユニット一覧を文字列化する
-export const unitListToString = (unitList: UnitInfo[]) => {
+export const unitListToString = (unitList: number[]) => {
   return unitList
     .map(
       unit =>
-        `[${unit.score}点] ${unit.name} ${unitMemberToStringArray(
-          unit.member,
-        ).join(',')}`,
+        `[${UNIT_LIST2[unit].score}点] ${
+          UNIT_LIST2[unit].name
+        } ${unitMemberToStringArray(UNIT_LIST2[unit].member).join(',')}`,
     )
     .join('\n');
 };
