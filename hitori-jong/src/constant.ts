@@ -392,6 +392,9 @@ export const UNIT_LIST: { name: string; member: string[] }[] = [
 // アイドルの種類数
 export const IDOL_LIST_LENGTH = IDOL_LIST.length;
 
+// そらを除いた、アイドルの種類数
+export const IDOL_LIST_LENGTH2 = IDOL_LIST_LENGTH - 1;
+
 // アイドル毎の枚数
 export const MAX_IDOL_COUNTS = 3;
 
@@ -401,10 +404,20 @@ export const TILE_DECK_SIZE = IDOL_LIST_LENGTH * MAX_IDOL_COUNTS;
 // 手札の枚数
 export const HANDS_SIZE = 13;
 
+// 64bit整数
+export interface Int64 {
+  upper: number;
+  lower: number;
+}
+
+// ゼロ
+export const INT64_ZERO: Int64 = { upper: 0, lower: 0 };
+
 // ユニット情報
 export interface UnitInfo {
   name: string;
-  member: string[];
+  member: Int64;
+  member2: number[];
   score: number;
 }
 
