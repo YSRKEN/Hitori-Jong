@@ -1,43 +1,17 @@
 import { useState, useEffect } from 'react';
 import {
+  getShuffledTileDeck,
+  calcUnitList,
+  unitListToString,
+  unitListToScore,
+} from 'algorithm';
+import {
   ApplicationMode,
   Action,
   HANDS_SIZE,
-  TILE_DECK_SIZE,
-  IDOL_LIST_LENGTH,
-  MAX_IDOL_COUNTS,
+  SORA_INDEX,
   IDOL_LIST,
-  UNIT_LIST,
 } from './constant';
-
-const getShuffledTileDeck = () => {
-  // 初期化
-  const temp = Array<number>(TILE_DECK_SIZE);
-  for (let i = 0; i < IDOL_LIST_LENGTH; i += 1) {
-    for (let j = 0; j < MAX_IDOL_COUNTS; j += 1) {
-      temp[i * MAX_IDOL_COUNTS + j] = i;
-    }
-  }
-
-  // シャッフル
-  // TODO：アルゴリズムを変更する。Math.random()はどのアルゴリズムを使うか保証されておらず、
-  // またミリジャンの牌山は162!÷3!^54≒1.17e+247≒2^821通りの組み合わせがある。
-  // つまり、乱数生成をメルセンヌ・ツイスタ(周期2^19937-1)など長周期のもので行うとしても、
-  // シードを2^821通り以上の組み合わせが保証されるように取る必要がある。
-  // しかし、window.crypto.getRandomValues()が使えたとしても、1要素につき2^32のランダム性しかないため、
-  // 厳密に行おうとすると、getRandomValuesで26要素用意し、26個の乱数生成器を用意し、
-  // 1回乱数を使用する毎に乱数生成器を取り替えるような実装が必要となる。
-  //
-  // あまりに大変なので、とりあえずMath.random()でお茶を濁すことにする
-  for (let i = TILE_DECK_SIZE - 1; i >= 1; i -= 1) {
-    const j = Math.floor(Math.random() * Math.floor(i + 1));
-    const a = temp[i];
-    temp[i] = temp[j];
-    temp[j] = a;
-  }
-
-  return temp;
-};
 
 const useStore = () => {
   const [applicationMode, setApplicationMode] = useState<ApplicationMode>(
@@ -70,32 +44,30 @@ const useStore = () => {
 
   // 役判定
   useEffect(() => {
-    // 手役をハッシュ化
-    const handSet = new Set<string>();
-    for (let hand of myHands) {
-      handSet.add(IDOL_LIST[hand].name);
-    }
-
-    // 確認
-    let output: string = '';
-    for (let record of UNIT_LIST) {
-      let flg = true;
-      for (let member of record.member) {
-        if (!(handSet.has(member))) {
-          flg = false;
-          break;
+    if (myHands.includes(SORA_INDEX)) {
+      // 簡易的なスコア計算
+      // (そらが1枚だけだと仮定し、それを53通りに展開して最高得点のものを返す)
+      const soraIndex = myHands.indexOf(SORA_INDEX);
+      let maxScore = 0;
+      let maxScoreOutput = '';
+      for (let i = 0; i < SORA_INDEX - 1; i += 1) {
+        const myHands2 = [...myHands];
+        myHands2[soraIndex] = i;
+        const unitList = calcUnitList(myHands2);
+        const unitScore = unitListToScore(unitList);
+        if (unitScore > maxScore) {
+          maxScore = unitScore;
+          maxScoreOutput = `【成立役(そら→${
+            IDOL_LIST[i].name
+          })】合計＝${unitScore}点\n${unitListToString(unitList)}`;
         }
       }
-      if (flg) {
-        output += record.name + ' : ' + record.member[0];
-        for (let i = 1; i < record.member.length; ++i) {
-          output += ', ' + record.member[i];
-        }
-        output += "\n";
-      }
+      setUnitText(maxScoreOutput);
+    } else {
+      const unitList = calcUnitList(myHands);
+      const score = unitListToScore(unitList);
+      setUnitText(`【成立役】合計＝${score}点\n${unitListToString(unitList)}`);
     }
-    output = '【成立役】' + "\n" + output;
-    setUnitText(output);
   }, [myHands]);
 
   const dispatch = (action: Action) => {
@@ -107,7 +79,7 @@ const useStore = () => {
         resetTileDeck();
         break;
       case 'drawTile': {
-        const clickIndex = parseInt(action.message);
+        const clickIndex = parseInt(action.message, 10);
         const newMyHands = [...myHands];
         newMyHands[clickIndex] = tileDeck[tileDeckPointer];
         setMyHands(newMyHands);
