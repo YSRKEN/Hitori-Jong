@@ -1,0 +1,32 @@
+/* テキストを縦書きにする */
+.vertical-writing {
+  -webkit-writing-mode: vertical-rl;
+  -ms-writing-mode: tb-rl;
+  writing-mode: vertical-rl;
+}
+
+.tile-style {
+  height: 80px;
+  line-height: 24px;
+  width: 36px;
+}
+
+.color-Princess {
+  background-color: pink;
+}
+
+.color-Fairy {
+  background-color: lightblue;
+}
+
+.color-Angel {
+  background-color: lemonchiffon;
+}
+
+.color-Extra {
+  background-color: lightgreen;
+}
+
+.color-Sora {
+  background-color: violet;
+}
