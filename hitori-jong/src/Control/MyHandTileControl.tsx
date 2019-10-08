@@ -13,7 +13,11 @@ const MyHandTileControl: React.FC = () => {
   return (
     <div>
       {temp.map((record: { index: number; idolNumber: number }) => (
-        <TileParts key={record.index} idolNumber={record.idolNumber} tileIndex={record.index}/>
+        <TileParts
+          key={record.index}
+          idolNumber={record.idolNumber}
+          tileIndex={record.index}
+        />
       ))}
     </div>
   );

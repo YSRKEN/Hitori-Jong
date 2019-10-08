@@ -11,6 +11,7 @@ import {
   HANDS_SIZE,
   SORA_INDEX,
   IDOL_LIST,
+  UnitInfo,
 } from './constant';
 
 const useStore = () => {
@@ -21,6 +22,7 @@ const useStore = () => {
   const [tileDeck, setTileDeck] = useState<number[]>([]);
   const [tileDeckPointer, setTileDeckPointer] = useState<number>(0);
   const [unitText, setUnitText] = useState<string>('');
+  const [handsBoldFlg, setHandsBoldFlg] = useState<boolean[]>([]);
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -42,8 +44,10 @@ const useStore = () => {
     resetTileDeck();
   }, [applicationMode]);
 
-  // 役判定
+  // 役判定とフラグ処理
   useEffect(() => {
+    // 役判定
+    let finalUnitList: UnitInfo[] = [];
     if (myHands.includes(SORA_INDEX)) {
       // 簡易的なスコア計算
       // (そらが1枚だけだと仮定し、それを53通りに展開して最高得点のものを返す)
@@ -60,6 +64,7 @@ const useStore = () => {
           maxScoreOutput = `【成立役(そら→${
             IDOL_LIST[i].name
           })】合計＝${unitScore}点\n${unitListToString(unitList)}`;
+          finalUnitList = [...unitList];
         }
       }
       setUnitText(maxScoreOutput);
@@ -67,7 +72,18 @@ const useStore = () => {
       const unitList = calcUnitList(myHands);
       const score = unitListToScore(unitList);
       setUnitText(`【成立役】合計＝${score}点\n${unitListToString(unitList)}`);
+      finalUnitList = [...unitList];
     }
+
+    // フラグ処理
+    const memberSet = new Set<string>();
+    for (const unitInfo of finalUnitList) {
+      for (const member of unitInfo.member) {
+        memberSet.add(member);
+      }
+    }
+    memberSet.add('そら');
+    setHandsBoldFlg(myHands.map(hand => memberSet.has(IDOL_LIST[hand].name)));
   }, [myHands]);
 
   const dispatch = (action: Action) => {
@@ -91,7 +107,7 @@ const useStore = () => {
     }
   };
 
-  return { applicationMode, myHands, unitText, dispatch };
+  return { applicationMode, myHands, unitText, handsBoldFlg, dispatch };
 };
 
 export default useStore;

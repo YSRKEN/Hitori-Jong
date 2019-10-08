@@ -5,6 +5,7 @@ interface ApplicationState {
   applicationMode: ApplicationMode;
   myHands: number[];
   unitText: string;
+  handsBoldFlg: boolean[];
   dispatch: (action: Action) => void;
 }
 
