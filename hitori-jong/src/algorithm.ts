@@ -2,9 +2,11 @@ import {
   TILE_DECK_SIZE,
   IDOL_LIST_LENGTH,
   MAX_IDOL_COUNTS,
+  UnitInfo,
   IDOL_LIST,
   UNIT_LIST,
-  UnitInfo,
+  Int64,
+  INT64_ZERO,
 } from 'constant';
 
 // [0, n)の整数一様乱数を得る。参考：MDN
@@ -62,63 +64,120 @@ export const getShuffledTileDeck = () => {
   return temp;
 };
 
-// 手役から、どのユニットが作れるかを調べる
-export const calcUnitList = (myHands: number[]) => {
-  // 手役をハッシュ化
-  const handSet = new Set<string>();
-  for (const hand of myHands) {
-    handSet.add(IDOL_LIST[hand].name);
+// 1をshift個だけ左シフト後の値
+const getShiftedValue = (shift: number): Int64 => {
+  if (shift < 32) {
+    return { upper: 0, lower: 1 << shift };
   }
 
-  // 確認
-  const output: UnitInfo[] = [];
+  return { upper: 1 << (shift - 32), lower: 0 };
+};
+
+// Int64型変数のOR演算を行う
+const orInt64 = (a: Int64, b: Int64) => {
+  return { upper: a.upper | b.upper, lower: a.lower | b.lower };
+};
+
+// Int64型変数のAND演算を行う
+const andInt64 = (a: Int64, b: Int64) => {
+  return { upper: a.upper & b.upper, lower: a.lower & b.lower };
+};
+
+// Int64型変数の比較演算を行う
+const equalInt64 = (a: Int64, b: Int64) => {
+  return a.upper === b.upper && a.lower === b.lower;
+};
+
+// 手役一覧における人名部分を、比較演算しやすいように変換する
+// とても都合がいいことに、JavaScriptのnumber型で正確に表せる整数は53bitまでなので、
+// そのままキーとして使用できる
+export const convertUnitList = () => {
+  const temp: { [key: string]: Int64 } = {};
+  for (let i = 0; i < 53; i += 1) {
+    temp[IDOL_LIST[i].name] = getShiftedValue(i);
+  }
+
+  const unitList2: UnitInfo[] = [];
   for (const record of UNIT_LIST) {
-    let flg = true;
+    let memberKey: Int64 = { upper: 0, lower: 0 };
     for (const member of record.member) {
-      if (!handSet.has(member)) {
-        flg = false;
-        break;
-      }
+      memberKey = orInt64(memberKey, temp[member]);
     }
-    if (flg) {
-      const { name } = record;
-      const { member } = record;
-      let score = 0;
-      switch (member.length) {
-        case 1:
-          score = 1000;
-          break;
-        case 2:
-          score = 1000;
-          break;
-        case 3:
-          score = 1000;
-          break;
-        case 4:
-          score = 1000;
-          break;
-        case 5:
-          score = 1000;
-          break;
-        case 13:
-          // 仮決め
-          score = 24000;
-          break;
-        default:
-          score = 0;
-          break;
-      }
-      output.push({ name, member, score });
+    let gameScore = 0;
+    switch (record.member.length) {
+      case 1:
+        gameScore = 1000;
+        break;
+      case 2:
+        gameScore = 2000;
+        break;
+      case 3:
+        gameScore = 4000;
+        break;
+      case 4:
+        gameScore = 6000;
+        break;
+      case 5:
+        gameScore = 8000;
+        break;
+      case 13:
+        // 仮決め
+        gameScore = 24000;
+        break;
+      default:
+        gameScore = 0;
+        break;
+    }
+    unitList2.push({ name: record.name, member: memberKey, score: gameScore });
+  }
+
+  return unitList2;
+};
+const UNIT_LIST2 = convertUnitList();
+
+// 手役から、どのユニットが作れるかを調べる
+export const calcUnitList = (myHands: number[]) => {
+  // 手役をビット化
+  let myHandsBit: Int64 = INT64_ZERO;
+  for (const hand of myHands) {
+    myHandsBit = orInt64(myHandsBit, getShiftedValue(hand));
+  }
+
+  // 役を確認
+  const output: UnitInfo[] = [];
+  for (const record of UNIT_LIST2) {
+    if (equalInt64(andInt64(myHandsBit, record.member), record.member)) {
+      output.push({
+        name: record.name,
+        member: record.member,
+        score: record.score,
+      });
     }
   }
 
   return output;
 };
 
+export const unitMemberToStringArray = (members: Int64) => {
+  const memberArray: number[] = [];
+  for (let i = 0; i < 53; i += 1) {
+    if (!equalInt64(andInt64(members, getShiftedValue(i)), INT64_ZERO)) {
+      memberArray.push(i);
+    }
+  }
+
+  return memberArray.map(id => IDOL_LIST[id].name);
+};
+
 // ユニット一覧を文字列化する
 export const unitListToString = (unitList: UnitInfo[]) => {
   return unitList
-    .map(unit => `[${unit.score}点] ${unit.name} ${unit.member.join(', ')}`)
+    .map(
+      unit =>
+        `[${unit.score}点] ${unit.name} ${unitMemberToStringArray(
+          unit.member,
+        ).join(',')}`,
+    )
     .join('\n');
 };
 

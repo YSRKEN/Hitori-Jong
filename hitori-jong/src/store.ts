@@ -4,6 +4,7 @@ import {
   calcUnitList,
   unitListToString,
   unitListToScore,
+  unitMemberToStringArray,
 } from 'algorithm';
 import {
   ApplicationMode,
@@ -78,7 +79,7 @@ const useStore = () => {
     // フラグ処理
     const memberSet = new Set<string>();
     for (const unitInfo of finalUnitList) {
-      for (const member of unitInfo.member) {
+      for (const member of unitMemberToStringArray(unitInfo.member)) {
         memberSet.add(member);
       }
     }

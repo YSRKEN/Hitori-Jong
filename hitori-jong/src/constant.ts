@@ -401,10 +401,19 @@ export const TILE_DECK_SIZE = IDOL_LIST_LENGTH * MAX_IDOL_COUNTS;
 // 手札の枚数
 export const HANDS_SIZE = 13;
 
+// 64bit整数
+export interface Int64 {
+  upper: number;
+  lower: number;
+}
+
+// ゼロ
+export const INT64_ZERO: Int64 = { upper: 0, lower: 0 };
+
 // ユニット情報
 export interface UnitInfo {
   name: string;
-  member: string[];
+  member: Int64;
   score: number;
 }
 
