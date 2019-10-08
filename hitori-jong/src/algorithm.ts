@@ -7,6 +7,7 @@ import {
   UNIT_LIST,
   Int64,
   INT64_ZERO,
+  SORA_INDEX,
 } from 'constant';
 
 // [0, n)の整数一様乱数を得る。参考：MDN
@@ -136,11 +137,16 @@ export const convertUnitList = () => {
 const UNIT_LIST2 = convertUnitList();
 
 // 手役から、どのユニットが作れるかを調べる
-export const calcUnitList = (myHands: number[]) => {
+let cache: { [key: string]: UnitInfo[] } = {};
+export const calcUnitListImpl = (myHands: number[]) => {
   // 手役をビット化
   let myHandsBit: Int64 = INT64_ZERO;
   for (const hand of myHands) {
     myHandsBit = orInt64(myHandsBit, getShiftedValue(hand));
+  }
+  const key = `${myHandsBit.upper},${myHandsBit.lower}`;
+  if (key in cache) {
+    return cache[key];
   }
 
   // 役を確認
@@ -155,9 +161,59 @@ export const calcUnitList = (myHands: number[]) => {
     }
   }
 
+  cache[key] = output;
+
   return output;
 };
 
+// ユニット一覧からスコア計算する
+export const unitListToScore = (unitList: UnitInfo[]) => {
+  if (unitList.length === 0) {
+    return 0;
+  }
+
+  return unitList
+    .map(unit => unit.score)
+    .reduce((sum: number, val: number) => sum + val);
+};
+
+// 手役から、どのユニットが作れるかを調べる(そら考慮版)
+// minSora……そらが複数枚入っていた際、それぞれS1・S2……とすると、アイドルIDが必ずS1≦S2≦……となるようにするための補正
+export const calcUnitList = (
+  myHands: number[],
+  minSora = 0,
+): { unit: UnitInfo[]; hands: number[] } => {
+  cache = {};
+  // そらが含まれているかどうかで場合分け
+  const soraIndex = myHands.indexOf(SORA_INDEX);
+  if (soraIndex >= 0) {
+    // 含まれている場合は、全通り調べて最高得点のものを返す
+    let maxScore = 0;
+    let maxResult: { unit: UnitInfo[]; hands: number[] } = {
+      unit: [],
+      hands: [],
+    };
+    for (let i = minSora; i < SORA_INDEX - 1; i += 1) {
+      // そらを指定したカードの値として解釈
+      const myHandsTemp = [...myHands];
+      myHandsTemp[soraIndex] = i;
+
+      // 再帰的にスコア計算
+      const result = calcUnitList(myHandsTemp, i);
+      const score = unitListToScore(result.unit);
+      if (maxScore < score) {
+        maxScore = score;
+        maxResult = result;
+      }
+    }
+
+    return maxResult;
+  }
+
+  return { unit: calcUnitListImpl(myHands), hands: myHands };
+};
+
+// 表示用に、ユニットメンバーを文字列配列に変換
 export const unitMemberToStringArray = (members: Int64) => {
   const memberArray: number[] = [];
   for (let i = 0; i < 53; i += 1) {
@@ -179,15 +235,4 @@ export const unitListToString = (unitList: UnitInfo[]) => {
         ).join(',')}`,
     )
     .join('\n');
-};
-
-// ユニット一覧からスコア計算する
-export const unitListToScore = (unitList: UnitInfo[]) => {
-  if (unitList.length === 0) {
-    return 0;
-  }
-
-  return unitList
-    .map(unit => unit.score)
-    .reduce((sum: number, val: number) => sum + val);
 };

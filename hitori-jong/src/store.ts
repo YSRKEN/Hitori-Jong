@@ -6,14 +6,7 @@ import {
   unitListToScore,
   unitMemberToStringArray,
 } from 'algorithm';
-import {
-  ApplicationMode,
-  Action,
-  HANDS_SIZE,
-  SORA_INDEX,
-  IDOL_LIST,
-  UnitInfo,
-} from './constant';
+import { ApplicationMode, Action, HANDS_SIZE, IDOL_LIST } from './constant';
 
 const useStore = () => {
   const [applicationMode, setApplicationMode] = useState<ApplicationMode>(
@@ -48,37 +41,29 @@ const useStore = () => {
   // 役判定とフラグ処理
   useEffect(() => {
     // 役判定
-    let finalUnitList: UnitInfo[] = [];
-    if (myHands.includes(SORA_INDEX)) {
-      // 簡易的なスコア計算
-      // (そらが1枚だけだと仮定し、それを53通りに展開して最高得点のものを返す)
-      const soraIndex = myHands.indexOf(SORA_INDEX);
-      let maxScore = 0;
-      let maxScoreOutput = '';
-      for (let i = 0; i < SORA_INDEX - 1; i += 1) {
-        const myHands2 = [...myHands];
-        myHands2[soraIndex] = i;
-        const unitList = calcUnitList(myHands2);
-        const unitScore = unitListToScore(unitList);
-        if (unitScore > maxScore) {
-          maxScore = unitScore;
-          maxScoreOutput = `【成立役(そら→${
-            IDOL_LIST[i].name
-          })】合計＝${unitScore}点\n${unitListToString(unitList)}`;
-          finalUnitList = [...unitList];
-        }
+    const result = calcUnitList(myHands);
+    const score = unitListToScore(result.unit);
+    const soraChangeList: string[] = [];
+    for (let i = 0; i < myHands.length; i += 1) {
+      if (result.hands[i] !== myHands[i]) {
+        soraChangeList.push(IDOL_LIST[result.hands[i]].name);
       }
-      setUnitText(maxScoreOutput);
+    }
+    if (soraChangeList.length > 0) {
+      setUnitText(
+        `【成立役(そら→${soraChangeList.join(
+          '、',
+        )})】合計＝${score}点\n${unitListToString(result.unit)}`,
+      );
     } else {
-      const unitList = calcUnitList(myHands);
-      const score = unitListToScore(unitList);
-      setUnitText(`【成立役】合計＝${score}点\n${unitListToString(unitList)}`);
-      finalUnitList = [...unitList];
+      setUnitText(
+        `【成立役】合計＝${score}点\n${unitListToString(result.unit)}`,
+      );
     }
 
     // フラグ処理
     const memberSet = new Set<string>();
-    for (const unitInfo of finalUnitList) {
+    for (const unitInfo of result.unit) {
       for (const member of unitMemberToStringArray(unitInfo.member)) {
         memberSet.add(member);
       }
