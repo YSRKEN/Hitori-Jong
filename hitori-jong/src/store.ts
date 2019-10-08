@@ -11,7 +11,7 @@ import { ApplicationMode, Action, HANDS_SIZE, IDOL_LIST } from './constant';
 
 const useStore = () => {
   const [applicationMode, setApplicationMode] = useState<ApplicationMode>(
-    'GameForm',
+    'StartForm',
   );
   const [myHands, setMyHands] = useState<number[]>([]);
   const [tileDeck, setTileDeck] = useState<number[]>([]);

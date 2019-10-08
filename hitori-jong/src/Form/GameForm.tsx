@@ -29,7 +29,6 @@ const GameForm: React.FC = () => {
           <Form>
             <Form.Group className="text-center my-3">
               <Button
-                size="lg"
                 variant="warning"
                 className="text-nowrap"
                 onClick={onClickReturnButton}
@@ -43,7 +42,6 @@ const GameForm: React.FC = () => {
           <Form>
             <Form.Group className="text-center my-3">
               <Button
-                size="lg"
                 variant="outline-primary"
                 className="text-nowrap"
                 disabled
@@ -56,11 +54,7 @@ const GameForm: React.FC = () => {
         <Col>
           <Form>
             <Form.Group className="text-center my-3">
-              <Button
-                size="lg"
-                className="text-nowrap"
-                onClick={onClickResetButton}
-              >
+              <Button className="text-nowrap" onClick={onClickResetButton}>
                 牌山と手札をリセット
               </Button>
             </Form.Group>
