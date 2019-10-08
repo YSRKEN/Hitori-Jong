@@ -5,6 +5,7 @@ import {
   unitListToString,
   unitListToScore,
   unitListToStringArray,
+  unitListToHumansCount,
 } from 'algorithm';
 import { ApplicationMode, Action, HANDS_SIZE, IDOL_LIST } from './constant';
 
@@ -43,6 +44,7 @@ const useStore = () => {
     // 役判定
     const result = calcUnitListWithSora(myHands);
     const score = unitListToScore(result.unit);
+    const humans = unitListToHumansCount(result.unit);
     const soraChangeList: string[] = [];
     for (let i = 0; i < myHands.length; i += 1) {
       if (result.hands[i] !== myHands[i]) {
@@ -53,17 +55,26 @@ const useStore = () => {
       setUnitText(
         `【成立役(そら→${soraChangeList.join(
           '、',
-        )})】合計＝${score}点\n${unitListToString(result.unit)}`,
+        )})】合計＝${score}点、人数＝${humans}人\n${unitListToString(
+          result.unit,
+        )}`,
       );
     } else {
       setUnitText(
-        `【成立役】合計＝${score}点\n${unitListToString(result.unit)}`,
+        `【成立役】合計＝${score}点、人数＝${humans}人\n${unitListToString(
+          result.unit,
+        )}`,
       );
     }
 
     // フラグ処理
     const memberSet = unitListToStringArray(result.unit);
     setHandsBoldFlg(myHands.map(hand => memberSet.has(IDOL_LIST[hand].name)));
+
+    // ユニットの人数合計＝枚数なら上がり
+    if (humans === HANDS_SIZE) {
+      window.alert('おめでとう！上がりです！');
+    }
   }, [myHands]);
 
   const dispatch = (action: Action) => {

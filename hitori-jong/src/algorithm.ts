@@ -8,6 +8,7 @@ import {
   Int64,
   INT64_ZERO,
   SORA_INDEX,
+  IDOL_LIST_LENGTH2,
 } from 'constant';
 
 // [0, n)の整数一様乱数を得る。参考：MDN
@@ -90,20 +91,28 @@ const equalInt64 = (a: Int64, b: Int64) => {
 };
 
 // 手役一覧における人名部分を、比較演算しやすいように変換する
-// とても都合がいいことに、JavaScriptのnumber型で正確に表せる整数は53bitまでなので、
-// そのままキーとして使用できる
 export const convertUnitList = () => {
   const temp: { [key: string]: Int64 } = {};
-  for (let i = 0; i < 53; i += 1) {
+  const temp2: { [key: string]: number } = {};
+  for (let i = 0; i < IDOL_LIST_LENGTH2; i += 1) {
     temp[IDOL_LIST[i].name] = getShiftedValue(i);
+    temp2[IDOL_LIST[i].name] = i;
   }
 
   const unitList2: UnitInfo[] = [];
   for (const record of UNIT_LIST) {
+    // キーハッシュ
     let memberKey: Int64 = { upper: 0, lower: 0 };
     for (const member of record.member) {
       memberKey = orInt64(memberKey, temp[member]);
     }
+    // アイドル毎の枚数
+    const memberArray: number[] = Array(IDOL_LIST_LENGTH2);
+    memberArray.fill(0);
+    for (const member of record.member) {
+      memberArray[temp2[member]] += 1;
+    }
+    // スコア
     let gameScore = 0;
     switch (record.member.length) {
       case 1:
@@ -129,7 +138,12 @@ export const convertUnitList = () => {
         gameScore = 0;
         break;
     }
-    unitList2.push({ name: record.name, member: memberKey, score: gameScore });
+    unitList2.push({
+      name: record.name,
+      member: memberKey,
+      member2: memberArray,
+      score: gameScore,
+    });
   }
 
   return unitList2;
@@ -164,6 +178,109 @@ const calcUnitListRough = (myHandsBit: Int64) => {
   return output;
 };
 
+// 手役を「それぞれのアイドルが何枚あるか」の配列に変換する
+const calcHandsArray = (myHands: number[]) => {
+  const temp = Array<number>(IDOL_LIST_LENGTH2);
+  temp.fill(0);
+  for (const hand of myHands) {
+    temp[hand] += 1;
+  }
+
+  return temp;
+};
+
+const calcCount = (myHandsArray: number[], unitListX: number[]) => {
+  let minCount = 9999;
+  for (let i = 0; i < IDOL_LIST_LENGTH2; i += 1) {
+    if (unitListX[i] > 0) {
+      minCount = Math.min(minCount, myHandsArray[i]);
+    }
+  }
+
+  return minCount;
+};
+
+// 手役に対して、どのユニットの組み合わせを取れば高得点かを計算する
+// ・myHandsArray……要素数IDOL_LIST_LENGTH2(53)、各アイドルの枚数が記録されている
+// ・unitList……適合するユニット番号が記録されている
+// ・unitListから、各ユニットの「要素数IDOL_LIST_LENGTH2(53)」を取得し、
+//   それをどう組み合わせれば高得点かを勘案する
+const calcUnitListFine = (myHandsArray: number[], unitList: number[]) => {
+  // unitListの各要素について、「それぞれのアイドルが何枚あるか」の配列に変換する
+  const unitList2 = unitList.map(id => UNIT_LIST2[id].member2);
+
+  // unitList2の各要素について、myHandsArray内で何回割り当てられるかを計算する
+  const roughCount = unitList2.map(unitData =>
+    calcCount(myHandsArray, unitData),
+  );
+
+  // 割当可能回数から、全割当パターンを算出する
+  let patterns: number[][] = [];
+  for (const count of roughCount) {
+    const temp = Array(count + 1);
+    for (let i = 0; i <= count; i += 1) {
+      temp[i] = i;
+    }
+    if (patterns.length === 0) {
+      for (const i of temp) {
+        patterns.push([i]);
+      }
+    } else {
+      const temp2: number[][] = [];
+      for (const record of patterns) {
+        for (const i of temp) {
+          temp2.push(record.concat([i]));
+        }
+      }
+      patterns = temp2;
+    }
+  }
+
+  // 各割当パターンについて、実行可能性とスコア計算を実施し、最大のものを採用する
+  let maxScore = 0;
+  let fineList: number[] = [];
+  for (const record of patterns) {
+    // スコアを計算
+    let score = 0;
+    for (let i = 0; i < record.length; i += 1) {
+      if (record[i] >= 1) {
+        score += record[i] * UNIT_LIST2[unitList[i]].score;
+      }
+    }
+    if (score > maxScore) {
+      // 実行可能性を判断
+      const temp = Array<number>(IDOL_LIST_LENGTH2);
+      temp.fill(0);
+      for (let i = 0; i < record.length; i += 1) {
+        if (record[i] >= 1) {
+          for (let j = 0; j < IDOL_LIST_LENGTH2; j += 1) {
+            temp[j] += record[i] * unitList2[i][j];
+          }
+        }
+      }
+      let flg = true;
+      for (let j = 0; j < IDOL_LIST_LENGTH2; j += 1) {
+        if (myHandsArray[j] < temp[j]) {
+          flg = false;
+          break;
+        }
+      }
+      if (flg) {
+        maxScore = score;
+        const temp2: number[] = [];
+        for (let i = 0; i < record.length; i += 1) {
+          if (record[i] >= 1) {
+            temp2.push(unitList[i]);
+          }
+        }
+        fineList = temp2;
+      }
+    }
+  }
+
+  return fineList;
+};
+
 // 手役から、どのユニットの組み合わせを取るべきかを調べる
 let cache: { [key: string]: number[] } = {};
 export const calcUnitList = (myHands: number[]) => {
@@ -181,11 +298,13 @@ export const calcUnitList = (myHands: number[]) => {
   const roughList = calcUnitListRough(myHandsBit);
 
   // どの手役を使うと最高得点が取れるかを判断する
+  const myHandsArray = calcHandsArray(myHands);
+  const fineList = calcUnitListFine(myHandsArray, roughList);
 
   // キャッシュに追加する
-  cache[key] = [...roughList];
+  cache[key] = [...fineList];
 
-  return roughList;
+  return fineList;
 };
 
 // ユニット一覧からスコア計算する
@@ -238,7 +357,7 @@ export const calcUnitListWithSora = (
 // 表示用に、ユニットメンバーを文字列配列に変換
 const unitMemberToStringArray = (members: Int64) => {
   const memberArray: number[] = [];
-  for (let i = 0; i < 53; i += 1) {
+  for (let i = 0; i < IDOL_LIST_LENGTH2; i += 1) {
     if (!equalInt64(andInt64(members, getShiftedValue(i)), INT64_ZERO)) {
       memberArray.push(i);
     }
@@ -270,4 +389,15 @@ export const unitListToString = (unitList: number[]) => {
         } ${unitMemberToStringArray(UNIT_LIST2[unit].member).join(',')}`,
     )
     .join('\n');
+};
+
+// ユニット一覧における人数の総数
+export const unitListToHumansCount = (unitList: number[]) => {
+  if (unitList.length === 0) {
+    return 0;
+  }
+
+  return unitList
+    .map(unitInfo => UNIT_LIST[unitInfo].member.length)
+    .reduce((p, c) => p + c);
 };

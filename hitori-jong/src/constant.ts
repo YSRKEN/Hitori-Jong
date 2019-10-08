@@ -392,6 +392,9 @@ export const UNIT_LIST: { name: string; member: string[] }[] = [
 // アイドルの種類数
 export const IDOL_LIST_LENGTH = IDOL_LIST.length;
 
+// そらを除いた、アイドルの種類数
+export const IDOL_LIST_LENGTH2 = IDOL_LIST_LENGTH - 1;
+
 // アイドル毎の枚数
 export const MAX_IDOL_COUNTS = 3;
 
@@ -414,6 +417,7 @@ export const INT64_ZERO: Int64 = { upper: 0, lower: 0 };
 export interface UnitInfo {
   name: string;
   member: Int64;
+  member2: number[];
   score: number;
 }
 
