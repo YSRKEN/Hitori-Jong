@@ -1,22 +1,32 @@
-.App {
-  text-align: center;
+/* テキストを縦書きにする */
+.vertical-writing {
+  -webkit-writing-mode: vertical-rl;
+  -ms-writing-mode: tb-rl;
+  writing-mode: vertical-rl;
 }
 
-.App-logo {
-  height: 40vmin;
+.tile-style {
+  height: 80px;
+  line-height: 24px;
+  width: 36px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.color-Princess {
+  background-color: pink;
 }
 
-.App-link {
-  color: #09d3ac;
+.color-Fairy {
+  background-color: lightblue;
+}
+
+.color-Angel {
+  background-color: lemonchiffon;
+}
+
+.color-Extra {
+  background-color: lightgreen;
+}
+
+.color-Sora {
+  background-color: violet;
 }
