@@ -7,6 +7,28 @@ import {
   UnitInfo,
 } from 'constant';
 
+// [0, n)の整数一様乱数を得る。参考：MDN
+const getRandomInt = (n: number) => {
+  return Math.floor(Math.random() * n);
+};
+
+// [0, n)の整数一様乱数を得る。参考・MDN、cpprefjp
+const getRandomIntSecure = (n: number) => {
+  const rawValueLimit = Math.floor(4294967296 / n) * n;
+  /* eslint no-constant-condition: ["error", {"checkLoops": false}]*/
+  while (true) {
+    // [0, 2^32=4294967296)の整数乱数を得る
+    const rawValue = window.crypto.getRandomValues(new Uint32Array(1))[0];
+
+    // 整数乱数がある値以上ならば、その結果を棄却して再度乱数を出させる(モジュロ問題の回避)
+    if (rawValue >= rawValueLimit) {
+      continue;
+    } else {
+      return rawValue % n;
+    }
+  }
+};
+
 // 牌山をシャッフルする
 export const getShuffledTileDeck = () => {
   // 初期化
@@ -18,25 +40,29 @@ export const getShuffledTileDeck = () => {
   }
 
   // シャッフル
-  // TODO：アルゴリズムを変更する。Math.random()はどのアルゴリズムを使うか保証されておらず、
-  // またミリジャンの牌山は162!÷3!^54≒1.17e+247≒2^821通りの組み合わせがある。
-  // つまり、乱数生成をメルセンヌ・ツイスタ(周期2^19937-1)など長周期のもので行うとしても、
-  // シードを2^821通り以上の組み合わせが保証されるように取る必要がある。
-  // しかし、window.crypto.getRandomValues()が使えたとしても、1要素につき2^32のランダム性しかないため、
-  // 厳密に行おうとすると、getRandomValuesで26要素用意し、26個の乱数生成器を用意し、
-  // 1回乱数を使用する毎に乱数生成器を取り替えるような実装が必要となる。
-  //
-  // あまりに大変なので、とりあえずMath.random()でお茶を濁すことにする
-  for (let i = TILE_DECK_SIZE - 1; i >= 1; i -= 1) {
-    const j = Math.floor(Math.random() * Math.floor(i + 1));
-    const a = temp[i];
-    temp[i] = temp[j];
-    temp[j] = a;
+  // window.crypto.getRandomValues()が実装されている際は、そちらを利用して
+  // 一様整数乱数を取得し、そこから狙った幅の整数乱数にすることでシャッフルを行う。
+  // 実装されてない際は、ベタにMath.random()から整数乱数を作成してシャッフルを行う
+  if (typeof window.crypto.getRandomValues === 'function') {
+    for (let i = TILE_DECK_SIZE - 1; i >= 1; i -= 1) {
+      const j = getRandomIntSecure(i + 1);
+      const a = temp[i];
+      temp[i] = temp[j];
+      temp[j] = a;
+    }
+  } else {
+    for (let i = TILE_DECK_SIZE - 1; i >= 1; i -= 1) {
+      const j = getRandomInt(i + 1);
+      const a = temp[i];
+      temp[i] = temp[j];
+      temp[j] = a;
+    }
   }
 
   return temp;
 };
 
+// 手役から、どのユニットが作れるかを調べる
 export const calcUnitList = (myHands: number[]) => {
   // 手役をハッシュ化
   const handSet = new Set<string>();
