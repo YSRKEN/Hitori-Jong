@@ -239,7 +239,8 @@ const calcUnitListFine = (myHandsArray: number[], unitList: number[]) => {
   // 各割当パターンについて、実行可能性とスコア計算を実施し、最大のものを採用する
   let maxScore = 0;
   let fineList: number[] = [];
-  for (const record of patterns) {
+  for (let x = 0; x < patterns.length; x += 1) {
+    const record = patterns[x];
     // スコアを計算
     let score = 0;
     for (let i = 0; i < record.length; i += 1) {
