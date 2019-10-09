@@ -475,13 +475,19 @@ export const checkTempai = (myHands: number[]) => {
         dic[key] = 1;
       }
     }
-    /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
-    const output = result4
-      .map(
-        r =>
-          `・${IDOL_LIST[r.from].name}→${IDOL_LIST[r.to].name}　${r.score}\n`,
-      )
-      .join('');
+    const dic2: { [key: string]: string } = {};
+    for (let r of result4) {
+      const key = IDOL_LIST[r.from].name;
+      if (!(key in dic2)) {
+        dic2[key] = '';
+      }
+      dic2[key] = dic2[key] + `${IDOL_LIST[r.to].name}(${r.score}) `;
+    }
+    let output = '';
+    for (let key in dic2) {
+      /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
+      output += `・${key}→\n　${dic2[key]}\n`;
+    }
     window.alert(`テンパイ形：\n${output}`);
 
     return;
