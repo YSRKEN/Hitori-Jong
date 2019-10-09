@@ -9,6 +9,7 @@ import {
   INT64_ZERO,
   SORA_INDEX,
   IDOL_LIST_LENGTH2,
+  HANDS_SIZE,
 } from 'constant';
 
 // [0, n)の整数一様乱数を得る。参考：MDN
@@ -189,6 +190,7 @@ const calcHandsArray = (myHands: number[]) => {
   return temp;
 };
 
+// 手牌に指定した手役が何回取り出せるかを調べる
 const calcCount = (myHandsArray: number[], unitListX: number[]) => {
   let minCount = 9999;
   for (let i = 0; i < IDOL_LIST_LENGTH2; i += 1) {
@@ -243,10 +245,15 @@ const calcUnitListFine = (myHandsArray: number[], unitList: number[]) => {
     const record = patterns[x];
     // スコアを計算
     let score = 0;
+    let tileCount = 0;
     for (let i = 0; i < record.length; i += 1) {
       if (record[i] >= 1) {
         score += record[i] * UNIT_LIST2[unitList[i]].score;
+        tileCount += record[i] * UNIT_LIST[unitList[i]].member.length;
       }
+    }
+    if (tileCount === HANDS_SIZE) {
+      score += 100000000;
     }
     if (score > maxScore) {
       // 実行可能性を判断
