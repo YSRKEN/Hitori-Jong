@@ -23,6 +23,7 @@ const useStore = () => {
   const [turnCount, setTurnCount] = useState<number>(1);
   const [checkedTileFlg, setCheckedTileFlg] = useState<boolean[]>([]);
   const [statusOfCalcTempai, setStatusOfCalcTempai] = useState<boolean>(false);
+  const [unitTextType, setUnitTextType] = useState(0);
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -50,42 +51,48 @@ const useStore = () => {
 
   // 役判定とフラグ処理
   useEffect(() => {
-    // 役判定
-    resetCache();
-    const result = calcUnitListWithSora(myHands);
-    const score = unitListToScore(result.unit);
-    const humans = unitListToHumansCount(result.unit);
-    const soraChangeList: string[] = [];
-    for (let i = 0; i < myHands.length; i += 1) {
-      if (result.hands[i] !== myHands[i]) {
-        soraChangeList.push(IDOL_LIST[result.hands[i]].name);
+    if (unitTextType === 0) {
+      // 役判定
+      resetCache();
+      const result = calcUnitListWithSora(myHands);
+      const score = unitListToScore(result.unit);
+      const humans = unitListToHumansCount(result.unit);
+      const soraChangeList: string[] = [];
+      for (let i = 0; i < myHands.length; i += 1) {
+        if (result.hands[i] !== myHands[i]) {
+          soraChangeList.push(IDOL_LIST[result.hands[i]].name);
+        }
       }
-    }
-    if (soraChangeList.length > 0) {
-      setUnitText(
-        `【成立役(そら→${soraChangeList.join(
-          '、',
-        )})】合計＝${score}点、人数＝${humans}人\n${unitListToString(
-          result.unit,
-        )}`,
-      );
+      if (soraChangeList.length > 0) {
+        setUnitText(
+          `【成立役(そら→${soraChangeList.join(
+            '、',
+          )})】合計＝${score}点、人数＝${humans}人\n${unitListToString(
+            result.unit,
+          )}`,
+        );
+      } else {
+        setUnitText(
+          `【成立役】合計＝${score}点、人数＝${humans}人\n${unitListToString(
+            result.unit,
+          )}`,
+        );
+      }
+
+      // フラグ処理
+      const memberSet = unitListToStringArray(result.unit);
+      setHandsBoldFlg(myHands.map(hand => memberSet.has(IDOL_LIST[hand].name)));
+
+      // ユニットの人数合計＝枚数なら上がり
+      if (humans === HANDS_SIZE && applicationMode === 'GameForm') {
+        window.alert('アガリ(ミリオンライブ)！');
+      }
     } else {
-      setUnitText(
-        `【成立役】合計＝${score}点、人数＝${humans}人\n${unitListToString(
-          result.unit,
-        )}`,
-      );
+      resetCache();
+      setUnitText('【リーチ役】');
+      setHandsBoldFlg(myHands.map(hand => false));
     }
-
-    // フラグ処理
-    const memberSet = unitListToStringArray(result.unit);
-    setHandsBoldFlg(myHands.map(hand => memberSet.has(IDOL_LIST[hand].name)));
-
-    // ユニットの人数合計＝枚数なら上がり
-    if (humans === HANDS_SIZE && applicationMode === 'GameForm') {
-      window.alert('アガリ(ミリオンライブ)！');
-    }
-  }, [applicationMode, myHands]);
+  }, [applicationMode, myHands, unitTextType]);
 
   // 牌交換
   useEffect(() => {
@@ -160,6 +167,7 @@ const useStore = () => {
     turnCount,
     checkedTileFlg,
     statusOfCalcTempai,
+    unitTextType, setUnitTextType,
     dispatch,
   };
 };

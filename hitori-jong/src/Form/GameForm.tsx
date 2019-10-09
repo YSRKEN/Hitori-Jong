@@ -2,9 +2,10 @@ import React, { useContext } from 'react';
 import { Button, Container, Row, Col, Form } from 'react-bootstrap';
 import StateContext from 'context';
 import MyHandTileControl from 'Control/MyHandTileControl';
+import SelectButtons from 'Parts/SelectButtons';
 
 const GameForm: React.FC = () => {
-  const { unitText, turnCount, statusOfCalcTempai, dispatch } = useContext(
+  const { unitText, turnCount, statusOfCalcTempai, unitTextType, setUnitTextType, dispatch } = useContext(
     StateContext,
   );
 
@@ -67,6 +68,13 @@ const GameForm: React.FC = () => {
                   {turnCount}順目
                 </Button>
               )}
+            </Form.Group>
+          </Form>
+        </Col>
+        <Col>
+          <Form>
+            <Form.Group className="text-center my-3">
+              <SelectButtons columns={['成立役', 'リーチ役']} selectedIndex={unitTextType} onClickFunc={setUnitTextType}/>
             </Form.Group>
           </Form>
         </Col>
