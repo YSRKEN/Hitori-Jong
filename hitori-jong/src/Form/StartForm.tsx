@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Button, Container, Row, Col, Form } from 'react-bootstrap';
 import StateContext from 'context';
+import { TwitterShareButton, TwitterIcon } from 'react-share';
 
 const StartForm: React.FC = () => {
   const { dispatch } = useContext(StateContext);
@@ -33,7 +34,7 @@ const StartForm: React.FC = () => {
         </Col>
       </Row>
       <Row>
-        <Col xs={12} sm={8} md={4} className="my-3 mx-auto">
+        <Col xs={12} sm={8} md={4} className="my-3 mx-auto d-flex">
           <span>
             <a
               href="https://github.com/YSRKEN/Hitori-Jong/blob/master/README.md"
@@ -46,6 +47,15 @@ const StartForm: React.FC = () => {
             </a>
             <a href="https://github.com/YSRKEN/Hitori-Jong">GitHub</a>
           </span>
+          <div className="ml-3">
+            <TwitterShareButton
+              url="https://hitori-jong.firebaseapp.com"
+              title="一人用ミリジャン「ヒトリジャン」。スマホ対応。"
+              hashtags={['ミリジャン', 'ヒトリジャン']}
+            >
+              <TwitterIcon size={32} round />
+            </TwitterShareButton>
+          </div>
         </Col>
       </Row>
     </Container>
