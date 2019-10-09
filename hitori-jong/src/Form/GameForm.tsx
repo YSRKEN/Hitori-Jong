@@ -4,7 +4,9 @@ import StateContext from 'context';
 import MyHandTileControl from 'Control/MyHandTileControl';
 
 const GameForm: React.FC = () => {
-  const { unitText, turnCount, dispatch } = useContext(StateContext);
+  const { unitText, turnCount, statusOfCalcTempai, dispatch } = useContext(
+    StateContext,
+  );
 
   const onClickReturnButton = () => {
     if (window.confirm('スタート画面に戻りますか？')) {
@@ -18,6 +20,13 @@ const GameForm: React.FC = () => {
   const onClickResetButton = () => {
     dispatch({
       type: 'resetTileDeck',
+      message: '',
+    });
+  };
+
+  const checkTempai = () => {
+    dispatch({
+      type: 'calcTempai',
       message: '',
     });
   };
@@ -41,13 +50,23 @@ const GameForm: React.FC = () => {
         <Col>
           <Form>
             <Form.Group className="text-center my-3">
-              <Button
-                variant="outline-primary"
-                className="text-nowrap"
-                disabled
-              >
-                {turnCount}順目
-              </Button>
+              {statusOfCalcTempai ? (
+                <Button
+                  variant="outline-primary"
+                  className="text-nowrap"
+                  disabled
+                >
+                  計算中……
+                </Button>
+              ) : (
+                <Button
+                  variant="outline-primary"
+                  className="text-nowrap"
+                  onClick={() => checkTempai()}
+                >
+                  {turnCount}順目
+                </Button>
+              )}
             </Form.Group>
           </Form>
         </Col>

@@ -6,6 +6,8 @@ import {
   unitListToScore,
   unitListToStringArray,
   unitListToHumansCount,
+  resetCache,
+  checkTempai,
 } from 'algorithm';
 import { ApplicationMode, Action, HANDS_SIZE, IDOL_LIST } from './constant';
 
@@ -20,6 +22,7 @@ const useStore = () => {
   const [handsBoldFlg, setHandsBoldFlg] = useState<boolean[]>([]);
   const [turnCount, setTurnCount] = useState<number>(1);
   const [checkedTileFlg, setCheckedTileFlg] = useState<boolean[]>([]);
+  const [statusOfCalcTempai, setStatusOfCalcTempai] = useState<boolean>(false);
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -48,6 +51,7 @@ const useStore = () => {
   // 役判定とフラグ処理
   useEffect(() => {
     // 役判定
+    resetCache();
     const result = calcUnitListWithSora(myHands);
     const score = unitListToScore(result.unit);
     const humans = unitListToHumansCount(result.unit);
@@ -101,7 +105,15 @@ const useStore = () => {
       temp2.fill(false);
       setCheckedTileFlg(temp2);
     }
-  }, [checkedTileFlg, myHands]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkedTileFlg]);
+
+  useEffect(() => {
+    if (statusOfCalcTempai) {
+      checkTempai(myHands);
+      setStatusOfCalcTempai(false);
+    }
+  }, [myHands, statusOfCalcTempai]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   const dispatch = (action: Action) => {
     switch (action.type) {
@@ -127,6 +139,9 @@ const useStore = () => {
         setCheckedTileFlg(newCheckedTileFlg);
         break;
       }
+      case 'calcTempai':
+        setStatusOfCalcTempai(true);
+        break;
       default:
         break;
     }
@@ -139,6 +154,7 @@ const useStore = () => {
     handsBoldFlg,
     turnCount,
     checkedTileFlg,
+    statusOfCalcTempai,
     dispatch,
   };
 };
