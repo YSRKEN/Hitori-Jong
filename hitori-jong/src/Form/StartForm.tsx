@@ -16,6 +16,7 @@ const StartForm: React.FC = () => {
       <Row>
         <Col className="my-5">
           <h1 className="text-center">ヒトリジャン</h1>
+          <h4 className="text-center">Ver.1.0.0</h4>
         </Col>
       </Row>
       <Row>
@@ -29,6 +30,22 @@ const StartForm: React.FC = () => {
               スタート
             </Button>
           </Form>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12} sm={8} md={4} className="my-3 mx-auto">
+          <span>
+            <a
+              href="https://github.com/YSRKEN/Hitori-Jong/blob/master/README.md"
+              className="mr-3"
+            >
+              遊び方
+            </a>
+            <a href="https://twitter.com/YSRKEN" className="mr-3">
+              作者Twitter
+            </a>
+            <a href="https://github.com/YSRKEN/Hitori-Jong">GitHub</a>
+          </span>
         </Col>
       </Row>
     </Container>
