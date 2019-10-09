@@ -11,7 +11,7 @@ import { ApplicationMode, Action, HANDS_SIZE, IDOL_LIST } from './constant';
 
 const useStore = () => {
   const [applicationMode, setApplicationMode] = useState<ApplicationMode>(
-    'StartForm',
+    'GameForm',
   );
   const [myHands, setMyHands] = useState<number[]>([]);
   const [tileDeck, setTileDeck] = useState<number[]>([]);
@@ -19,6 +19,7 @@ const useStore = () => {
   const [unitText, setUnitText] = useState<string>('');
   const [handsBoldFlg, setHandsBoldFlg] = useState<boolean[]>([]);
   const [turnCount, setTurnCount] = useState<number>(1);
+  const [checkedTileFlg, setCheckedTileFlg] = useState<boolean[]>([]);
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -31,9 +32,12 @@ const useStore = () => {
     for (let i = 0; i < HANDS_SIZE; i += 1) {
       temp2[i] = temp[i];
     }
+    const temp3 = Array<boolean>(HANDS_SIZE);
+    temp3.fill(false);
     setMyHands(temp2);
     setTileDeckPointer(HANDS_SIZE);
     setTurnCount(1);
+    setCheckedTileFlg(temp3);
   };
 
   // 牌山と手札を設定する
@@ -79,6 +83,26 @@ const useStore = () => {
     }
   }, [applicationMode, myHands]);
 
+  // 牌交換
+  useEffect(() => {
+    if (checkedTileFlg.filter(flg => flg).length >= 2) {
+      const checkedTileIndex: number[] = [];
+      for (let i = 0; i < checkedTileFlg.length; i += 1) {
+        if (checkedTileFlg[i]) {
+          checkedTileIndex.push(i);
+        }
+      }
+      const newMyHands = [...myHands];
+      const temp = newMyHands[checkedTileIndex[0]];
+      newMyHands[checkedTileIndex[0]] = newMyHands[checkedTileIndex[1]];
+      newMyHands[checkedTileIndex[1]] = temp;
+      setMyHands(newMyHands);
+      const temp2 = Array<boolean>(HANDS_SIZE);
+      temp2.fill(false);
+      setCheckedTileFlg(temp2);
+    }
+  }, [checkedTileFlg, myHands]);
+
   const dispatch = (action: Action) => {
     switch (action.type) {
       case 'setApplicationMode':
@@ -96,6 +120,13 @@ const useStore = () => {
         setTurnCount(turnCount + 1);
         break;
       }
+      case 'checkTile': {
+        const checkIndex = parseInt(action.message, 10);
+        const newCheckedTileFlg = [...checkedTileFlg];
+        newCheckedTileFlg[checkIndex] = true;
+        setCheckedTileFlg(newCheckedTileFlg);
+        break;
+      }
       default:
         break;
     }
@@ -107,6 +138,7 @@ const useStore = () => {
     unitText,
     handsBoldFlg,
     turnCount,
+    checkedTileFlg,
     dispatch,
   };
 };

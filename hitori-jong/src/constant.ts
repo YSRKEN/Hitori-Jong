@@ -1,5 +1,9 @@
 // Actionの種類
-export type ActionType = 'setApplicationMode' | 'resetTileDeck' | 'drawTile';
+export type ActionType =
+  | 'setApplicationMode'
+  | 'resetTileDeck'
+  | 'drawTile'
+  | 'checkTile';
 
 // アプリケーションの動作モード
 export type ApplicationMode = 'StartForm' | 'GameForm';
