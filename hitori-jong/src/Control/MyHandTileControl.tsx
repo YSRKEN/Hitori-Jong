@@ -11,7 +11,7 @@ const MyHandTileControl: React.FC = () => {
   });
 
   return (
-    <div>
+    <div className="d-flex">
       {temp.map((record: { index: number; idolNumber: number }) => (
         <TileParts
           key={record.index}
