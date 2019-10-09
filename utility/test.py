@@ -97,17 +97,23 @@ def main():
             unit_patterns = new_unit_patterns
 
     # 各組み合わせについて、実現可能かを判定し、最大スコアのものを選択する
+    # ただしアガリ(ミリオンライブ)の場合はそちらを優先させる
     max_score = 0
     max_unit_pattern = []
     for unit_pattern in unit_patterns:
         selected_units_info = calc_units_info(unit_info_list, unit_pattern)
         if judge_info(hands_info, selected_units_info):
             score = 0
+            tile_count = 0
             for p, s in zip(unit_score_list, unit_pattern):
                 score += p * s
+                tile_count += s
+            if tile_count == 13:
+                score += 100000000
             if score > max_score:
                 max_score = score
                 max_unit_pattern = unit_pattern
+    max_score = max_score % 100000000
 
     # 結果を出力する
     print(f'点数：{max_score}点')
