@@ -436,6 +436,9 @@ export const checkTempai = (myHands: number[]) => {
   }[] = [];
   for (let i = 0; i < myHands.length; i += 1) {
     const newHands = [...myHands];
+    if (myHands[i] === SORA_INDEX) {
+      continue;
+    }
     for (let j = 0; j < SORA_INDEX - 1; j += 1) {
       if (myHands[i] === j) {
         continue;

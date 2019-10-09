@@ -113,7 +113,8 @@ const useStore = () => {
       checkTempai(myHands);
       setStatusOfCalcTempai(false);
     }
-  }, [myHands, statusOfCalcTempai]); // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusOfCalcTempai]);
 
   const dispatch = (action: Action) => {
     switch (action.type) {
