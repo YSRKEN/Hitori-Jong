@@ -221,7 +221,7 @@ const calcUnitListFine = (myHandsArray: number[], unitList: number[]) => {
   for (const count of roughCount) {
     const temp = Array(count + 1);
     for (let i = 0; i <= count; i += 1) {
-      temp[i] = i;
+      temp[i] = count - i;
     }
     if (patterns.length === 0) {
       for (const i of temp) {
