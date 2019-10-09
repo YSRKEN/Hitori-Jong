@@ -7,6 +7,8 @@ interface ApplicationState {
   unitText: string;
   handsBoldFlg: boolean[];
   turnCount: number;
+  checkedTileFlg: boolean[];
+  statusOfCalcTempai: boolean;
   dispatch: (action: Action) => void;
 }
 

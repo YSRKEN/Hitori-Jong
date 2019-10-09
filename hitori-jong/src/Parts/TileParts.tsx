@@ -6,35 +6,52 @@ const TileParts: React.FC<{ idolNumber: number; tileIndex: number }> = ({
   idolNumber,
   tileIndex,
 }) => {
-  const { handsBoldFlg, dispatch } = useContext(StateContext);
+  const { handsBoldFlg, checkedTileFlg, dispatch } = useContext(StateContext);
 
   const onClickTile = () =>
     dispatch({ type: 'drawTile', message: `${tileIndex}` });
 
+  const onClickCheck = () =>
+    dispatch({ type: 'checkTile', message: `${tileIndex}` });
+
   if (handsBoldFlg[tileIndex]) {
     return (
+      <div>
+        <span
+          role="button"
+          className={`vertical-writing border p-1 tile-style mr-1 color-${IDOL_LIST[idolNumber].type} font-weight-bold`}
+          onClick={onClickTile}
+          tabIndex={tileIndex}
+          onKeyUp={onClickTile}
+        >
+          {IDOL_LIST[idolNumber].name}
+        </span>
+        <input
+          type="checkbox"
+          checked={checkedTileFlg[tileIndex]}
+          onChange={onClickCheck}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div>
       <span
         role="button"
-        className={`vertical-writing border p-1 tile-style mr-1 color-${IDOL_LIST[idolNumber].type} font-weight-bold`}
+        className={`vertical-writing border p-1 tile-style mr-1 color-${IDOL_LIST[idolNumber].type}`}
         onClick={onClickTile}
         tabIndex={tileIndex}
         onKeyUp={onClickTile}
       >
         {IDOL_LIST[idolNumber].name}
       </span>
-    );
-  }
-
-  return (
-    <span
-      role="button"
-      className={`vertical-writing border p-1 tile-style mr-1 color-${IDOL_LIST[idolNumber].type}`}
-      onClick={onClickTile}
-      tabIndex={tileIndex}
-      onKeyUp={onClickTile}
-    >
-      {IDOL_LIST[idolNumber].name}
-    </span>
+      <input
+        type="checkbox"
+        checked={checkedTileFlg[tileIndex]}
+        onChange={onClickCheck}
+      />
+    </div>
   );
 };
 

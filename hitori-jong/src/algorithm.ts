@@ -326,13 +326,16 @@ export const unitListToScore = (unitList: number[]) => {
     .reduce((sum: number, val: number) => sum + val);
 };
 
+export const resetCache = () => {
+  cache = {};
+};
+
 // 手役から、どのユニットが作れるかを調べる(そら考慮版)
 // minSora……そらが複数枚入っていた際、それぞれS1・S2……とすると、アイドルIDが必ずS1≦S2≦……となるようにするための補正
 export const calcUnitListWithSora = (
   myHands: number[],
   minSora = 0,
 ): { unit: number[]; hands: number[] } => {
-  cache = {};
   // そらが含まれているかどうかで場合分け
   const soraIndex = myHands.indexOf(SORA_INDEX);
   if (soraIndex >= 0) {
@@ -408,4 +411,77 @@ export const unitListToHumansCount = (unitList: number[]) => {
   return unitList
     .map(unitInfo => UNIT_LIST[unitInfo].member.length)
     .reduce((p, c) => p + c);
+};
+
+// テンパイしているかをチェックする
+export const checkTempai = (myHands: number[]) => {
+  resetCache();
+  // 既にアガっているかを調べる
+  console.log('既にアガっているかを調べる');
+  const result = calcUnitListWithSora(myHands);
+  const humans = unitListToHumansCount(result.unit);
+  if (humans === HANDS_SIZE) {
+    window.alert('既にアガリ形です');
+
+    return;
+  }
+
+  // テンパイしているかを調べる
+  console.log('テンパイしているかを調べる');
+  const result2: {
+    from: number;
+    to: number;
+    units: string;
+    score: number;
+  }[] = [];
+  for (let i = 0; i < myHands.length; i += 1) {
+    const newHands = [...myHands];
+    for (let j = 0; j < SORA_INDEX - 1; j += 1) {
+      if (myHands[i] === j) {
+        continue;
+      }
+      newHands[i] = j;
+      /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
+      console.log(`　${IDOL_LIST[myHands[i]].name}→${IDOL_LIST[j].name}`);
+      const result3 = calcUnitListWithSora(newHands);
+      const humans2 = unitListToHumansCount(result3.unit);
+      if (humans2 === HANDS_SIZE) {
+        result2.push({
+          from: myHands[i],
+          to: newHands[i],
+          units: result3.unit.map(u => UNIT_LIST[u].name).join(', '),
+          score: result3.unit
+            .map(u => UNIT_LIST2[u].score)
+            .reduce((s, v) => s + v),
+        });
+      }
+    }
+  }
+  if (result2.length > 0) {
+    const result4: {
+      from: number;
+      to: number;
+      units: string;
+      score: number;
+    }[] = [];
+    const dic: { [key: string]: number } = {};
+    for (const record of result2) {
+      const key = `${record.from},${record.to}`;
+      if (!(key in dic)) {
+        result4.push(record);
+        dic[key] = 1;
+      }
+    }
+    /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
+    const output = result4
+      .map(
+        r =>
+          `・${IDOL_LIST[r.from].name}→${IDOL_LIST[r.to].name}　${r.score}\n`,
+      )
+      .join('');
+    window.alert(`テンパイ形：\n${output}`);
+
+    return;
+  }
+  window.alert('イーシャンテン以上です');
 };

@@ -17,7 +17,7 @@ const StartForm: React.FC = () => {
       <Row>
         <Col className="my-5">
           <h1 className="text-center">ヒトリジャン</h1>
-          <h4 className="text-center">Ver.1.0.0</h4>
+          <h4 className="text-center">Ver.1.1.0</h4>
         </Col>
       </Row>
       <Row>
