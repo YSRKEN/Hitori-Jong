@@ -29,7 +29,7 @@ const TileParts: React.FC<{ idolNumber: number; tileIndex: number }> = ({
         <input
           type="checkbox"
           checked={checkedTileFlg[tileIndex]}
-          onClick={onClickCheck}
+          onChange={onClickCheck}
         />
       </div>
     );
@@ -49,7 +49,7 @@ const TileParts: React.FC<{ idolNumber: number; tileIndex: number }> = ({
       <input
         type="checkbox"
         checked={checkedTileFlg[tileIndex]}
-        onClick={onClickCheck}
+        onChange={onClickCheck}
       />
     </div>
   );
