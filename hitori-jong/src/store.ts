@@ -74,10 +74,10 @@ const useStore = () => {
     setHandsBoldFlg(myHands.map(hand => memberSet.has(IDOL_LIST[hand].name)));
 
     // ユニットの人数合計＝枚数なら上がり
-    if (humans === HANDS_SIZE) {
-      window.alert('おめでとう！上がりです！');
+    if (humans === HANDS_SIZE && applicationMode === 'GameForm') {
+      window.alert('アガリ(ミリオンライブ)！');
     }
-  }, [myHands]);
+  }, [applicationMode, myHands]);
 
   const dispatch = (action: Action) => {
     switch (action.type) {
