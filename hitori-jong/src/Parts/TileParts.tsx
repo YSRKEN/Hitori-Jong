@@ -6,10 +6,13 @@ const TileParts: React.FC<{ idolNumber: number; tileIndex: number }> = ({
   idolNumber,
   tileIndex,
 }) => {
-  const { handsBoldFlg, dispatch } = useContext(StateContext);
+  const { handsBoldFlg, checkedTileFlg, dispatch } = useContext(StateContext);
 
   const onClickTile = () =>
     dispatch({ type: 'drawTile', message: `${tileIndex}` });
+
+  const onClickCheck = () =>
+    dispatch({ type: 'checkTile', message: `${tileIndex}` });
 
   if (handsBoldFlg[tileIndex]) {
     return (
@@ -23,7 +26,11 @@ const TileParts: React.FC<{ idolNumber: number; tileIndex: number }> = ({
         >
           {IDOL_LIST[idolNumber].name}
         </span>
-        <input type="checkbox" />
+        <input
+          type="checkbox"
+          checked={checkedTileFlg[tileIndex]}
+          onClick={onClickCheck}
+        />
       </div>
     );
   }
@@ -39,7 +46,11 @@ const TileParts: React.FC<{ idolNumber: number; tileIndex: number }> = ({
       >
         {IDOL_LIST[idolNumber].name}
       </span>
-      <input type="checkbox" />
+      <input
+        type="checkbox"
+        checked={checkedTileFlg[tileIndex]}
+        onClick={onClickCheck}
+      />
     </div>
   );
 };
