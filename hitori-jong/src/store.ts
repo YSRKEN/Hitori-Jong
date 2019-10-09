@@ -124,6 +124,10 @@ const useStore = () => {
         resetTileDeck();
         break;
       case 'drawTile': {
+        if (tileDeck.length <= tileDeckPointer) {
+          window.alert('もうツモできません');
+          break;
+        }
         const clickIndex = parseInt(action.message, 10);
         const newMyHands = [...myHands];
         newMyHands[clickIndex] = tileDeck[tileDeckPointer];
