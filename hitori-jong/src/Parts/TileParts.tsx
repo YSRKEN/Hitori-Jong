@@ -19,7 +19,7 @@ const TileParts: React.FC<{ idolNumber: number; tileIndex: number }> = ({
       <div>
         <span
           role="button"
-          className={`vertical-writing border p-1 tile-style mr-1 color-${IDOL_LIST[idolNumber].type} font-weight-bold`}
+          className={`vertical-writing border p-1 tile-style mr-1 color-${IDOL_LIST[idolNumber].type} font-weight-bold d-block`}
           onClick={onClickTile}
           tabIndex={tileIndex}
           onKeyUp={onClickTile}
@@ -39,7 +39,7 @@ const TileParts: React.FC<{ idolNumber: number; tileIndex: number }> = ({
     <div>
       <span
         role="button"
-        className={`vertical-writing border p-1 tile-style mr-1 color-${IDOL_LIST[idolNumber].type}`}
+        className={`vertical-writing border p-1 tile-style mr-1 color-${IDOL_LIST[idolNumber].type} d-block`}
         onClick={onClickTile}
         tabIndex={tileIndex}
         onKeyUp={onClickTile}
