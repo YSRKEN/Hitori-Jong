@@ -415,14 +415,15 @@ export const unitListToHumansCount = (unitList: number[]) => {
 
 // テンパイしているかをチェックする
 export const checkTempai = (myHands: number[]) => {
-  resetCache();
+  console.log('テンパイ判定');
+  const startTime = Date.now();
   // 既にアガっているかを調べる
   console.log('既にアガっているかを調べる');
   const result = calcUnitListWithSora(myHands);
   const humans = unitListToHumansCount(result.unit);
   if (humans === HANDS_SIZE) {
+    console.log(`${Date.now() - startTime}[ms]`);
     window.alert('既にアガリ形です');
-
     return;
   }
 
@@ -483,6 +484,7 @@ export const checkTempai = (myHands: number[]) => {
       }
       dic2[key] = `${dic2[key]}${IDOL_LIST[r.to].name}(${r.score}) `;
     }
+    console.log(`${Date.now() - startTime}[ms]`);
     let output = '';
     for (const key of Object.keys(dic2)) {
       /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
@@ -492,6 +494,7 @@ export const checkTempai = (myHands: number[]) => {
 
     return;
   }
+  console.log(`${Date.now() - startTime}[ms]`);
   window.alert('イーシャンテン以上です');
 };
 
@@ -502,7 +505,6 @@ export const calcReachUnitList = (myHands: number[]) => {
   // 素の配牌でとりえる役を列挙する
   const myHandsBit = calcHandsBit(myHands);
   const roughList = calcUnitListRough(myHandsBit);
-  console.log(roughList);
 
   // 1枚追加した配牌でとり得る役を列挙する
   const appendUnitDict: { [key: number]: number[] } = {};
