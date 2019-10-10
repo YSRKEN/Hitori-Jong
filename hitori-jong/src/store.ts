@@ -6,7 +6,6 @@ import {
   unitListToScore,
   unitListToStringArray,
   unitListToHumansCount,
-  resetCache,
   checkTempai,
   calcReachUnitListWithSora,
   UNIT_LIST2,
@@ -61,7 +60,6 @@ const useStore = () => {
   useEffect(() => {
     if (unitTextType === 0) {
       // 役判定
-      resetCache();
       const startTime = Date.now();
       const result = calcUnitListWithSora(myHands);
       console.log('成立役判定');
@@ -100,7 +98,6 @@ const useStore = () => {
         window.alert('アガリ(ミリオンライブ)！');
       }
     } else {
-      resetCache();
       const startTime = Date.now();
       const result = calcReachUnitListWithSora(myHands);
       console.log('リーチ役判定');

@@ -202,21 +202,14 @@ const calcCount = (myHandsArray: number[], unitListX: number[]) => {
   return minCount;
 };
 
-// 手役に対して、どのユニットの組み合わせを取れば高得点かを計算する
-// ・myHandsArray……要素数IDOL_LIST_LENGTH2(53)、各アイドルの枚数が記録されている
-// ・unitList……適合するユニット番号が記録されている
-// ・unitListから、各ユニットの「要素数IDOL_LIST_LENGTH2(53)」を取得し、
-//   それをどう組み合わせれば高得点かを勘案する
-const calcUnitListFine = (myHandsArray: number[], unitList: number[]) => {
-  // unitListの各要素について、「それぞれのアイドルが何枚あるか」の配列に変換する
-  const unitList2 = unitList.map(id => UNIT_LIST2[id].member2);
+// 候補の組み合わせについて調べる
+const cache: {[key: string]: number[][]} = {};
+const calcUnitPatterns = (roughCount: number[]) => {
+  const key = roughCount.map(i => i.toString()).join(',');
+  if (key in cache) {
+    return cache[key];
+  }
 
-  // unitList2の各要素について、myHandsArray内で何回割り当てられるかを計算する
-  const roughCount = unitList2.map(unitData =>
-    calcCount(myHandsArray, unitData),
-  );
-
-  // 割当可能回数から、全割当パターンを算出する
   let patterns: number[][] = [];
   for (const count of roughCount) {
     const temp = Array(count + 1);
@@ -238,42 +231,66 @@ const calcUnitListFine = (myHandsArray: number[], unitList: number[]) => {
     }
   }
 
+  cache[key] = patterns;
+  return patterns;
+}
+
+// スコア計算
+const calcScore = (pattern: number[], unitList: number[]) => {
+  // スコアを計算
+  let score = 0;
+  let tileCount = 0;
+  for (let i = 0; i < pattern.length; i += 1) {
+    score += pattern[i] * UNIT_LIST2[unitList[i]].score;
+    tileCount += pattern[i] * UNIT_LIST[unitList[i]].member.length;
+  }
+  if (tileCount === HANDS_SIZE) {
+    score += 100000000;
+  }
+  return score;
+}
+
+// アイドル53種それぞれについて、ユニット毎の採用数×ユニット毎の指定アイドルの枚数の総和と、手牌とを比較する
+const isValidPattern = (pattern: number[], myHandsArray: number[], unitList2: number[][]) => {
+  for (let ti = 0; ti < IDOL_LIST_LENGTH2; ti += 1) {
+    let sum = 0;
+    for (let pi = 0; pi < pattern.length; pi += 1) {
+      sum += pattern[pi] * unitList2[pi][ti];
+    }
+    if (sum > myHandsArray[ti]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// 手役に対して、どのユニットの組み合わせを取れば高得点かを計算する
+// ・myHandsArray……要素数IDOL_LIST_LENGTH2(53)、各アイドルの枚数が記録されている
+// ・unitList……適合するユニット番号が記録されている
+// ・unitListから、各ユニットの「要素数IDOL_LIST_LENGTH2(53)」を取得し、
+//   それをどう組み合わせれば高得点かを勘案する
+const calcUnitListFine = (myHandsArray: number[], unitList: number[]) => {
+  // unitListの各要素について、「それぞれのアイドルが何枚あるか」の配列に変換する
+  const unitList2 = unitList.map(id => UNIT_LIST2[id].member2);
+
+  // unitList2の各要素について、myHandsArray内で何回割り当てられるかを計算する
+  const roughCount = unitList2.map(unitData =>
+    calcCount(myHandsArray, unitData),
+  );
+
+  // 割当可能回数から、全割当パターンを算出する
+  let patterns = calcUnitPatterns(roughCount);
+
   // 各割当パターンについて、実行可能性とスコア計算を実施し、最大のものを採用する
   let maxScore = 0;
   let fineList: number[] = [];
   for (let x = 0; x < patterns.length; x += 1) {
     const record = patterns[x];
     // スコアを計算
-    let score = 0;
-    let tileCount = 0;
-    for (let i = 0; i < record.length; i += 1) {
-      if (record[i] >= 1) {
-        score += record[i] * UNIT_LIST2[unitList[i]].score;
-        tileCount += record[i] * UNIT_LIST[unitList[i]].member.length;
-      }
-    }
-    if (tileCount === HANDS_SIZE) {
-      score += 100000000;
-    }
+    let score = calcScore(record, unitList);
     if (score > maxScore) {
       // 実行可能性を判断
-      const temp = Array<number>(IDOL_LIST_LENGTH2);
-      temp.fill(0);
-      for (let i = 0; i < record.length; i += 1) {
-        if (record[i] >= 1) {
-          for (let j = 0; j < IDOL_LIST_LENGTH2; j += 1) {
-            temp[j] += record[i] * unitList2[i][j];
-          }
-        }
-      }
-      let flg = true;
-      for (let j = 0; j < IDOL_LIST_LENGTH2; j += 1) {
-        if (myHandsArray[j] < temp[j]) {
-          flg = false;
-          break;
-        }
-      }
-      if (flg) {
+      if (isValidPattern(record, myHandsArray, unitList2)) {
         maxScore = score;
         const temp2: number[] = [];
         for (let i = 0; i < record.length; i += 1) {
@@ -290,15 +307,11 @@ const calcUnitListFine = (myHandsArray: number[], unitList: number[]) => {
 };
 
 // 手役から、どのユニットの組み合わせを取るべきかを調べる
-let cache: { [key: string]: number[] } = {};
+const cache2: {[key: string]: number[]} = {};
 export const calcUnitList = (myHands: number[]) => {
-  // キャッシュを確認する
-  const key = [...myHands]
-    .sort()
-    .map(i => i.toString())
-    .join(',');
-  if (key in cache) {
-    return cache[key];
+  const key = myHands.map(i => i.toString()).join(',');
+  if (key in cache2) {
+    return cache2[key];
   }
 
   // 可能な手役の一覧を列挙する
@@ -309,8 +322,7 @@ export const calcUnitList = (myHands: number[]) => {
   const myHandsArray = calcHandsArray(myHands);
   const fineList = calcUnitListFine(myHandsArray, roughList);
 
-  // キャッシュに追加する
-  cache[key] = [...fineList];
+  cache2[key] = fineList;
 
   return fineList;
 };
@@ -326,9 +338,6 @@ export const unitListToScore = (unitList: number[]) => {
     .reduce((sum: number, val: number) => sum + val);
 };
 
-export const resetCache = () => {
-  cache = {};
-};
 
 // 手役から、どのユニットが作れるかを調べる(そら考慮版)
 // minSora……そらが複数枚入っていた際、それぞれS1・S2……とすると、アイドルIDが必ずS1≦S2≦……となるようにするための補正
@@ -445,8 +454,7 @@ export const checkTempai = (myHands: number[]) => {
         continue;
       }
       newHands[i] = j;
-      /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
-      console.log(`　${IDOL_LIST[myHands[i]].name}→${IDOL_LIST[j].name}`);
+
       const result3 = calcUnitListWithSora(newHands);
       const humans2 = unitListToHumansCount(result3.unit);
       if (humans2 === HANDS_SIZE) {
