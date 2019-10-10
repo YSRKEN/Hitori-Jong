@@ -6,7 +6,6 @@ import {
   unitListToScore,
   unitListToStringArray,
   unitListToHumansCount,
-  resetCache,
   checkTempai,
   calcReachUnitListWithSora,
   UNIT_LIST2,
@@ -61,8 +60,11 @@ const useStore = () => {
   useEffect(() => {
     if (unitTextType === 0) {
       // 役判定
-      resetCache();
+      const startTime = Date.now();
       const result = calcUnitListWithSora(myHands);
+      console.log('成立役判定');
+      console.log(result);
+      console.log(`${Date.now() - startTime}[ms]`);
       const score = unitListToScore(result.unit);
       const humans = unitListToHumansCount(result.unit);
       const soraChangeList: string[] = [];
@@ -96,8 +98,11 @@ const useStore = () => {
         window.alert('アガリ(ミリオンライブ)！');
       }
     } else {
-      resetCache();
+      const startTime = Date.now();
       const result = calcReachUnitListWithSora(myHands);
+      console.log('リーチ役判定');
+      console.log(result);
+      console.log(`${Date.now() - startTime}[ms]`);
       let output = '【リーチ役】\n';
       for (const key of Object.keys(result)) {
         const key2 = parseInt(key, 10);
