@@ -21,7 +21,7 @@ import {
 
 const useStore = () => {
   const [applicationMode, setApplicationMode] = useState<ApplicationMode>(
-    'GameForm',
+    'StartForm',
   );
   const [myHands, setMyHands] = useState<number[]>([]);
   const [tileDeck, setTileDeck] = useState<number[]>([]);
