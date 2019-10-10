@@ -8,12 +8,20 @@ import {
   unitListToHumansCount,
   resetCache,
   checkTempai,
+  calcReachUnitListWithSora,
+  UNIT_LIST2,
 } from 'algorithm';
-import { ApplicationMode, Action, HANDS_SIZE, IDOL_LIST } from './constant';
+import {
+  ApplicationMode,
+  Action,
+  HANDS_SIZE,
+  IDOL_LIST,
+  UNIT_LIST,
+} from './constant';
 
 const useStore = () => {
   const [applicationMode, setApplicationMode] = useState<ApplicationMode>(
-    'GameForm',
+    'StartForm',
   );
   const [myHands, setMyHands] = useState<number[]>([]);
   const [tileDeck, setTileDeck] = useState<number[]>([]);
@@ -23,6 +31,7 @@ const useStore = () => {
   const [turnCount, setTurnCount] = useState<number>(1);
   const [checkedTileFlg, setCheckedTileFlg] = useState<boolean[]>([]);
   const [statusOfCalcTempai, setStatusOfCalcTempai] = useState<boolean>(false);
+  const [unitTextType, setUnitTextType] = useState(0);
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -50,42 +59,59 @@ const useStore = () => {
 
   // 役判定とフラグ処理
   useEffect(() => {
-    // 役判定
-    resetCache();
-    const result = calcUnitListWithSora(myHands);
-    const score = unitListToScore(result.unit);
-    const humans = unitListToHumansCount(result.unit);
-    const soraChangeList: string[] = [];
-    for (let i = 0; i < myHands.length; i += 1) {
-      if (result.hands[i] !== myHands[i]) {
-        soraChangeList.push(IDOL_LIST[result.hands[i]].name);
+    if (unitTextType === 0) {
+      // 役判定
+      resetCache();
+      const result = calcUnitListWithSora(myHands);
+      const score = unitListToScore(result.unit);
+      const humans = unitListToHumansCount(result.unit);
+      const soraChangeList: string[] = [];
+      for (let i = 0; i < myHands.length; i += 1) {
+        if (result.hands[i] !== myHands[i]) {
+          soraChangeList.push(IDOL_LIST[result.hands[i]].name);
+        }
       }
-    }
-    if (soraChangeList.length > 0) {
-      setUnitText(
-        `【成立役(そら→${soraChangeList.join(
-          '、',
-        )})】合計＝${score}点、人数＝${humans}人\n${unitListToString(
-          result.unit,
-        )}`,
-      );
+      if (soraChangeList.length > 0) {
+        setUnitText(
+          `【成立役(そら→${soraChangeList.join(
+            '、',
+          )})】合計＝${score}点、人数＝${humans}人\n${unitListToString(
+            result.unit,
+          )}`,
+        );
+      } else {
+        setUnitText(
+          `【成立役】合計＝${score}点、人数＝${humans}人\n${unitListToString(
+            result.unit,
+          )}`,
+        );
+      }
+
+      // フラグ処理
+      const memberSet = unitListToStringArray(result.unit);
+      setHandsBoldFlg(myHands.map(hand => memberSet.has(IDOL_LIST[hand].name)));
+
+      // ユニットの人数合計＝枚数なら上がり
+      if (humans === HANDS_SIZE && applicationMode === 'GameForm') {
+        window.alert('アガリ(ミリオンライブ)！');
+      }
     } else {
-      setUnitText(
-        `【成立役】合計＝${score}点、人数＝${humans}人\n${unitListToString(
-          result.unit,
-        )}`,
-      );
+      resetCache();
+      const result = calcReachUnitListWithSora(myHands);
+      let output = '【リーチ役】\n';
+      for (const key of Object.keys(result)) {
+        const key2 = parseInt(key, 10);
+        const val = result[key2];
+        output += `＋${IDOL_LIST[key2].name}⇒${val
+          .map(unit => `${UNIT_LIST[unit].name}[${UNIT_LIST2[unit].score}点]`)
+          .join('、')}\n`;
+      }
+      setUnitText(output);
+      const temp = Array(myHands.length);
+      temp.fill(false);
+      setHandsBoldFlg(temp);
     }
-
-    // フラグ処理
-    const memberSet = unitListToStringArray(result.unit);
-    setHandsBoldFlg(myHands.map(hand => memberSet.has(IDOL_LIST[hand].name)));
-
-    // ユニットの人数合計＝枚数なら上がり
-    if (humans === HANDS_SIZE && applicationMode === 'GameForm') {
-      window.alert('アガリ(ミリオンライブ)！');
-    }
-  }, [applicationMode, myHands]);
+  }, [applicationMode, myHands, unitTextType]);
 
   // 牌交換
   useEffect(() => {
@@ -113,7 +139,8 @@ const useStore = () => {
       checkTempai(myHands);
       setStatusOfCalcTempai(false);
     }
-  }, [myHands, statusOfCalcTempai]); // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusOfCalcTempai]);
 
   const dispatch = (action: Action) => {
     switch (action.type) {
@@ -159,6 +186,8 @@ const useStore = () => {
     turnCount,
     checkedTileFlg,
     statusOfCalcTempai,
+    unitTextType,
+    setUnitTextType,
     dispatch,
   };
 };
