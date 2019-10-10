@@ -2,11 +2,16 @@ import { useState, useEffect } from 'react';
 import {
   getShuffledTileDeck,
   checkTempai,
+  calcUnitListWithSora,
+  unitListToStringArray,
+  unitListToScore,
+  unitListToHumansCount,
 } from 'algorithm';
 import {
   ApplicationMode,
   Action,
   HANDS_SIZE,
+  IDOL_LIST,
 } from './constant';
 
 const useStore = () => {
@@ -16,7 +21,7 @@ const useStore = () => {
   const [myHands, setMyHands] = useState<number[]>([]);
   const [tileDeck, setTileDeck] = useState<number[]>([]);
   const [tileDeckPointer, setTileDeckPointer] = useState<number>(0);
-  const [handsBoldFlg] = useState<boolean[]>([]);
+  const [handsBoldFlg, setHandsBoldFlg] = useState<boolean[]>([]);
   const [turnCount, setTurnCount] = useState<number>(1);
   const [checkedTileFlg, setCheckedTileFlg] = useState<boolean[]>([]);
   const [statusOfCalcTempai, setStatusOfCalcTempai] = useState<boolean>(false);
@@ -44,6 +49,27 @@ const useStore = () => {
   useEffect(() => {
     resetTileDeck();
   }, [applicationMode]);
+
+  // 役判定とフラグ処理
+  useEffect(() => {
+    // 役判定
+    const startTime = Date.now();
+    const result = calcUnitListWithSora(myHands);
+    const score = unitListToScore(result.unit);
+    const humans = unitListToHumansCount(result.unit);
+    console.log('成立役判定');
+    console.log(result);
+    console.log(`${Date.now() - startTime}[ms]`);
+
+    // フラグ処理
+    const memberSet = unitListToStringArray(result.unit);
+    setHandsBoldFlg(myHands.map(hand => memberSet.has(IDOL_LIST[hand].name)));
+
+    // ユニットの人数合計＝枚数なら上がり
+    if (humans === HANDS_SIZE && applicationMode === 'GameForm') {
+      window.alert(`アガリ(ミリオンライブ)！　${score}点`);
+    }
+  }, [applicationMode, myHands]);
 
   // 牌交換
   useEffect(() => {
