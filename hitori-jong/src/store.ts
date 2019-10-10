@@ -8,8 +8,16 @@ import {
   unitListToHumansCount,
   resetCache,
   checkTempai,
+  calcReachUnitListWithSora,
+  UNIT_LIST2,
 } from 'algorithm';
-import { ApplicationMode, Action, HANDS_SIZE, IDOL_LIST } from './constant';
+import {
+  ApplicationMode,
+  Action,
+  HANDS_SIZE,
+  IDOL_LIST,
+  UNIT_LIST,
+} from './constant';
 
 const useStore = () => {
   const [applicationMode, setApplicationMode] = useState<ApplicationMode>(
@@ -89,8 +97,19 @@ const useStore = () => {
       }
     } else {
       resetCache();
-      setUnitText('【リーチ役】');
-      setHandsBoldFlg(myHands.map(hand => false));
+      const result = calcReachUnitListWithSora(myHands);
+      let output = '【リーチ役】\n';
+      for (const key of Object.keys(result)) {
+        const key2 = parseInt(key, 10);
+        const val = result[key2];
+        output += `＋${IDOL_LIST[key2].name}⇒${val
+          .map(unit => `${UNIT_LIST[unit].name}[${UNIT_LIST2[unit].score}点]`)
+          .join('、')}\n`;
+      }
+      setUnitText(output);
+      const temp = Array(myHands.length);
+      temp.fill(false);
+      setHandsBoldFlg(temp);
     }
   }, [applicationMode, myHands, unitTextType]);
 
@@ -167,7 +186,8 @@ const useStore = () => {
     turnCount,
     checkedTileFlg,
     statusOfCalcTempai,
-    unitTextType, setUnitTextType,
+    unitTextType,
+    setUnitTextType,
     dispatch,
   };
 };

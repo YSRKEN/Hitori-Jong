@@ -149,7 +149,7 @@ export const convertUnitList = () => {
 
   return unitList2;
 };
-const UNIT_LIST2 = convertUnitList();
+export const UNIT_LIST2 = convertUnitList();
 
 // 手役をInt64型に変換する
 const calcHandsBit = (myHands: number[]) => {
@@ -476,15 +476,15 @@ export const checkTempai = (myHands: number[]) => {
       }
     }
     const dic2: { [key: string]: string } = {};
-    for (let r of result4) {
+    for (const r of result4) {
       const key = IDOL_LIST[r.from].name;
       if (!(key in dic2)) {
         dic2[key] = '';
       }
-      dic2[key] = dic2[key] + `${IDOL_LIST[r.to].name}(${r.score}) `;
+      dic2[key] = `${dic2[key]}${IDOL_LIST[r.to].name}(${r.score}) `;
     }
     let output = '';
-    for (let key in dic2) {
+    for (const key of Object.keys(dic2)) {
       /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
       output += `・${key}→\n　${dic2[key]}\n`;
     }
@@ -493,4 +493,39 @@ export const checkTempai = (myHands: number[]) => {
     return;
   }
   window.alert('イーシャンテン以上です');
+};
+
+export const calcReachUnitList = (myHands: number[]) => {
+  // リーチ役＝素の配牌＋1枚で完成する役。言い換えると、
+  // 「元の手牌では作れないが1枚追加すると作れる」という意味
+
+  // 素の配牌でとりえる役を列挙する
+  const myHandsBit = calcHandsBit(myHands);
+  const roughList = calcUnitListRough(myHandsBit);
+  console.log(roughList);
+
+  // 1枚追加した配牌でとり得る役を列挙する
+  const appendUnitDict: { [key: number]: number[] } = {};
+  for (let i = 0; i < SORA_INDEX - 1; i += 1) {
+    const temp = [...myHands];
+    temp.push(i);
+    const tempHandsBit = calcHandsBit(temp);
+    const tempRoughList = calcUnitListRough(tempHandsBit);
+    for (const unitIndex of tempRoughList) {
+      if (!roughList.includes(unitIndex)) {
+        if (!(i in appendUnitDict)) {
+          appendUnitDict[i] = [];
+        }
+        if (!appendUnitDict[i].includes(unitIndex)) {
+          appendUnitDict[i].push(unitIndex);
+        }
+      }
+    }
+  }
+
+  return appendUnitDict;
+};
+
+export const calcReachUnitListWithSora = (myHands: number[]) => {
+  return calcReachUnitList(myHands);
 };
