@@ -3,9 +3,10 @@ import { Button, Container, Row, Col, Form } from 'react-bootstrap';
 import StateContext from 'context';
 import MyHandTileControl from 'Control/MyHandTileControl';
 import SelectButtons from 'Parts/SelectButtons';
+import MainIdolButton from 'Parts/MainIdolButton';
 
 const GameForm: React.FC = () => {
-  const { turnCount, statusOfCalcTempai, editFlg, dispatch } = useContext(
+  const { turnCount, statusOfCalcTempai, editFlg, mainIdolIndex, dispatch } = useContext(
     StateContext,
   );
 
@@ -121,6 +122,9 @@ const GameForm: React.FC = () => {
                 selectedIndex={editFlg}
                 onClickFunc={setEditFlg}
               />
+            </Form.Group>
+            <Form.Group className="text-center mr-3">
+              <MainIdolButton mainIdolIndex={mainIdolIndex} />
             </Form.Group>
             <Form.Group className="text-center">
               <Button className="text-nowrap" onClick={onClickResetButton}>

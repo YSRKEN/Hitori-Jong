@@ -9,7 +9,7 @@ import {
   unitListToHandsBoldFlg,
   sortHands,
 } from 'algorithm';
-import { ApplicationMode, Action, HANDS_SIZE } from './constant';
+import { ApplicationMode, Action, HANDS_SIZE, nameToIndex } from './constant';
 
 const useStore = () => {
   const [applicationMode, setApplicationMode] = useState<ApplicationMode>(
@@ -24,6 +24,7 @@ const useStore = () => {
   const [statusOfCalcTempai, setStatusOfCalcTempai] = useState<boolean>(false);
   const [editFlg, setEditFlg] = useState(0);
   const [selectedTileIndex, setSelectedTileIndex] = useState(0);
+  const [mainIdolIndex,] = useState(nameToIndex('静香'));
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -165,6 +166,7 @@ const useStore = () => {
     checkedTileFlg,
     statusOfCalcTempai,
     editFlg,
+    mainIdolIndex,
     dispatch,
   };
 };

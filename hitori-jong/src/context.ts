@@ -9,6 +9,7 @@ interface ApplicationState {
   checkedTileFlg: boolean[];
   statusOfCalcTempai: boolean;
   editFlg: number;
+  mainIdolIndex: number;
   dispatch: (action: Action) => void;
 }
 
