@@ -4,7 +4,7 @@ import { Button, Container, Row, Col, Form } from 'react-bootstrap';
 import { IDOL_LIST_LENGTH, IDOL_LIST } from 'constant';
 
 const SelectForm: React.FC = () => {
-  const { dispatch } = useContext(StateContext);
+  const { selectedTileIndex, dispatch } = useContext(StateContext);
 
   const onClickBackButton = () =>
     dispatch({ type: 'setApplicationMode', message: 'GameForm' });
@@ -12,8 +12,9 @@ const SelectForm: React.FC = () => {
   const onClicktile = (idolNumber: number) =>
     dispatch({ type: 'setTile', message: `${idolNumber}` });
 
-  const temp = Array(IDOL_LIST_LENGTH);
-  for (let i = 0; i < IDOL_LIST_LENGTH; i += 1) {
+  const idol_list_length = selectedTileIndex >= 0 ? IDOL_LIST_LENGTH : IDOL_LIST_LENGTH - 2;
+  const temp = Array(idol_list_length);
+  for (let i = 0; i < idol_list_length; i += 1) {
     temp[i] = i;
   }
 

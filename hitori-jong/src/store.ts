@@ -9,7 +9,7 @@ import {
   unitListToHandsBoldFlg,
   sortHands,
 } from 'algorithm';
-import { ApplicationMode, Action, HANDS_SIZE } from './constant';
+import { ApplicationMode, Action, HANDS_SIZE, nameToIndex } from './constant';
 
 const useStore = () => {
   const [applicationMode, setApplicationMode] = useState<ApplicationMode>(
@@ -24,6 +24,7 @@ const useStore = () => {
   const [statusOfCalcTempai, setStatusOfCalcTempai] = useState<boolean>(false);
   const [editFlg, setEditFlg] = useState(0);
   const [selectedTileIndex, setSelectedTileIndex] = useState(0);
+  const [mainIdolIndex, setMainIdolIndex] = useState(nameToIndex('静香'));
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -44,12 +45,20 @@ const useStore = () => {
     setCheckedTileFlg(temp3);
   };
 
+  // 担当を事前に設定する
+  useEffect(() => {
+    const mainIdol = window.localStorage.getItem('MainIdol');
+    if (mainIdol !== null) {
+      setMainIdolIndex(parseInt(mainIdol, 10));
+    }
+  }, []);
+
   // 役判定とフラグ処理
   useEffect(() => {
     // 役判定
     const startTime = Date.now();
-    const result = calcUnitListWithSora(myHands);
-    const score = unitListToScore(result.unit);
+    const result = calcUnitListWithSora(myHands, mainIdolIndex);
+    const score = unitListToScore(result.unit, mainIdolIndex);
     const humans = unitListToHumansCount(result.unit);
     console.log('成立役判定');
     console.log(result);
@@ -63,7 +72,7 @@ const useStore = () => {
       /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
       window.alert(`アガリ(ミリオンライブ)！　${score}点`);
     }
-  }, [applicationMode, myHands]);
+  }, [applicationMode, myHands, mainIdolIndex]);
 
   // 牌交換
   useEffect(() => {
@@ -88,7 +97,7 @@ const useStore = () => {
 
   useEffect(() => {
     if (statusOfCalcTempai) {
-      checkTempai(myHands);
+      checkTempai(myHands, mainIdolIndex);
       setStatusOfCalcTempai(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -136,20 +145,31 @@ const useStore = () => {
         setStatusOfCalcTempai(true);
         break;
       case 'checkUnits':
-        checkUnits(myHands);
+        checkUnits(myHands, mainIdolIndex);
         break;
       case 'requestSort':
-        setMyHands(sortHands(myHands));
+        setMyHands(sortHands(myHands, mainIdolIndex));
         break;
       case 'setEditFlg':
         setEditFlg(action.message === 'Yes' ? 1 : 0);
         break;
       case 'setTile': {
-        const idolIndex = parseInt(action.message, 10);
-        const newMyHands = [...myHands];
-        newMyHands[selectedTileIndex] = idolIndex;
-        setApplicationMode('GameForm');
-        setMyHands(newMyHands);
+        if (selectedTileIndex >= 0) {
+          const idolIndex = parseInt(action.message, 10);
+          const newMyHands = [...myHands];
+          newMyHands[selectedTileIndex] = idolIndex;
+          setApplicationMode('GameForm');
+          setMyHands(newMyHands);
+        } else {
+          setMainIdolIndex(parseInt(action.message, 10));
+          window.localStorage.setItem('MainIdol', action.message);
+          setApplicationMode('GameForm');
+        }
+        break;
+      }
+      case 'setMIB': {
+        setSelectedTileIndex(-1);
+        setApplicationMode('SelectForm');
         break;
       }
       default:
@@ -165,6 +185,8 @@ const useStore = () => {
     checkedTileFlg,
     statusOfCalcTempai,
     editFlg,
+    mainIdolIndex,
+    selectedTileIndex,
     dispatch,
   };
 };

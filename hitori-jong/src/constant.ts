@@ -8,7 +8,8 @@ export type ActionType =
   | 'checkUnits'
   | 'requestSort'
   | 'setEditFlg'
-  | 'setTile';
+  | 'setTile'
+  | 'setMIB';
 
 // アプリケーションの動作モード
 export type ApplicationMode = 'StartForm' | 'GameForm' | 'SelectForm';
