@@ -36,6 +36,13 @@ const GameForm: React.FC = () => {
     });
   };
 
+  const requestSort = () => {
+    dispatch({
+      type: 'requestSort',
+      message: '',
+    });
+  };
+
   return (
     <Container className="px-0">
       <Row className="mt-5">
@@ -84,7 +91,11 @@ const GameForm: React.FC = () => {
               )}
             </Form.Group>
             <Form.Group className="text-center mr-3">
-              <Button className="text-nowrap" variant="secondary">
+              <Button
+                className="text-nowrap"
+                variant="secondary"
+                onClick={() => requestSort()}
+              >
                 自動理牌
               </Button>
             </Form.Group>
