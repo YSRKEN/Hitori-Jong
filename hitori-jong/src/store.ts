@@ -22,6 +22,7 @@ const useStore = () => {
   const [turnCount, setTurnCount] = useState<number>(1);
   const [checkedTileFlg, setCheckedTileFlg] = useState<boolean[]>([]);
   const [statusOfCalcTempai, setStatusOfCalcTempai] = useState<boolean>(false);
+  const [editFlg, setEditFlg] = useState(0);
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -134,6 +135,9 @@ const useStore = () => {
       case 'requestSort':
         setMyHands(sortHands(myHands));
         break;
+      case 'setEditFlg':
+        setEditFlg(action.message === 'Yes' ? 1 : 0);
+        break;
       default:
         break;
     }
@@ -146,6 +150,7 @@ const useStore = () => {
     turnCount,
     checkedTileFlg,
     statusOfCalcTempai,
+    editFlg,
     dispatch,
   };
 };

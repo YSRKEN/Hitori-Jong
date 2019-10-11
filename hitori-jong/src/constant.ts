@@ -6,10 +6,11 @@ export type ActionType =
   | 'checkTile'
   | 'calcTempai'
   | 'checkUnits'
-  | 'requestSort';
+  | 'requestSort'
+  | 'setEditFlg';
 
 // アプリケーションの動作モード
-export type ApplicationMode = 'StartForm' | 'GameForm';
+export type ApplicationMode = 'StartForm' | 'GameForm' | 'SelectForm';
 
 // アイドルの属性
 export type IdolType = 'Princess' | 'Fairy' | 'Angel' | 'Extra' | 'Sora';
