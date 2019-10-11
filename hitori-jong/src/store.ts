@@ -57,8 +57,8 @@ const useStore = () => {
   useEffect(() => {
     // 役判定
     const startTime = Date.now();
-    const result = calcUnitListWithSora(myHands);
-    const score = unitListToScore(result.unit);
+    const result = calcUnitListWithSora(myHands, mainIdolIndex);
+    const score = unitListToScore(result.unit, mainIdolIndex);
     const humans = unitListToHumansCount(result.unit);
     console.log('成立役判定');
     console.log(result);
@@ -72,7 +72,7 @@ const useStore = () => {
       /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
       window.alert(`アガリ(ミリオンライブ)！　${score}点`);
     }
-  }, [applicationMode, myHands]);
+  }, [applicationMode, myHands, mainIdolIndex]);
 
   // 牌交換
   useEffect(() => {
@@ -97,7 +97,7 @@ const useStore = () => {
 
   useEffect(() => {
     if (statusOfCalcTempai) {
-      checkTempai(myHands);
+      checkTempai(myHands, mainIdolIndex);
       setStatusOfCalcTempai(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -145,10 +145,10 @@ const useStore = () => {
         setStatusOfCalcTempai(true);
         break;
       case 'checkUnits':
-        checkUnits(myHands);
+        checkUnits(myHands, mainIdolIndex);
         break;
       case 'requestSort':
-        setMyHands(sortHands(myHands));
+        setMyHands(sortHands(myHands, mainIdolIndex));
         break;
       case 'setEditFlg':
         setEditFlg(action.message === 'Yes' ? 1 : 0);
