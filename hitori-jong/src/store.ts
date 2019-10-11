@@ -24,7 +24,7 @@ const useStore = () => {
   const [statusOfCalcTempai, setStatusOfCalcTempai] = useState<boolean>(false);
   const [editFlg, setEditFlg] = useState(0);
   const [selectedTileIndex, setSelectedTileIndex] = useState(0);
-  const [mainIdolIndex,] = useState(nameToIndex('静香'));
+  const [mainIdolIndex, setMainIdolIndex] = useState(nameToIndex('静香'));
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -146,11 +146,21 @@ const useStore = () => {
         setEditFlg(action.message === 'Yes' ? 1 : 0);
         break;
       case 'setTile': {
-        const idolIndex = parseInt(action.message, 10);
-        const newMyHands = [...myHands];
-        newMyHands[selectedTileIndex] = idolIndex;
-        setApplicationMode('GameForm');
-        setMyHands(newMyHands);
+        if (selectedTileIndex >= 0) {
+          const idolIndex = parseInt(action.message, 10);
+          const newMyHands = [...myHands];
+          newMyHands[selectedTileIndex] = idolIndex;
+          setApplicationMode('GameForm');
+          setMyHands(newMyHands);
+        } else {
+          setMainIdolIndex(parseInt(action.message, 10));
+          setApplicationMode('GameForm');
+        }
+        break;
+      }
+      case 'setMIB': {
+        setSelectedTileIndex(-1);
+        setApplicationMode('SelectForm');
         break;
       }
       default:
@@ -167,6 +177,7 @@ const useStore = () => {
     statusOfCalcTempai,
     editFlg,
     mainIdolIndex,
+    selectedTileIndex,
     dispatch,
   };
 };
