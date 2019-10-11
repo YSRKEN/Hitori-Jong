@@ -3,15 +3,14 @@ import {
   getShuffledTileDeck,
   checkTempai,
   calcUnitListWithSora,
-  unitListToStringArray,
   unitListToScore,
   unitListToHumansCount,
+  unitListToHandsBoldFlg,
 } from 'algorithm';
 import {
   ApplicationMode,
   Action,
   HANDS_SIZE,
-  IDOL_LIST,
 } from './constant';
 
 const useStore = () => {
@@ -62,8 +61,7 @@ const useStore = () => {
     console.log(`${Date.now() - startTime}[ms]`);
 
     // フラグ処理
-    const memberSet = unitListToStringArray(result.unit);
-    setHandsBoldFlg(myHands.map(hand => memberSet.has(IDOL_LIST[hand].name)));
+    setHandsBoldFlg(unitListToHandsBoldFlg(result.hands, result.unit));
 
     // ユニットの人数合計＝枚数なら上がり
     if (humans === HANDS_SIZE && applicationMode === 'GameForm') {

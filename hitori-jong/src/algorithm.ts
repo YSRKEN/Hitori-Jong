@@ -10,6 +10,7 @@ import {
   SORA_INDEX,
   IDOL_LIST_LENGTH2,
   HANDS_SIZE,
+  nameToIndex,
 } from 'constant';
 
 // [0, n)の整数一様乱数を得る。参考：MDN
@@ -374,43 +375,6 @@ export const calcUnitListWithSora = (
   return { unit: calcUnitList(myHands), hands: myHands };
 };
 
-// 表示用に、ユニットメンバーを文字列配列に変換
-const unitMemberToStringArray = (members: Int64) => {
-  const memberArray: number[] = [];
-  for (let i = 0; i < IDOL_LIST_LENGTH2; i += 1) {
-    if (!equalInt64(andInt64(members, getShiftedValue(i)), INT64_ZERO)) {
-      memberArray.push(i);
-    }
-  }
-
-  return memberArray.map(id => IDOL_LIST[id].name);
-};
-
-// 表示用に、ユニット一覧を文字列配列に変換
-export const unitListToStringArray = (unitList: number[]) => {
-  const memberSet = new Set<string>();
-  for (const unitInfo of unitList) {
-    for (const member of unitMemberToStringArray(UNIT_LIST2[unitInfo].member)) {
-      memberSet.add(member);
-    }
-  }
-  memberSet.add('そら');
-
-  return memberSet;
-};
-
-// ユニット一覧を文字列化する
-export const unitListToString = (unitList: number[]) => {
-  return unitList
-    .map(
-      unit =>
-        `[${UNIT_LIST2[unit].score}点] ${
-          UNIT_LIST2[unit].name
-        } ${unitMemberToStringArray(UNIT_LIST2[unit].member).join(',')}`,
-    )
-    .join('\n');
-};
-
 // ユニット一覧における人数の総数
 export const unitListToHumansCount = (unitList: number[]) => {
   if (unitList.length === 0) {
@@ -539,3 +503,22 @@ export const calcReachUnitList = (myHands: number[]) => {
 export const calcReachUnitListWithSora = (myHands: number[]) => {
   return calcReachUnitList(myHands);
 };
+
+// どの牌にチェックを入れるかを表示する
+export const unitListToHandsBoldFlg = (myHands: number[], unitList: number[]) => {
+  const handsBoldFlg = Array(myHands.length);
+  handsBoldFlg.fill(false);
+  for (let unitIndex of unitList) {
+    const unitMembers = UNIT_LIST[unitIndex].member;
+    const unitMemberIndex = unitMembers.map((name: string) => nameToIndex(name));
+    for (let unitMember of unitMemberIndex) {
+      for (let i = 0; i < myHands.length; i += 1) {
+        if (handsBoldFlg[i] === false && myHands[i] === unitMember) {
+          handsBoldFlg[i] = true;
+          break;
+        }
+      }
+    }
+  }
+  return handsBoldFlg;
+}

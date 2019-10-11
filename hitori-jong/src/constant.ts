@@ -76,6 +76,9 @@ export const IDOL_LIST: IdolInfo[] = [
   { name: 'そら', type: 'Sora' },
 ];
 export const SORA_INDEX = IDOL_LIST.findIndex(record => record.type === 'Sora');
+export const nameToIndex = (name: string) => {
+  return IDOL_LIST.findIndex((record: IdolInfo) => record.name === name);
+};
 
 // 手役一覧
 // prettier-ignore
