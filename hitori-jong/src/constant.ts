@@ -7,7 +7,8 @@ export type ActionType =
   | 'calcTempai'
   | 'checkUnits'
   | 'requestSort'
-  | 'setEditFlg';
+  | 'setEditFlg'
+  | 'setTile';
 
 // アプリケーションの動作モード
 export type ApplicationMode = 'StartForm' | 'GameForm' | 'SelectForm';

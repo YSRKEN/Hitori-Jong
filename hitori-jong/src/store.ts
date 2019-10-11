@@ -23,6 +23,7 @@ const useStore = () => {
   const [checkedTileFlg, setCheckedTileFlg] = useState<boolean[]>([]);
   const [statusOfCalcTempai, setStatusOfCalcTempai] = useState<boolean>(false);
   const [editFlg, setEditFlg] = useState(0);
+  const [selectedTileIndex, setSelectedTileIndex] = useState(0);
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -42,11 +43,6 @@ const useStore = () => {
     setTurnCount(1);
     setCheckedTileFlg(temp3);
   };
-
-  // 牌山と手札を設定する
-  useEffect(() => {
-    resetTileDeck();
-  }, [applicationMode]);
 
   // 役判定とフラグ処理
   useEffect(() => {
@@ -101,6 +97,9 @@ const useStore = () => {
   const dispatch = (action: Action) => {
     switch (action.type) {
       case 'setApplicationMode':
+        if (applicationMode === 'StartForm') {
+          resetTileDeck();
+        }
         setApplicationMode(action.message as ApplicationMode);
         break;
       case 'resetTileDeck':
@@ -121,6 +120,7 @@ const useStore = () => {
           setTurnCount(turnCount + 1);
         } else {
           // 編集モードなので選択画面に遷移する
+          setSelectedTileIndex(parseInt(action.message, 10));
           setApplicationMode('SelectForm');
         }
         break;
@@ -144,6 +144,14 @@ const useStore = () => {
       case 'setEditFlg':
         setEditFlg(action.message === 'Yes' ? 1 : 0);
         break;
+      case 'setTile': {
+        const idolIndex = parseInt(action.message, 10);
+        const newMyHands = [...myHands];
+        newMyHands[selectedTileIndex] = idolIndex;
+        setApplicationMode('GameForm');
+        setMyHands(newMyHands);
+        break;
+      }
       default:
         break;
     }
