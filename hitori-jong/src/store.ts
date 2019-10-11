@@ -12,6 +12,7 @@ import {
   ApplicationMode,
   Action,
   HANDS_SIZE,
+  nameToIndex,
 } from './constant';
 
 const useStore = () => {
@@ -39,7 +40,8 @@ const useStore = () => {
     }
     const temp3 = Array<boolean>(HANDS_SIZE);
     temp3.fill(false);
-    setMyHands(temp2);
+    setMyHands(['未来', '春香', '育', '亜利沙', '百合子', '茜', '紬', 
+      '桃子', '瑞希', '紬', '茜', '海美', '琴葉'].map(n => nameToIndex(n)));
     setTileDeckPointer(HANDS_SIZE);
     setTurnCount(1);
     setCheckedTileFlg(temp3);
