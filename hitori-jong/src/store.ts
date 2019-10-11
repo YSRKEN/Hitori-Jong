@@ -45,6 +45,14 @@ const useStore = () => {
     setCheckedTileFlg(temp3);
   };
 
+  // 担当を事前に設定する
+  useEffect(() => {
+    const mainIdol = window.localStorage.getItem('MainIdol');
+    if (mainIdol !== null) {
+      setMainIdolIndex(parseInt(mainIdol, 10));
+    }
+  }, []);
+
   // 役判定とフラグ処理
   useEffect(() => {
     // 役判定
@@ -154,6 +162,7 @@ const useStore = () => {
           setMyHands(newMyHands);
         } else {
           setMainIdolIndex(parseInt(action.message, 10));
+          window.localStorage.setItem('MainIdol', action.message);
           setApplicationMode('GameForm');
         }
         break;
