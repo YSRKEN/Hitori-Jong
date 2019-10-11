@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   getShuffledTileDeck,
   checkTempai,
+  checkUnits,
   calcUnitListWithSora,
   unitListToScore,
   unitListToHumansCount,
@@ -128,6 +129,9 @@ const useStore = () => {
       }
       case 'calcTempai':
         setStatusOfCalcTempai(true);
+        break;
+      case 'checkUnits':
+        checkUnits(myHands);
         break;
       default:
         break;

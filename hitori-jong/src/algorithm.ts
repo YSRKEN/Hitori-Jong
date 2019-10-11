@@ -522,3 +522,23 @@ export const unitListToHandsBoldFlg = (myHands: number[], unitList: number[]) =>
   }
   return handsBoldFlg;
 }
+
+// 成立役とリーチ役の成立状況を調べる
+export const checkUnits = (myHands: number[]) => {
+  let output = '【成立役】\n';
+  const result1 = calcUnitListWithSora(myHands);
+  for (let unitIndex of result1.unit) {
+    const unit = UNIT_LIST[unitIndex];
+    output += `${unit.name}　${unit.member.join(', ')}\n`;
+  }
+
+  output += '\n【リーチ役】\n';
+  const result2 = calcReachUnitListWithSora(myHands);
+  for (let memberIndexStr in result2) {
+    const memberIndex = parseInt(memberIndexStr, 10);
+    const member = IDOL_LIST[memberIndex].name;
+    /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
+    output += `＋${member}　${result2[memberIndex].map(unitIndex => `\n　${UNIT_LIST[unitIndex].name}`).join('')}\n`;
+  }
+  window.alert(output);
+}

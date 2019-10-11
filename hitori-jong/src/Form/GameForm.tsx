@@ -24,6 +24,13 @@ const GameForm: React.FC = () => {
     });
   };
 
+  const checkUnits = () => {
+    dispatch({
+      type: 'checkUnits',
+      message: '',
+    });
+  };
+
   const checkTempai = () => {
     dispatch({
       type: 'calcTempai',
@@ -35,46 +42,56 @@ const GameForm: React.FC = () => {
     <Container className="px-0">
       <Row>
         <Col>
-          <Form>
-            <Form.Group className="text-center my-3">
+          <Form className="d-flex my-3">
+            <Form.Group className="text-center mr-3">
               <Button
                 variant="warning"
                 className="text-nowrap"
                 onClick={onClickReturnButton}
               >
-                スタート画面に戻る
+                スタート画面へ
               </Button>
             </Form.Group>
-          </Form>
-        </Col>
-        <Col>
-          <Form>
-            <Form.Group className="text-center my-3">
+            <Form.Group className="text-center mr-3">
+              <Button
+                variant="outline-primary"
+                className="text-nowrap"
+                disabled
+              >
+                {turnCount}順目
+                </Button>
+            </Form.Group>
+            <Form.Group className="text-center mr-3">
+              <Button
+                variant="info"
+                className="text-nowrap"
+                onClick={() => checkUnits()}
+              >
+                役？
+                </Button>
+            </Form.Group>
+            <Form.Group className="text-center mr-3">
               {statusOfCalcTempai ? (
                 <Button
-                  variant="outline-primary"
+                  variant="info"
                   className="text-nowrap"
                   disabled
                 >
                   計算中……
                 </Button>
               ) : (
-                <Button
-                  variant="outline-primary"
-                  className="text-nowrap"
-                  onClick={() => checkTempai()}
-                >
-                  {turnCount}順目
+                  <Button
+                    variant="info"
+                    className="text-nowrap"
+                    onClick={() => checkTempai()}
+                  >
+                    テンパイ？
                 </Button>
-              )}
+                )}
             </Form.Group>
-          </Form>
-        </Col>
-        <Col>
-          <Form>
-            <Form.Group className="text-center my-3">
+            <Form.Group className="text-center mr-3">
               <Button className="text-nowrap" onClick={onClickResetButton}>
-                牌山と手札をリセット
+                リセット
               </Button>
             </Form.Group>
           </Form>

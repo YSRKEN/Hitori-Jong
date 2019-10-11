@@ -4,7 +4,8 @@ export type ActionType =
   | 'resetTileDeck'
   | 'drawTile'
   | 'checkTile'
-  | 'calcTempai';
+  | 'calcTempai'
+  | 'checkUnits';
 
 // アプリケーションの動作モード
 export type ApplicationMode = 'StartForm' | 'GameForm';
