@@ -40,9 +40,9 @@ const GameForm: React.FC = () => {
 
   return (
     <Container className="px-0">
-      <Row>
+      <Row className="mt-5">
         <Col>
-          <Form className="d-flex my-3">
+          <Form className="d-flex">
             <Form.Group className="text-center mr-3">
               <Button
                 variant="warning"
@@ -97,7 +97,7 @@ const GameForm: React.FC = () => {
           </Form>
         </Col>
       </Row>
-      <Row>
+      <Row className="fixed-bottom mb-3">
         <Col>
           <Form>
             <Form.Group className="text-center my-3">
