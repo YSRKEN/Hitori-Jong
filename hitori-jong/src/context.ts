@@ -8,6 +8,9 @@ interface ApplicationState {
   turnCount: number;
   checkedTileFlg: boolean[];
   statusOfCalcTempai: boolean;
+  editFlg: number;
+  mainIdolIndex: number;
+  selectedTileIndex: number;
   dispatch: (action: Action) => void;
 }
 
