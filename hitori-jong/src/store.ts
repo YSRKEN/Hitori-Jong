@@ -8,11 +8,7 @@ import {
   unitListToHumansCount,
   unitListToHandsBoldFlg,
 } from 'algorithm';
-import {
-  ApplicationMode,
-  Action,
-  HANDS_SIZE,
-} from './constant';
+import { ApplicationMode, Action, HANDS_SIZE } from './constant';
 
 const useStore = () => {
   const [applicationMode, setApplicationMode] = useState<ApplicationMode>(
@@ -66,6 +62,7 @@ const useStore = () => {
 
     // ユニットの人数合計＝枚数なら上がり
     if (humans === HANDS_SIZE && applicationMode === 'GameForm') {
+      /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
       window.alert(`アガリ(ミリオンライブ)！　${score}点`);
     }
   }, [applicationMode, myHands]);
