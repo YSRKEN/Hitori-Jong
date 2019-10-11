@@ -107,16 +107,22 @@ const useStore = () => {
         resetTileDeck();
         break;
       case 'drawTile': {
-        if (tileDeck.length <= tileDeckPointer) {
-          window.alert('もうツモできません');
-          break;
+        if (editFlg === 0) {
+          // 通常モードなのでドローを行う
+          if (tileDeck.length <= tileDeckPointer) {
+            window.alert('もうツモできません');
+            break;
+          }
+          const clickIndex = parseInt(action.message, 10);
+          const newMyHands = [...myHands];
+          newMyHands[clickIndex] = tileDeck[tileDeckPointer];
+          setMyHands(newMyHands);
+          setTileDeckPointer(tileDeckPointer + 1);
+          setTurnCount(turnCount + 1);
+        } else {
+          // 編集モードなので選択画面に遷移する
+          setApplicationMode('SelectForm');
         }
-        const clickIndex = parseInt(action.message, 10);
-        const newMyHands = [...myHands];
-        newMyHands[clickIndex] = tileDeck[tileDeckPointer];
-        setMyHands(newMyHands);
-        setTileDeckPointer(tileDeckPointer + 1);
-        setTurnCount(turnCount + 1);
         break;
       }
       case 'checkTile': {
