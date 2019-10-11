@@ -553,7 +553,11 @@ export const checkUnits = (myHands: number[], mainIdolIndex: number) => {
   const result1 = calcUnitListWithSora(myHands, mainIdolIndex);
   for (const unitIndex of result1.unit) {
     const unit = UNIT_LIST[unitIndex];
-    output += `${unit.name}　${unit.member.join(', ')}\n`;
+    if (UNIT_LIST2[unitIndex].member2[mainIdolIndex] === 1) {
+      output += `${unit.name}　${unit.member.join(', ')}　${UNIT_LIST2[unitIndex].score * 2}点\n`;
+    } else {
+      output += `${unit.name}　${unit.member.join(', ')}　${UNIT_LIST2[unitIndex].score}点\n`;
+    }
   }
 
   output += '\n【リーチ役】\n';
