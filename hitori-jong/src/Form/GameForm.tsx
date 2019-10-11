@@ -2,9 +2,12 @@ import React, { useContext } from 'react';
 import { Button, Container, Row, Col, Form } from 'react-bootstrap';
 import StateContext from 'context';
 import MyHandTileControl from 'Control/MyHandTileControl';
+import SelectButtons from 'Parts/SelectButtons';
 
 const GameForm: React.FC = () => {
-  const { turnCount, statusOfCalcTempai, dispatch } = useContext(StateContext);
+  const { turnCount, statusOfCalcTempai, editFlg, dispatch } = useContext(
+    StateContext,
+  );
 
   const onClickReturnButton = () => {
     if (window.confirm('スタート画面に戻りますか？')) {
@@ -40,6 +43,13 @@ const GameForm: React.FC = () => {
     dispatch({
       type: 'requestSort',
       message: '',
+    });
+  };
+
+  const setEditFlg = (x: number) => {
+    dispatch({
+      type: 'setEditFlg',
+      message: x === 0 ? 'No' : 'Yes',
     });
   };
 
@@ -104,8 +114,15 @@ const GameForm: React.FC = () => {
       </Row>
       <Row>
         <Col>
-          <Form>
-            <Form.Group className="text-center my-3">
+          <Form className="d-flex mt-3">
+            <Form.Group className="text-center mr-3">
+              <SelectButtons
+                columns={['通常', '編集']}
+                selectedIndex={editFlg}
+                onClickFunc={setEditFlg}
+              />
+            </Form.Group>
+            <Form.Group className="text-center">
               <Button className="text-nowrap" onClick={onClickResetButton}>
                 リセット
               </Button>

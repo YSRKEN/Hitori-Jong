@@ -22,6 +22,8 @@ const useStore = () => {
   const [turnCount, setTurnCount] = useState<number>(1);
   const [checkedTileFlg, setCheckedTileFlg] = useState<boolean[]>([]);
   const [statusOfCalcTempai, setStatusOfCalcTempai] = useState<boolean>(false);
+  const [editFlg, setEditFlg] = useState(0);
+  const [selectedTileIndex, setSelectedTileIndex] = useState(0);
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -41,11 +43,6 @@ const useStore = () => {
     setTurnCount(1);
     setCheckedTileFlg(temp3);
   };
-
-  // 牌山と手札を設定する
-  useEffect(() => {
-    resetTileDeck();
-  }, [applicationMode]);
 
   // 役判定とフラグ処理
   useEffect(() => {
@@ -100,22 +97,32 @@ const useStore = () => {
   const dispatch = (action: Action) => {
     switch (action.type) {
       case 'setApplicationMode':
+        if (applicationMode === 'StartForm') {
+          resetTileDeck();
+        }
         setApplicationMode(action.message as ApplicationMode);
         break;
       case 'resetTileDeck':
         resetTileDeck();
         break;
       case 'drawTile': {
-        if (tileDeck.length <= tileDeckPointer) {
-          window.alert('もうツモできません');
-          break;
+        if (editFlg === 0) {
+          // 通常モードなのでドローを行う
+          if (tileDeck.length <= tileDeckPointer) {
+            window.alert('もうツモできません');
+            break;
+          }
+          const clickIndex = parseInt(action.message, 10);
+          const newMyHands = [...myHands];
+          newMyHands[clickIndex] = tileDeck[tileDeckPointer];
+          setMyHands(newMyHands);
+          setTileDeckPointer(tileDeckPointer + 1);
+          setTurnCount(turnCount + 1);
+        } else {
+          // 編集モードなので選択画面に遷移する
+          setSelectedTileIndex(parseInt(action.message, 10));
+          setApplicationMode('SelectForm');
         }
-        const clickIndex = parseInt(action.message, 10);
-        const newMyHands = [...myHands];
-        newMyHands[clickIndex] = tileDeck[tileDeckPointer];
-        setMyHands(newMyHands);
-        setTileDeckPointer(tileDeckPointer + 1);
-        setTurnCount(turnCount + 1);
         break;
       }
       case 'checkTile': {
@@ -134,6 +141,17 @@ const useStore = () => {
       case 'requestSort':
         setMyHands(sortHands(myHands));
         break;
+      case 'setEditFlg':
+        setEditFlg(action.message === 'Yes' ? 1 : 0);
+        break;
+      case 'setTile': {
+        const idolIndex = parseInt(action.message, 10);
+        const newMyHands = [...myHands];
+        newMyHands[selectedTileIndex] = idolIndex;
+        setApplicationMode('GameForm');
+        setMyHands(newMyHands);
+        break;
+      }
       default:
         break;
     }
@@ -146,6 +164,7 @@ const useStore = () => {
     turnCount,
     checkedTileFlg,
     statusOfCalcTempai,
+    editFlg,
     dispatch,
   };
 };
