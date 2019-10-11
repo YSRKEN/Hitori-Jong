@@ -10,6 +10,7 @@ import {
   SORA_INDEX,
   IDOL_LIST_LENGTH2,
   HANDS_SIZE,
+  nameToIndex,
 } from 'constant';
 
 // [0, n)の整数一様乱数を得る。参考：MDN
@@ -203,7 +204,7 @@ const calcCount = (myHandsArray: number[], unitListX: number[]) => {
 };
 
 // 候補の組み合わせについて調べる
-const cache: {[key: string]: number[][]} = {};
+const cache: { [key: string]: number[][] } = {};
 const calcUnitPatterns = (roughCount: number[]) => {
   const key = roughCount.map(i => i.toString()).join(',');
   if (key in cache) {
@@ -232,8 +233,9 @@ const calcUnitPatterns = (roughCount: number[]) => {
   }
 
   cache[key] = patterns;
+
   return patterns;
-}
+};
 
 // スコア計算
 const calcScore = (pattern: number[], unitList: number[]) => {
@@ -247,11 +249,16 @@ const calcScore = (pattern: number[], unitList: number[]) => {
   if (tileCount === HANDS_SIZE) {
     score += 100000000;
   }
+
   return score;
-}
+};
 
 // アイドル53種それぞれについて、ユニット毎の採用数×ユニット毎の指定アイドルの枚数の総和と、手牌とを比較する
-const isValidPattern = (pattern: number[], myHandsArray: number[], unitList2: number[][]) => {
+const isValidPattern = (
+  pattern: number[],
+  myHandsArray: number[],
+  unitList2: number[][],
+) => {
   for (let ti = 0; ti < IDOL_LIST_LENGTH2; ti += 1) {
     let sum = 0;
     for (let pi = 0; pi < pattern.length; pi += 1) {
@@ -261,8 +268,9 @@ const isValidPattern = (pattern: number[], myHandsArray: number[], unitList2: nu
       return false;
     }
   }
+
   return true;
-}
+};
 
 // 手役に対して、どのユニットの組み合わせを取れば高得点かを計算する
 // ・myHandsArray……要素数IDOL_LIST_LENGTH2(53)、各アイドルの枚数が記録されている
@@ -279,7 +287,7 @@ const calcUnitListFine = (myHandsArray: number[], unitList: number[]) => {
   );
 
   // 割当可能回数から、全割当パターンを算出する
-  let patterns = calcUnitPatterns(roughCount);
+  const patterns = calcUnitPatterns(roughCount);
 
   // 各割当パターンについて、実行可能性とスコア計算を実施し、最大のものを採用する
   let maxScore = 0;
@@ -287,14 +295,14 @@ const calcUnitListFine = (myHandsArray: number[], unitList: number[]) => {
   for (let x = 0; x < patterns.length; x += 1) {
     const record = patterns[x];
     // スコアを計算
-    let score = calcScore(record, unitList);
+    const score = calcScore(record, unitList);
     if (score > maxScore) {
       // 実行可能性を判断
       if (isValidPattern(record, myHandsArray, unitList2)) {
         maxScore = score;
         const temp2: number[] = [];
         for (let i = 0; i < record.length; i += 1) {
-          if (record[i] >= 1) {
+          for (let j = 0; j < record[i]; j += 1) {
             temp2.push(unitList[i]);
           }
         }
@@ -307,7 +315,7 @@ const calcUnitListFine = (myHandsArray: number[], unitList: number[]) => {
 };
 
 // 手役から、どのユニットの組み合わせを取るべきかを調べる
-const cache2: {[key: string]: number[]} = {};
+const cache2: { [key: string]: number[] } = {};
 export const calcUnitList = (myHands: number[]) => {
   const key = myHands.map(i => i.toString()).join(',');
   if (key in cache2) {
@@ -337,7 +345,6 @@ export const unitListToScore = (unitList: number[]) => {
     .map(unit => UNIT_LIST2[unit].score)
     .reduce((sum: number, val: number) => sum + val);
 };
-
 
 // 手役から、どのユニットが作れるかを調べる(そら考慮版)
 // minSora……そらが複数枚入っていた際、それぞれS1・S2……とすると、アイドルIDが必ずS1≦S2≦……となるようにするための補正
@@ -374,43 +381,6 @@ export const calcUnitListWithSora = (
   return { unit: calcUnitList(myHands), hands: myHands };
 };
 
-// 表示用に、ユニットメンバーを文字列配列に変換
-const unitMemberToStringArray = (members: Int64) => {
-  const memberArray: number[] = [];
-  for (let i = 0; i < IDOL_LIST_LENGTH2; i += 1) {
-    if (!equalInt64(andInt64(members, getShiftedValue(i)), INT64_ZERO)) {
-      memberArray.push(i);
-    }
-  }
-
-  return memberArray.map(id => IDOL_LIST[id].name);
-};
-
-// 表示用に、ユニット一覧を文字列配列に変換
-export const unitListToStringArray = (unitList: number[]) => {
-  const memberSet = new Set<string>();
-  for (const unitInfo of unitList) {
-    for (const member of unitMemberToStringArray(UNIT_LIST2[unitInfo].member)) {
-      memberSet.add(member);
-    }
-  }
-  memberSet.add('そら');
-
-  return memberSet;
-};
-
-// ユニット一覧を文字列化する
-export const unitListToString = (unitList: number[]) => {
-  return unitList
-    .map(
-      unit =>
-        `[${UNIT_LIST2[unit].score}点] ${
-          UNIT_LIST2[unit].name
-        } ${unitMemberToStringArray(UNIT_LIST2[unit].member).join(',')}`,
-    )
-    .join('\n');
-};
-
 // ユニット一覧における人数の総数
 export const unitListToHumansCount = (unitList: number[]) => {
   if (unitList.length === 0) {
@@ -433,6 +403,7 @@ export const checkTempai = (myHands: number[]) => {
   if (humans === HANDS_SIZE) {
     console.log(`${Date.now() - startTime}[ms]`);
     window.alert('既にアガリ形です');
+
     return;
   }
 
@@ -538,4 +509,93 @@ export const calcReachUnitList = (myHands: number[]) => {
 
 export const calcReachUnitListWithSora = (myHands: number[]) => {
   return calcReachUnitList(myHands);
+};
+
+// どの牌にチェックを入れるかを表示する
+export const unitListToHandsBoldFlg = (
+  myHands: number[],
+  unitList: number[],
+) => {
+  const handsBoldFlg = Array(myHands.length);
+  handsBoldFlg.fill(false);
+  for (const unitIndex of unitList) {
+    const unitMembers = UNIT_LIST[unitIndex].member;
+    const unitMemberIndex = unitMembers.map((name: string) =>
+      nameToIndex(name),
+    );
+    for (const unitMember of unitMemberIndex) {
+      for (let i = 0; i < myHands.length; i += 1) {
+        if (handsBoldFlg[i] === false && myHands[i] === unitMember) {
+          handsBoldFlg[i] = true;
+          break;
+        }
+      }
+    }
+  }
+
+  return handsBoldFlg;
+};
+
+// 成立役とリーチ役の成立状況を調べる
+export const checkUnits = (myHands: number[]) => {
+  let output = '【成立役】\n';
+  const result1 = calcUnitListWithSora(myHands);
+  for (const unitIndex of result1.unit) {
+    const unit = UNIT_LIST[unitIndex];
+    output += `${unit.name}　${unit.member.join(', ')}\n`;
+  }
+
+  output += '\n【リーチ役】\n';
+  const result2 = calcReachUnitListWithSora(myHands);
+  for (const memberIndexStr of Object.keys(result2)) {
+    const memberIndex = parseInt(memberIndexStr, 10);
+    const member = IDOL_LIST[memberIndex].name;
+    /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
+    output += `＋${member}　${result2[memberIndex]
+      .map(unitIndex => UNIT_LIST[unitIndex])
+      .map(unit => `\n　${unit.name}　${unit.member.join(', ')}`)
+      .join('')}\n`;
+  }
+  window.alert(output);
+};
+
+// 成立役に従い自動で理牌する
+export const sortHands = (myHands: number[]) => {
+  // 成立役を調べる
+  const result = calcUnitListWithSora(myHands);
+
+  // 成立役に従い理牌を実施。手順としては、
+  // ・そらさん補完後の手牌(result.hands)に対して、手役(result.unit)でラベリングを実施
+  // ・ラベリング結果に従い、通常手牌(myHands)をソート
+  //  ソート結果を新たな手牌とする
+  const newMyHandsIndex = Array(myHands.length);
+  newMyHandsIndex.fill(-1);
+  let index = 0;
+  for (const unitIndex of result.unit) {
+    const unitMemberIndex = UNIT_LIST[unitIndex].member.map((name: string) =>
+      nameToIndex(name),
+    );
+    for (const mi of unitMemberIndex) {
+      for (let hi = 0; hi < result.hands.length; hi += 1) {
+        if (result.hands[hi] === mi && newMyHandsIndex[hi] < 0) {
+          newMyHandsIndex[hi] = index;
+          index += 1;
+          break;
+        }
+      }
+    }
+  }
+  for (let hi = 0; hi < result.hands.length; hi += 1) {
+    if (newMyHandsIndex[hi] < 0) {
+      newMyHandsIndex[hi] = index;
+      index += 1;
+    }
+  }
+
+  const newMyHands = Array(myHands.length);
+  for (let hi = 0; hi < myHands.length; hi += 1) {
+    newMyHands[newMyHandsIndex[hi]] = myHands[hi];
+  }
+
+  return newMyHands;
 };
