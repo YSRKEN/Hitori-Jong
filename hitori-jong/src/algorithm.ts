@@ -538,7 +538,7 @@ export const checkUnits = (myHands: number[]) => {
     const memberIndex = parseInt(memberIndexStr, 10);
     const member = IDOL_LIST[memberIndex].name;
     /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
-    output += `＋${member}　${result2[memberIndex].map(unitIndex => `\n　${UNIT_LIST[unitIndex].name}`).join('')}\n`;
+    output += `＋${member}　${result2[memberIndex].map(unitIndex => UNIT_LIST[unitIndex]).map(unit => `\n　${unit.name}　${unit.member.join(', ')}`).join('')}\n`;
   }
   window.alert(output);
 }
