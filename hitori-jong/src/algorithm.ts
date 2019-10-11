@@ -560,6 +560,13 @@ export const checkUnits = (myHands: number[], mainIdolIndex: number) => {
     }
   }
 
+  output += '\n【担当役】\n';
+  for (let unitIndex = 0; unitIndex < UNIT_LIST.length; unitIndex += 1) {
+    if (UNIT_LIST2[unitIndex].member2[mainIdolIndex] === 1) {
+      output += `${UNIT_LIST[unitIndex].name}　${UNIT_LIST[unitIndex].member.join(', ')}　${UNIT_LIST2[unitIndex].score * 2}点\n`;
+    }
+  }
+
   output += '\n【リーチ役】\n';
   const result2 = calcReachUnitListWithSora(myHands);
   for (const memberIndexStr of Object.keys(result2)) {
