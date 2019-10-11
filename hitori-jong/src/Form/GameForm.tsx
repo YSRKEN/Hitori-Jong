@@ -2,10 +2,9 @@ import React, { useContext } from 'react';
 import { Button, Container, Row, Col, Form } from 'react-bootstrap';
 import StateContext from 'context';
 import MyHandTileControl from 'Control/MyHandTileControl';
-import SelectButtons from 'Parts/SelectButtons';
 
 const GameForm: React.FC = () => {
-  const { unitText, turnCount, statusOfCalcTempai, unitTextType, setUnitTextType, dispatch } = useContext(
+  const { turnCount, statusOfCalcTempai, dispatch } = useContext(
     StateContext,
   );
 
@@ -25,6 +24,13 @@ const GameForm: React.FC = () => {
     });
   };
 
+  const checkUnits = () => {
+    dispatch({
+      type: 'checkUnits',
+      message: '',
+    });
+  };
+
   const checkTempai = () => {
     dispatch({
       type: 'calcTempai',
@@ -34,72 +40,70 @@ const GameForm: React.FC = () => {
 
   return (
     <Container className="px-0">
-      <Row>
+      <Row className="mt-5">
         <Col>
-          <Form>
-            <Form.Group className="text-center my-3">
+          <Form className="d-flex">
+            <Form.Group className="text-center mr-3">
               <Button
                 variant="warning"
                 className="text-nowrap"
                 onClick={onClickReturnButton}
               >
-                スタート画面に戻る
+                スタート画面へ
               </Button>
             </Form.Group>
-          </Form>
-        </Col>
-        <Col>
-          <Form>
-            <Form.Group className="text-center my-3">
+            <Form.Group className="text-center mr-3">
+              <Button
+                variant="outline-primary"
+                className="text-nowrap"
+                disabled
+              >
+                {turnCount}順目
+                </Button>
+            </Form.Group>
+            <Form.Group className="text-center mr-3">
+              <Button
+                variant="info"
+                className="text-nowrap"
+                onClick={() => checkUnits()}
+              >
+                役？
+                </Button>
+            </Form.Group>
+            <Form.Group className="text-center mr-3">
               {statusOfCalcTempai ? (
                 <Button
-                  variant="outline-primary"
+                  variant="info"
                   className="text-nowrap"
                   disabled
                 >
                   計算中……
                 </Button>
               ) : (
-                <Button
-                  variant="outline-primary"
-                  className="text-nowrap"
-                  onClick={() => checkTempai()}
-                >
-                  {turnCount}順目
+                  <Button
+                    variant="info"
+                    className="text-nowrap"
+                    onClick={() => checkTempai()}
+                  >
+                    テンパイ？
                 </Button>
-              )}
+                )}
             </Form.Group>
-          </Form>
-        </Col>
-        <Col>
-          <Form>
-            <Form.Group className="text-center my-3">
-              <SelectButtons columns={['成立役', 'リーチ役']} selectedIndex={unitTextType} onClickFunc={setUnitTextType}/>
-            </Form.Group>
-          </Form>
-        </Col>
-        <Col>
-          <Form>
-            <Form.Group className="text-center my-3">
+            <Form.Group className="text-center mr-3">
               <Button className="text-nowrap" onClick={onClickResetButton}>
-                牌山と手札をリセット
+                リセット
               </Button>
             </Form.Group>
           </Form>
         </Col>
       </Row>
-      <Row>
+      <Row className="fixed-bottom mb-3">
         <Col>
           <Form>
             <Form.Group className="text-center my-3">
               <MyHandTileControl />
             </Form.Group>
           </Form>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <pre>{unitText}</pre>
         </Col>
       </Row>
     </Container>

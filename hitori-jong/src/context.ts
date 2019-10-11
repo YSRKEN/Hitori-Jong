@@ -4,13 +4,10 @@ import { ApplicationMode, Action } from './constant';
 interface ApplicationState {
   applicationMode: ApplicationMode;
   myHands: number[];
-  unitText: string;
   handsBoldFlg: boolean[];
   turnCount: number;
   checkedTileFlg: boolean[];
   statusOfCalcTempai: boolean;
-  unitTextType: number;
-  setUnitTextType: (n: number) => void;
   dispatch: (action: Action) => void;
 }
 
