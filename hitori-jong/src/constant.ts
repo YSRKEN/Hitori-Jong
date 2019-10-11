@@ -5,7 +5,8 @@ export type ActionType =
   | 'drawTile'
   | 'checkTile'
   | 'calcTempai'
-  | 'checkUnits';
+  | 'checkUnits'
+  | 'requestSort';
 
 // アプリケーションの動作モード
 export type ApplicationMode = 'StartForm' | 'GameForm';

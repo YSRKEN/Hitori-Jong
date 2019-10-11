@@ -4,9 +4,7 @@ import StateContext from 'context';
 import MyHandTileControl from 'Control/MyHandTileControl';
 
 const GameForm: React.FC = () => {
-  const { turnCount, statusOfCalcTempai, dispatch } = useContext(
-    StateContext,
-  );
+  const { turnCount, statusOfCalcTempai, dispatch } = useContext(StateContext);
 
   const onClickReturnButton = () => {
     if (window.confirm('スタート画面に戻りますか？')) {
@@ -38,6 +36,13 @@ const GameForm: React.FC = () => {
     });
   };
 
+  const requestSort = () => {
+    dispatch({
+      type: 'requestSort',
+      message: '',
+    });
+  };
+
   return (
     <Container className="px-0">
       <Row className="mt-5">
@@ -59,7 +64,7 @@ const GameForm: React.FC = () => {
                 disabled
               >
                 {turnCount}順目
-                </Button>
+              </Button>
             </Form.Group>
             <Form.Group className="text-center mr-3">
               <Button
@@ -68,28 +73,39 @@ const GameForm: React.FC = () => {
                 onClick={() => checkUnits()}
               >
                 役？
-                </Button>
+              </Button>
             </Form.Group>
             <Form.Group className="text-center mr-3">
               {statusOfCalcTempai ? (
-                <Button
-                  variant="info"
-                  className="text-nowrap"
-                  disabled
-                >
+                <Button variant="info" className="text-nowrap" disabled>
                   計算中……
                 </Button>
               ) : (
-                  <Button
-                    variant="info"
-                    className="text-nowrap"
-                    onClick={() => checkTempai()}
-                  >
-                    テンパイ？
+                <Button
+                  variant="info"
+                  className="text-nowrap"
+                  onClick={() => checkTempai()}
+                >
+                  テンパイ？
                 </Button>
-                )}
+              )}
             </Form.Group>
             <Form.Group className="text-center mr-3">
+              <Button
+                className="text-nowrap"
+                variant="secondary"
+                onClick={() => requestSort()}
+              >
+                自動理牌
+              </Button>
+            </Form.Group>
+          </Form>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Form>
+            <Form.Group className="text-center my-3">
               <Button className="text-nowrap" onClick={onClickResetButton}>
                 リセット
               </Button>

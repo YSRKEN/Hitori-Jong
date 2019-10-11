@@ -7,6 +7,7 @@ import {
   unitListToScore,
   unitListToHumansCount,
   unitListToHandsBoldFlg,
+  sortHands,
 } from 'algorithm';
 import { ApplicationMode, Action, HANDS_SIZE } from './constant';
 
@@ -129,6 +130,9 @@ const useStore = () => {
         break;
       case 'checkUnits':
         checkUnits(myHands);
+        break;
+      case 'requestSort':
+        setMyHands(sortHands(myHands));
         break;
       default:
         break;

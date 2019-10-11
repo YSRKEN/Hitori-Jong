@@ -558,3 +558,44 @@ export const checkUnits = (myHands: number[]) => {
   }
   window.alert(output);
 };
+
+// 成立役に従い自動で理牌する
+export const sortHands = (myHands: number[]) => {
+  // 成立役を調べる
+  const result = calcUnitListWithSora(myHands);
+
+  // 成立役に従い理牌を実施。手順としては、
+  // ・そらさん補完後の手牌(result.hands)に対して、手役(result.unit)でラベリングを実施
+  // ・ラベリング結果に従い、通常手牌(myHands)をソート
+  //  ソート結果を新たな手牌とする
+  const newMyHandsIndex = Array(myHands.length);
+  newMyHandsIndex.fill(-1);
+  let index = 0;
+  for (const unitIndex of result.unit) {
+    const unitMemberIndex = UNIT_LIST[unitIndex].member.map((name: string) =>
+      nameToIndex(name),
+    );
+    for (const mi of unitMemberIndex) {
+      for (let hi = 0; hi < result.hands.length; hi += 1) {
+        if (result.hands[hi] === mi && newMyHandsIndex[hi] < 0) {
+          newMyHandsIndex[hi] = index;
+          index += 1;
+          break;
+        }
+      }
+    }
+  }
+  for (let hi = 0; hi < result.hands.length; hi += 1) {
+    if (newMyHandsIndex[hi] < 0) {
+      newMyHandsIndex[hi] = index;
+      index += 1;
+    }
+  }
+
+  const newMyHands = Array(myHands.length);
+  for (let hi = 0; hi < myHands.length; hi += 1) {
+    newMyHands[newMyHandsIndex[hi]] = myHands[hi];
+  }
+
+  return newMyHands;
+};
