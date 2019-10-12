@@ -5,11 +5,19 @@ import { SceneMode } from 'constant/other';
 // アプリケーションの状態
 const useStore = () => {
   // 現在の表示モード
-  const [sceneMode,] = React.useState<SceneMode>('TitleScene');
+  const [sceneMode, setSceneMode] = React.useState<SceneMode>('TitleScene');
 
   // Reduxライクなdispatch関数
   const dispatch = (action: Action) => {
     switch (action.type) {
+      case 'changeSceneTtoG':
+        setSceneMode('GameScene');
+        break;
+      case 'changeSceneTtoS':
+        setSceneMode('SimulationScene');
+        break;
+      default:
+        break;
     }
   };
 
