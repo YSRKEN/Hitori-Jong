@@ -1,3 +1,14 @@
+/* リンク表示絡み */
+.misc-links {
+	margin-top: 5vh;
+	margin-left: 5vh;
+}
+.misc-links > span {
+	font-size: 5vh;
+	margin-left: 2.5vh;
+	margin-right: 2.5vh;
+}
+
 /* タイトルロゴ絡み */
 .title-logo {
 	text-align: center;
@@ -6,10 +17,9 @@
 .version-logo {
 	text-align: center;
 	font-size: 7.5vh;
-	margin-top: 0vh;
 }
 .title-bar {
-	margin-top: 20vh;
+	margin-top: 10vh;
 }
 
 /* 各種ボタン絡み */
@@ -20,7 +30,7 @@
 	margin-right: auto;
 	margin-top: 15vh;
 }
-.button {
+.button-group span {
 	border-color: gray;
 	border-width: 2px;
 	border-style: solid;
