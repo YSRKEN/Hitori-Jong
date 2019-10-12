@@ -1,31 +1,33 @@
 import { Action } from './constant/action';
 import React from 'react';
 import { SceneMode } from 'constant/other';
-import { loadSettingAsString, saveSetting } from 'service/SettingService';
+import { loadSettingAsString, saveSettingForString, loadSettingAsObject } from 'service/SettingService';
 
 // アプリケーションの状態
 const useStore = () => {
   // 現在の表示モード
   const [sceneMode, setSceneMode] = React.useState<SceneMode>(loadSettingAsString('sceneMode', 'TitleScene') as SceneMode);
+  // シミュレーターにおける手牌
+  const [handTileListS,] = React.useState<number[]>(loadSettingAsObject('handTileListS', [31, 41, 5, 9, 26, 5, 35, 8, 9, 7, 9, 32, 38]) as number[]);
 
-  // Reduxライクなdispatch関数
+    // Reduxライクなdispatch関数
   const dispatch = (action: Action) => {
     switch (action.type) {
       case 'changeSceneTtoG':
         setSceneMode('GameScene');
-        saveSetting('sceneMode', 'GameScene');
+        saveSettingForString('sceneMode', 'GameScene');
         break;
       case 'changeSceneTtoS':
         setSceneMode('SimulationScene');
-        saveSetting('sceneMode', 'SimulationScene');
+        saveSettingForString('sceneMode', 'SimulationScene');
         break;
       case 'changeSceneGtoT':
         setSceneMode('TitleScene');
-        saveSetting('sceneMode', 'TitleScene');
+        saveSettingForString('sceneMode', 'TitleScene');
         break;
       case 'changeSceneStoT':
         setSceneMode('TitleScene');
-        saveSetting('sceneMode', 'TitleScene');
+        saveSettingForString('sceneMode', 'TitleScene');
         break;
       default:
         break;
@@ -34,6 +36,7 @@ const useStore = () => {
 
   return {
     sceneMode,
+    handTileListS,
     dispatch,
   };
 };
