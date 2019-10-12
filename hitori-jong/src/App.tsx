@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import StateContext from 'context';
 import useStore from 'store';
 import SceneSelector from 'scene/SceneSelector';

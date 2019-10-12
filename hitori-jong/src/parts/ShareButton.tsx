@@ -8,7 +8,7 @@ const ShareButton: React.FC = () => (
 		title="一人用ミリジャン「ヒトリジャン」。スマホ対応。"
 		hashtags={['ミリジャン', 'ヒトリジャン']}
 	>
-		<TwitterIcon size={32} round />
+		<TwitterIcon size={40} />
 	</TwitterShareButton>
 );
 
