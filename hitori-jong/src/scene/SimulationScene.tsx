@@ -1,5 +1,6 @@
 import React from 'react';
 import StateContext from 'context';
+import './SimulationScene.css';
 
 // シミュレーション画面
 const SimulationScene: React.FC = () => {
@@ -9,8 +10,9 @@ const SimulationScene: React.FC = () => {
 
 	return (
 		<>
-			<h1>シミュレーション画面</h1>
-			<button onClick={onClickStoT}>タイトルに戻る</button>
+			<div className="back-to-title-button">
+				<span onClick={onClickStoT}>タイトルに戻る</span>
+			</div>
 		</>
 	);
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import StateContext from 'context';
+import './GameScene.css';
 
 // ゲーム画面
 const GameScene: React.FC = () => {
@@ -9,8 +10,9 @@ const GameScene: React.FC = () => {
 
 	return (
 		<>
-			<h1>ゲーム画面</h1>
-			<button onClick={onClickGtoT}>タイトルに戻る</button>
+			<div className="back-to-title-button">
+				<span onClick={onClickGtoT}>タイトルに戻る</span>
+			</div>
 		</>
 	);
 }

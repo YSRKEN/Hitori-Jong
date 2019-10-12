@@ -1,5 +1,6 @@
 import React from 'react';
 import StateContext from 'context';
+import './Scene.css';
 import TitleScene from './TitleScene';
 import GameScene from './GameScene';
 import SimulationScene from './SimulationScene';
