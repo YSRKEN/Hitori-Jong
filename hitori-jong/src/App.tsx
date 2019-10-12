@@ -1,33 +1,22 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import SelectForm from 'Form/SelectForm';
-import StateContext from './context';
-import useStore from './store';
-import StartForm from './Form/StartForm';
-import GameForm from './Form/GameForm';
-
-const FormSelector: React.FC = () => {
-  const { applicationMode } = useContext(StateContext);
-
-  switch (applicationMode) {
-    case 'StartForm':
-      return <StartForm />;
-    case 'GameForm':
-      return <GameForm />;
-    case 'SelectForm':
-      return <SelectForm />;
-    default:
-      return <></>;
-  }
-};
+import StateContext from 'context';
+import useStore from 'store';
+import { TwitterShareButton, TwitterIcon } from 'react-share';
 
 const App: React.FC = () => {
   const context = useStore();
 
   return (
     <StateContext.Provider value={context}>
-      <FormSelector />
+      <h1>ヒトリジャン Ver.2.0.0</h1>
+      <TwitterShareButton
+        url="https://hitori-jong.firebaseapp.com"
+        title="一人用ミリジャン「ヒトリジャン」。スマホ対応。"
+        hashtags={['ミリジャン', 'ヒトリジャン']}
+      >
+        <TwitterIcon size={32} round />
+      </TwitterShareButton>
     </StateContext.Provider>
   );
 };
