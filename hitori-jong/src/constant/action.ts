@@ -1,5 +1,5 @@
 // Actionの種類
-export type ActionType = 'changeSceneTtoG' | 'changeSceneTtoS';
+export type ActionType = 'changeSceneTtoG' | 'changeSceneTtoS' | 'changeSceneGtoT' | 'changeSceneStoT';
 
 // Action
 export interface Action {
