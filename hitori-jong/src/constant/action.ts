@@ -1,5 +1,5 @@
 // Actionの種類
-export type ActionType = 'setApplicationMode';
+export type ActionType = 'changeSceneTtoS';
 
 // Action
 export interface Action {

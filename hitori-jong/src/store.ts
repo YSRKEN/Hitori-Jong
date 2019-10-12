@@ -5,7 +5,7 @@ import { SceneMode } from 'constant/other';
 // アプリケーションの状態
 const useStore = () => {
   // 現在の表示モード
-  const [sceneMode,] = React.useState<SceneMode>('StartScene');
+  const [sceneMode,] = React.useState<SceneMode>('TitleScene');
 
   // Reduxライクなdispatch関数
   const dispatch = (action: Action) => {

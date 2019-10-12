@@ -1,14 +1,14 @@
 import React from 'react';
 import StateContext from 'context';
-import StartScene from './StartScene';
+import TitleScene from './TitleScene';
 
 // 表示シーンに応じて表示内容を切り替える
 const SceneSelector: React.FC = () => {
 	const { sceneMode } = React.useContext(StateContext);
 
 	switch (sceneMode) {
-		case 'StartScene':
-			return <StartScene />;
+		case 'TitleScene':
+			return <TitleScene />;
 		default:
 			return (<></>);
 	}

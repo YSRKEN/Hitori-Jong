@@ -1,10 +1,10 @@
 import React from 'react';
 import { APPLICATION_VERSION } from 'constant/other';
-import './StartScene.css';
+import './TitleScene.css';
 import { TwitterShareButton } from 'react-share';
 
 // タイトル画面
-const StartScene: React.FC = () => (
+const TitleScene: React.FC = () => (
 	<>
 		<div className="misc-links">
 			<span><a href="https://twitter.com/YSRKEN" rel="noopener noreferrer" target="_blank">作者Twitter</a></span>
@@ -33,4 +33,4 @@ const StartScene: React.FC = () => (
 	</>
 );
 
-export default StartScene;
+export default TitleScene;
