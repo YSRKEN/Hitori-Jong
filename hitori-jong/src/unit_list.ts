@@ -2,6 +2,7 @@
 // prettier-ignore
 export const UNIT_LIST: { "name": string; "member": string[] }[] = [
 	{ "name": "(詩花)", "member": ["詩花"] },
+	{ "name": "マイティセーラーズ(2人)", "member": ["海美", "翼"] },
 	{ "name": "恋するTwist&Shout", "member": ["やよい", "律子"] },
 	{ "name": "inferno SQUARING", "member": ["千早", "雪歩"] },
 	{ "name": "ハルカナミライ", "member": ["春香", "未来"] },
