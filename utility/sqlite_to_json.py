@@ -22,4 +22,13 @@ with closing(sqlite3.connect('765pro.sqlite3')) as conn:
     output = []
     for i in range(0, len(dict2)):
         output.append({'name': dict2[i], 'member': dict1[dict2[i]]})
-    json.dump(output, open('unit.json', mode='w', encoding='utf-8'), ensure_ascii=False)
+    with open('unit.json', mode='w', encoding='utf-8') as f:
+        f.write('[\n')
+        temp = []
+        for record in output:
+            name = record['name']
+            member = ", ".join([f'"{x}"' for x in record['member']])
+            temp.append('{ "name": "' + name + '", "member": [' + member + '] }')
+        temp2 = ',\n  '.join(temp)
+        f.write('  ' + temp2 + '\n')
+        f.write(']\n')
