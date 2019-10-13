@@ -116,35 +116,23 @@ export const convertUnitList = () => {
     }
     // スコア
     let gameScore = 0;
-    switch (record.member.length) {
-      case 1:
-        gameScore = 1000;
-        break;
-      case 2:
-        gameScore = 2000;
-        break;
-      case 3:
-        gameScore = 4000;
-        break;
-      case 4:
-        gameScore = 6000;
-        break;
-      case 5:
-        gameScore = 8000;
-        break;
-      case 13:
-        // 仮決め
-        gameScore = 24000;
-        break;
-      default:
-        gameScore = 0;
-        break;
+    let gameScore2 = 0;
+    if (record.member.length === 1) {
+      gameScore = 1000;
+      gameScore2 = 1000;
+    } else if (record.member.length === 2) {
+      gameScore = 2000;
+      gameScore2 = 1000;
+    } else {
+      gameScore = (record.member.length - 1) * 2000;
+      gameScore2 = (record.member.length - 2) * 2000;
     }
     unitList2.push({
       name: record.name,
       member: memberKey,
       member2: memberArray,
       score: gameScore,
+      score2: gameScore2,
     });
   }
 
@@ -241,20 +229,26 @@ const calcUnitPatterns = (roughCount: number[]) => {
 const calcScore = (pattern: number[], unitList: number[], mainIdolIndex: number) => {
   // スコアを計算
   let score = 0;
+  let score2 = 0;
   let tileCount = 0;
+  let mainIdolFlg = false;
   for (let i = 0; i < pattern.length; i += 1) {
     if (UNIT_LIST2[unitList[i]].member2[mainIdolIndex] === 1) {
-      score += pattern[i] * UNIT_LIST2[unitList[i]].score * 2;
-    } else {
-      score += pattern[i] * UNIT_LIST2[unitList[i]].score;
+      mainIdolFlg = true;
     }
+    score += pattern[i] * UNIT_LIST2[unitList[i]].score;
+    score2 += pattern[i] * UNIT_LIST2[unitList[i]].score2;
     tileCount += pattern[i] * UNIT_LIST[unitList[i]].member.length;
   }
-  if (tileCount === HANDS_SIZE) {
-    score += 100000000;
+  if (mainIdolFlg) {
+    score += 2000;
+    score2 += 2000;
   }
-
-  return score;
+  if (tileCount === HANDS_SIZE) {
+    return score;
+  } else {
+    return score2;
+  }
 };
 
 // アイドル53種それぞれについて、ユニット毎の採用数×ユニット毎の指定アイドルの枚数の総和と、手牌とを比較する
@@ -551,19 +545,27 @@ export const unitListToHandsBoldFlg = (
 export const checkUnits = (myHands: number[], mainIdolIndex: number) => {
   let output = '【成立役】\n';
   const result1 = calcUnitListWithSora(myHands, mainIdolIndex);
+  let mainIdolFlg = false;
+  const millionLiveFlg = result1.unit.length > 0 && result1.unit.map(u => UNIT_LIST[u].member.length).reduce((s, v) => s + v) === HANDS_SIZE;
   for (const unitIndex of result1.unit) {
     const unit = UNIT_LIST[unitIndex];
     if (UNIT_LIST2[unitIndex].member2[mainIdolIndex] === 1) {
-      output += `${unit.name}　${unit.member.join(', ')}　${UNIT_LIST2[unitIndex].score * 2}点\n`;
-    } else {
-      output += `${unit.name}　${unit.member.join(', ')}　${UNIT_LIST2[unitIndex].score}点\n`;
+      mainIdolFlg = true;
     }
+    if (millionLiveFlg) {
+      output += `${unit.name}　${unit.member.join(', ')}　${UNIT_LIST2[unitIndex].score}点\n`;
+    } else {
+      output += `${unit.name}　${unit.member.join(', ')}　${UNIT_LIST2[unitIndex].score2}点\n`;
+    }
+  }
+  if (mainIdolFlg) {
+    output += '＋担当ボーナス　2000点\n';
   }
 
   output += '\n【担当役】\n';
   for (let unitIndex = 0; unitIndex < UNIT_LIST.length; unitIndex += 1) {
     if (UNIT_LIST2[unitIndex].member2[mainIdolIndex] === 1) {
-      output += `${UNIT_LIST[unitIndex].name}　${UNIT_LIST[unitIndex].member.join(', ')}　${UNIT_LIST2[unitIndex].score * 2}点\n`;
+      output += `${UNIT_LIST[unitIndex].name}　${UNIT_LIST[unitIndex].member.join(', ')}　${UNIT_LIST2[unitIndex].score}点\n`;
     }
   }
 

@@ -264,6 +264,7 @@ export interface UnitInfo {
   member: Int64;
   member2: number[];
   score: number;
+  score2: number;
 }
 
 // Action
