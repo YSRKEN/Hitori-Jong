@@ -2,6 +2,7 @@
 // prettier-ignore
 export const UNIT_LIST: { "name": string; "member": string[] }[] = [
 	{ "name": "(詩花)", "member": ["詩花"] },
+	{ "name": "恋するTwist&Shout", "member": ["やよい", "律子"] },
 	{ "name": "inferno SQUARING", "member": ["千早", "雪歩"] },
 	{ "name": "ハルカナミライ", "member": ["春香", "未来"] },
 	{ "name": "成長Chu→LOVER!!", "member": ["杏奈", "百合子"] },
@@ -40,12 +41,13 @@ export const UNIT_LIST: { "name": string; "member": string[] }[] = [
 	{ "name": "ダブルエース", "member": ["奈緒", "美奈子"] },
 	{ "name": "キラメキラリ(カバー)", "member": ["茜", "紬"] },
 	{ "name": "わんつ→ているず", "member": ["真美", "やよい"] },
-	{ "name": "D・LOVE", "member": ["雪歩", "伊織"] },
 	{ "name": "CRIMSON LOVERS", "member": ["春香", "千早"] },
 	{ "name": "聖炎の女神", "member": ["貴音", "律子"] },
 	{ "name": "ブルウ・スタア", "member": ["真", "響"] },
 	{ "name": "始めのDon't worry", "member": ["美希", "伊織"] },
 	{ "name": "LEMONADE", "member": ["雪歩", "あずさ"] },
+	{ "name": "きゅんっ！ヴァンパイアガール", "member": ["伊織", "育", "桃子"] },
+	{ "name": "待ち受けプリンス", "member": ["やよい", "真", "伊織"] },
 	{ "name": "99 Nights", "member": ["美希", "伊織", "貴音"] },
 	{ "name": "咲きませ！！乙女塾", "member": ["春香", "真", "真美"] },
 	{ "name": "キミチャンネル", "member": ["春香", "響", "真"] },
@@ -73,9 +75,10 @@ export const UNIT_LIST: { "name": string; "member": string[] }[] = [
 	{ "name": "MUSIC♪(BCカバー)", "member": ["歌織", "紗代子", "可奈"] },
 	{ "name": "Dreaming!(カバー)", "member": ["可奈", "星梨花", "海美"] },
 	{ "name": "プロジェクト・フェアリー", "member": ["響", "貴音", "美希"] },
-	{ "name": "竜宮小町", "member": ["亜美", "あずさ", "伊織"] },
 	{ "name": "SprouT", "member": ["春香", "雪歩", "響"] },
 	{ "name": "Funny Logic", "member": ["やよい", "亜美", "真美"] },
+	{ "name": "竜宮小町", "member": ["亜美", "あずさ", "伊織", "律子"] },
+	{ "name": "Good-Byes", "member": ["やよい", "あずさ", "律子", "亜美"] },
 	{ "name": "星彩ステッパー", "member": ["美希", "伊織", "亜美", "真美"] },
 	{ "name": "虹のデスティネーション", "member": ["美希", "伊織", "雪歩", "あずさ"] },
 	{ "name": "edeN", "member": ["美希", "雪歩", "真", "貴音"] },
@@ -99,7 +102,6 @@ export const UNIT_LIST: { "name": string; "member": string[] }[] = [
 	{ "name": "ピコピコプラネッツ", "member": ["星梨花", "環", "ひなた", "杏奈"] },
 	{ "name": "Clover", "member": ["可奈", "志保", "星梨花", "海美"] },
 	{ "name": "Xs", "member": ["美希", "雪歩", "真", "伊織"] },
-	{ "name": "ワンダリングスター", "member": ["亜美", "真美", "雪歩", "伊織"] },
 	{ "name": "僕たちのResistance", "member": ["美希", "千早", "やよい", "響"] },
 	{ "name": "アマテラス", "member": ["雪歩", "あずさ", "貴音", "律子"] },
 	{ "name": "BRAVE STAR", "member": ["春香", "千早", "貴音", "律子"] },
@@ -124,7 +126,7 @@ export const UNIT_LIST: { "name": string; "member": string[] }[] = [
 	{ "name": "ビッグバンズバリボー!!!!!", "member": ["海美", "恵美", "紗代子", "風花", "奈緒"] },
 	{ "name": "オーディナリィ・クローバー", "member": ["歌織", "静香", "杏奈", "莉緒", "美也"] },
 	{ "name": "ラスト・アクトレス", "member": ["琴葉", "桃子", "このみ", "紬", "瑞希"] },
-	{ "name": "ジェネシス×ネメシス", "member": ["紬", "歌織", "ジュリア", "真", "茜"] },
+	{ "name": "Justice OR Voice", "member": ["紬", "歌織", "ジュリア", "真", "茜"] },
 	{ "name": "White Vows", "member": ["風花", "莉緒", "このみ", "歌織", "千鶴"] },
 	{ "name": "Chrono-Lexica", "member": ["百合子", "昴", "ロコ", "杏奈", "瑞希"] },
 	{ "name": "(TC 孤島サスペンスホラー)", "member": ["茜", "エレナ", "歌織", "千鶴", "志保"] },
@@ -132,7 +134,7 @@ export const UNIT_LIST: { "name": string; "member": string[] }[] = [
 	{ "name": "Girl meets Wonder", "member": ["星梨花", "桃子", "まつり", "響", "昴"] },
 	{ "name": "Vault That Borderline!(カバー)", "member": ["翼", "ジュリア", "百合子", "紗代子", "瑞希"] },
 	{ "name": "私はアイドル♡(カバー)", "member": ["瑞希", "恵美", "美也", "桃子", "まつり"] },
-	{ "name": "ファンキーノート", "member": ["やよい", "響", "伊織", "亜美", "真美"] },
+	{ "name": "ビジョナリー", "member": ["やよい", "響", "伊織", "亜美", "真美"] },
 	{ "name": "Miracle Night", "member": ["春香", "真", "亜美", "真美", "伊織"] },
 	{ "name": "Light Year Song", "member": ["やよい", "真", "亜美", "真美", "響"] },
 	{ "name": "ザ・ライブ革命でSHOW!", "member": ["美希", "やよい", "真", "亜美", "真美", "貴音"] },
@@ -150,4 +152,5 @@ export const UNIT_LIST: { "name": string; "member": string[] }[] = [
 	{ "name": "Sunshine Rhythm(13人)", "member": ["エレナ", "育", "ロコ", "エミリー", "ひなた", "奈緒", "翼", "美奈子", "のり子", "杏奈", "莉緒", "可奈", "歌織"] },
 	{ "name": "BlueMoon Harmony(13人)", "member": ["昴", "百合子", "静香", "恵美", "歩", "瑞希", "可憐", "朋花", "千鶴", "麗花", "ジュリア", "紗代子", "紬"] },
 	{ "name": "Starlight Melody(13人)", "member": ["未来", "まつり", "美也", "桃子", "風花", "このみ", "星梨花", "茜", "環", "志保", "琴葉", "海美", "亜利沙"] }
-];
+]
+;
