@@ -11,8 +11,7 @@ const IdolTile: React.FC<{idolIndex: number}> = ({idolIndex}) => {
 	} else {
 		classList.push('font-size-normal');
 	}
-	const classText = classList.join(' ');
-	return (<span className={classText}>{idolInfo.name}</span>);
+	return (<span className={classList.join(' ')}>{idolInfo.name}</span>);
 }
 
 export default IdolTile;

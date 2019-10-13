@@ -14,28 +14,28 @@
 }
 
 /* 牌の背景色 */
-.color-Princess {
+.idol-tile.color-Princess {
 	background-color: pink;
 }
-.color-Fairy {
+.idol-tile.color-Fairy {
 	background-color: lightblue;
 }
-.color-Angel {
+.idol-tile.color-Angel {
 	background-color: lemonchiffon;
 }
-.color-Extra {
+.idol-tile.color-Extra {
 	background-color: lightgreen;
 }
-.color-Sora {
+.idol-tile.color-Sora {
 	background-color: violet;
 }
 
 /* 牌のフォントサイズ */
-.font-size-normal {
+.idol-tile.font-size-normal {
 	font-size: 6vh;
 	line-height: 10vh;
 }
-.font-size-small { 
+.idol-tile.font-size-small { 
 	font-size: 5vh;
 	line-height: 11vh;
 }

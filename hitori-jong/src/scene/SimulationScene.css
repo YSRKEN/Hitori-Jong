@@ -3,3 +3,9 @@
 	bottom: 10vh;
 	width: 100vw;
 }
+
+.header-button-group {
+	display: flex;
+	margin-left: 5vh;
+	margin-top: 5vh;
+}

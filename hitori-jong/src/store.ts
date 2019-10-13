@@ -1,7 +1,7 @@
 import { Action } from './constant/action';
 import React from 'react';
 import { SceneMode } from 'constant/other';
-import { loadSettingAsString, saveSettingForString, loadSettingAsObject } from 'service/SettingService';
+import { loadSettingAsString, saveSettingForString, loadSettingAsObject, loadSettingAsInteger } from 'service/SettingService';
 
 // アプリケーションの状態
 const useStore = () => {
@@ -9,6 +9,8 @@ const useStore = () => {
   const [sceneMode, setSceneMode] = React.useState<SceneMode>(loadSettingAsString('sceneMode', 'TitleScene') as SceneMode);
   // シミュレーターにおける手牌
   const [handTileListS,] = React.useState<number[]>(loadSettingAsObject('handTileListS', [31, 41, 5, 9, 26, 5, 35, 8, 9, 7, 9, 32, 38]) as number[]);
+  // 担当
+  const [myIdol,] = React.useState<number>(loadSettingAsInteger('myIdol', 0));
 
     // Reduxライクなdispatch関数
   const dispatch = (action: Action) => {
@@ -37,6 +39,7 @@ const useStore = () => {
   return {
     sceneMode,
     handTileListS,
+    myIdol,
     dispatch,
   };
 };

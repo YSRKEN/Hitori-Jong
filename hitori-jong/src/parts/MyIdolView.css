@@ -1,0 +1,23 @@
+.my-idol-view {
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 2vh;
+	padding: 1vh 2vh 1vh 2vh;
+	font-size: 5vh;
+	word-wrap: normal;
+	margin-left: 5vh;
+}
+
+/* 表示の背景色 */
+.my-idol-view.color-Princess {
+	border-color: red;
+	color: red;
+}
+.my-idol-view.color-Fairy {
+	border-color: blue;
+	color: blue;
+}
+.my-idol-view.color-Angel {
+	border-color: orange;
+	color: orange;
+}

@@ -6,6 +6,7 @@ import { SceneMode } from 'constant/other';
 interface ApplicationState {
   sceneMode: SceneMode;
   handTileListS: number[];
+  myIdol: number;
   dispatch: (action: Action) => void;
 }
 
