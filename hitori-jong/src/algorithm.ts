@@ -4,7 +4,6 @@ import {
   MAX_IDOL_COUNTS,
   UnitInfo,
   IDOL_LIST,
-  UNIT_LIST,
   Int64,
   INT64_ZERO,
   SORA_INDEX,
@@ -12,6 +11,7 @@ import {
   HANDS_SIZE,
   nameToIndex,
 } from 'constant';
+import { UNIT_LIST } from 'unit_list';
 
 // [0, n)の整数一様乱数を得る。参考：MDN
 const getRandomInt = (n: number) => {
