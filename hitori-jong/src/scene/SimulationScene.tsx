@@ -1,7 +1,7 @@
 import React from 'react';
 import StateContext from 'context';
-import './SimulationScene.css';
 import HandTileView from 'parts/HandTileView';
+import './SimulationScene.css';
 
 // シミュレーション画面
 const SimulationScene: React.FC = () => {
@@ -14,7 +14,7 @@ const SimulationScene: React.FC = () => {
 			<div className="back-to-title-button">
 				<span onClick={onClickStoT}>タイトルに戻る</span>
 			</div>
-			<div>
+			<div className="footer-hand-tile-view">
 				<HandTileView handTileList={handTileListS}/>
 			</div>
 		</>

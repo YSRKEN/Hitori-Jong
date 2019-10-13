@@ -1,0 +1,41 @@
+/* アイドルの牌 */
+.idol-tile {
+	width: 12vh;
+	height: 24vh;
+	margin-left: 1vh;
+	margin-right: 1vh;
+	border-color: black;
+	border-width: 1px;
+	border-style: solid;
+	-webkit-writing-mode: vertical-rl;
+	-ms-writing-mode: tb-rl;
+	writing-mode: vertical-rl;
+	text-align: center;
+}
+
+/* 牌の背景色 */
+.color-Princess {
+	background-color: pink;
+}
+.color-Fairy {
+	background-color: lightblue;
+}
+.color-Angel {
+	background-color: lemonchiffon;
+}
+.color-Extra {
+	background-color: lightgreen;
+}
+.color-Sora {
+	background-color: violet;
+}
+
+/* 牌のフォントサイズ */
+.font-size-normal {
+	font-size: 6vh;
+	line-height: 10vh;
+}
+.font-size-small { 
+	font-size: 5vh;
+	line-height: 11vh;
+}

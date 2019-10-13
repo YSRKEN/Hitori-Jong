@@ -1,0 +1,6 @@
+.hand-tile-view {
+	display: flex;
+	margin-left: auto;
+	margin-right: auto;
+	width: calc(12vh * 13 + 1vh * 14);
+}
