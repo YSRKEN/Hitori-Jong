@@ -11,6 +11,7 @@ interface ApplicationState {
   editFlg: number;
   mainIdolIndex: number;
   selectedTileIndex: number;
+  infoText: string;
   dispatch: (action: Action) => void;
 }
 

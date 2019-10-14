@@ -580,7 +580,7 @@ export const checkUnits = (myHands: number[], mainIdolIndex: number) => {
       .map(unit => `\n　${unit.name}　${unit.member.join(', ')}`)
       .join('')}\n`;
   }
-  window.alert(output);
+  return output;
 };
 
 // 成立役に従い自動で理牌する
