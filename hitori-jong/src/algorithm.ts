@@ -350,42 +350,6 @@ export const unitListToScore = (unitList: number[], mainIdolIndex: number) => {
     .reduce((sum: number, val: number) => sum + val);
 };
 
-// 手役から、どのユニットが作れるかを調べる(そら考慮版)
-// minSora……そらが複数枚入っていた際、それぞれS1・S2……とすると、アイドルIDが必ずS1≦S2≦……となるようにするための補正
-export const calcUnitListWithSora = (
-  myHands: number[],
-  mainIdolIndex: number,
-  minSora = 0,
-): { unit: number[]; hands: number[] } => {
-  // そらが含まれているかどうかで場合分け
-  const soraIndex = myHands.indexOf(SORA_INDEX);
-  if (soraIndex >= 0) {
-    // 含まれている場合は、全通り調べて最高得点のものを返す
-    let maxScore = 0;
-    let maxResult: { unit: number[]; hands: number[] } = {
-      unit: [],
-      hands: [],
-    };
-    for (let i = minSora; i < SORA_INDEX - 1; i += 1) {
-      // そらを指定したカードの値として解釈
-      const myHandsTemp = [...myHands];
-      myHandsTemp[soraIndex] = i;
-
-      // 再帰的にスコア計算
-      const result = calcUnitListWithSora(myHandsTemp, mainIdolIndex, i);
-      const score = unitListToScore(result.unit, mainIdolIndex);
-      if (maxScore < score) {
-        maxScore = score;
-        maxResult = result;
-      }
-    }
-
-    return maxResult;
-  }
-
-  return { unit: calcUnitList(myHands, mainIdolIndex), hands: myHands };
-};
-
 // ユニット一覧における人数の総数
 export const unitListToHumansCount = (unitList: number[]) => {
   if (unitList.length === 0) {
@@ -403,8 +367,8 @@ export const checkTempai = (myHands: number[], mainIdolIndex: number) => {
   const startTime = Date.now();
   // 既にアガっているかを調べる
   console.log('既にアガっているかを調べる');
-  const result = calcUnitListWithSora(myHands, mainIdolIndex);
-  const humans = unitListToHumansCount(result.unit);
+  const result = calcUnitList(myHands, mainIdolIndex);
+  const humans = unitListToHumansCount(result);
   if (humans === HANDS_SIZE) {
     console.log(`${Date.now() - startTime}[ms]`);
     window.alert('既にアガリ形です');
@@ -422,23 +386,20 @@ export const checkTempai = (myHands: number[], mainIdolIndex: number) => {
   }[] = [];
   for (let i = 0; i < myHands.length; i += 1) {
     const newHands = [...myHands];
-    if (myHands[i] === SORA_INDEX) {
-      continue;
-    }
     for (let j = 0; j < SORA_INDEX - 1; j += 1) {
       if (myHands[i] === j) {
         continue;
       }
       newHands[i] = j;
 
-      const result3 = calcUnitListWithSora(newHands, mainIdolIndex);
-      const humans2 = unitListToHumansCount(result3.unit);
+      const result3 = calcUnitList(newHands, mainIdolIndex);
+      const humans2 = unitListToHumansCount(result3);
       if (humans2 === HANDS_SIZE) {
         result2.push({
           from: myHands[i],
           to: newHands[i],
-          units: result3.unit.map(u => UNIT_LIST[u].name).join(', '),
-          score: result3.unit
+          units: result3.map(u => UNIT_LIST[u].name).join(', '),
+          score: result3
             .map(u => UNIT_LIST2[u].score)
             .reduce((s, v) => s + v),
         });
@@ -544,10 +505,10 @@ export const unitListToHandsBoldFlg = (
 // 成立役とリーチ役の成立状況を調べる
 export const checkUnits = (myHands: number[], mainIdolIndex: number) => {
   let output = '【成立役】\n';
-  const result1 = calcUnitListWithSora(myHands, mainIdolIndex);
+  const result1 = calcUnitList(myHands, mainIdolIndex);
   let mainIdolFlg = false;
-  const millionLiveFlg = result1.unit.length > 0 && result1.unit.map(u => UNIT_LIST[u].member.length).reduce((s, v) => s + v) === HANDS_SIZE;
-  for (const unitIndex of result1.unit) {
+  const millionLiveFlg = result1.length > 0 && result1.map(u => UNIT_LIST[u].member.length).reduce((s, v) => s + v) === HANDS_SIZE;
+  for (const unitIndex of result1) {
     const unit = UNIT_LIST[unitIndex];
     if (UNIT_LIST2[unitIndex].member2[mainIdolIndex] === 1) {
       mainIdolFlg = true;
@@ -614,7 +575,7 @@ export const checkUnits = (myHands: number[], mainIdolIndex: number) => {
 // 成立役に従い自動で理牌する
 export const sortHands = (myHands: number[], mainIdolIndex: number) => {
   // 成立役を調べる
-  const result = calcUnitListWithSora(myHands, mainIdolIndex);
+  const result = calcUnitList(myHands, mainIdolIndex);
 
   // 成立役に従い理牌を実施。手順としては、
   // ・そらさん補完後の手牌(result.hands)に対して、手役(result.unit)でラベリングを実施
@@ -623,13 +584,13 @@ export const sortHands = (myHands: number[], mainIdolIndex: number) => {
   const newMyHandsIndex = Array(myHands.length);
   newMyHandsIndex.fill(-1);
   let index = 0;
-  for (const unitIndex of result.unit) {
+  for (const unitIndex of result) {
     const unitMemberIndex = UNIT_LIST[unitIndex].member.map((name: string) =>
       nameToIndex(name),
     );
     for (const mi of unitMemberIndex) {
-      for (let hi = 0; hi < result.hands.length; hi += 1) {
-        if (result.hands[hi] === mi && newMyHandsIndex[hi] < 0) {
+      for (let hi = 0; hi < myHands.length; hi += 1) {
+        if (myHands[hi] === mi && newMyHandsIndex[hi] < 0) {
           newMyHandsIndex[hi] = index;
           index += 1;
           break;
@@ -637,7 +598,7 @@ export const sortHands = (myHands: number[], mainIdolIndex: number) => {
       }
     }
   }
-  for (let hi = 0; hi < result.hands.length; hi += 1) {
+  for (let hi = 0; hi < myHands.length; hi += 1) {
     if (newMyHandsIndex[hi] < 0) {
       newMyHandsIndex[hi] = index;
       index += 1;
