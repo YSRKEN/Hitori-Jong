@@ -580,7 +580,7 @@ export const checkUnits = (myHands: number[], mainIdolIndex: number) => {
     if (temp.length >= 1) {
       /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
       output += `＋${member}　${temp
-        .map(unit => `\n　${unit.name}　${unit.member.join(', ')}`)
+        .map(unit => `\n　${unit.member.length}人 ${unit.name}(${unit.member.join(', ')})`)
         .join('')}\n`;
     }
   }
@@ -595,7 +595,7 @@ export const checkUnits = (myHands: number[], mainIdolIndex: number) => {
     if (temp.length >= 1) {
       /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
       output += `＋${member}　${temp
-        .map(unit => `\n　${unit.name}　${unit.member.join(', ')}`)
+        .map(unit => `\n　${unit.name}(${unit.member.join(', ')})`)
         .join('')}\n`;
     }
   }
