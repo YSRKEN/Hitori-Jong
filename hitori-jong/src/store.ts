@@ -25,6 +25,7 @@ const useStore = () => {
   const [editFlg, setEditFlg] = useState(0);
   const [selectedTileIndex, setSelectedTileIndex] = useState(0);
   const [mainIdolIndex, setMainIdolIndex] = useState(nameToIndex('静香'));
+  const [infoText, setInfoText] = useState('');
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -145,7 +146,8 @@ const useStore = () => {
         setStatusOfCalcTempai(true);
         break;
       case 'checkUnits':
-        checkUnits(myHands, mainIdolIndex);
+        setInfoText(checkUnits(myHands, mainIdolIndex));
+        setApplicationMode('InfoForm');
         break;
       case 'requestSort':
         setMyHands(sortHands(myHands, mainIdolIndex));
@@ -187,6 +189,7 @@ const useStore = () => {
     editFlg,
     mainIdolIndex,
     selectedTileIndex,
+    infoText,
     dispatch,
   };
 };

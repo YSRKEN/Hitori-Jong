@@ -565,22 +565,50 @@ export const checkUnits = (myHands: number[], mainIdolIndex: number) => {
   output += '\n【担当役】\n';
   for (let unitIndex = 0; unitIndex < UNIT_LIST.length; unitIndex += 1) {
     if (UNIT_LIST2[unitIndex].member2[mainIdolIndex] === 1) {
-      output += `${UNIT_LIST[unitIndex].name}　${UNIT_LIST[unitIndex].member.join(', ')}　${UNIT_LIST2[unitIndex].score}点\n`;
+      const unitMemberIndex = UNIT_LIST[unitIndex].member.map((name: string) =>
+        nameToIndex(name),
+      );
+      let count = 0;
+      for (const unitMember of unitMemberIndex) {
+        if (myHands.includes(unitMember)) {
+          count += 1;
+        }
+      }
+      output += `${count === unitMemberIndex.length ? '☆' : '　'}[${count}/${unitMemberIndex.length}]　${UNIT_LIST[unitIndex].member.length}人　${UNIT_LIST[unitIndex].name}　${UNIT_LIST[unitIndex].member.join(', ')}　${UNIT_LIST2[unitIndex].score}点\n`;
     }
   }
 
-  output += '\n【リーチ役】\n';
+  output += '\n【リーチ役(鳴けるもののみ)】\n';
   const result2 = calcReachUnitListWithSora(myHands);
   for (const memberIndexStr of Object.keys(result2)) {
     const memberIndex = parseInt(memberIndexStr, 10);
     const member = IDOL_LIST[memberIndex].name;
-    /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
-    output += `＋${member}　${result2[memberIndex]
+    const temp = result2[memberIndex]
       .map(unitIndex => UNIT_LIST[unitIndex])
-      .map(unit => `\n　${unit.name}　${unit.member.join(', ')}`)
-      .join('')}\n`;
+      .filter(unit => unit.member.length >= 3);
+    if (temp.length >= 1) {
+      /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
+      output += `＋${member}　${temp
+        .map(unit => `\n　${unit.member.length}人 ${unit.name}(${unit.member.join(', ')})`)
+        .join('')}\n`;
+    }
   }
-  window.alert(output);
+
+  output += '\n【リーチ役(その他)】\n';
+  for (const memberIndexStr of Object.keys(result2)) {
+    const memberIndex = parseInt(memberIndexStr, 10);
+    const member = IDOL_LIST[memberIndex].name;
+    const temp = result2[memberIndex]
+      .map(unitIndex => UNIT_LIST[unitIndex])
+      .filter(unit => unit.member.length <= 2);
+    if (temp.length >= 1) {
+      /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
+      output += `＋${member}　${temp
+        .map(unit => `\n　${unit.name}(${unit.member.join(', ')})`)
+        .join('')}\n`;
+    }
+  }
+  return output;
 };
 
 // 成立役に従い自動で理牌する
