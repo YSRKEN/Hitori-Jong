@@ -569,16 +569,35 @@ export const checkUnits = (myHands: number[], mainIdolIndex: number) => {
     }
   }
 
-  output += '\n【リーチ役】\n';
+  output += '\n【リーチ役(鳴けるもののみ)】\n';
   const result2 = calcReachUnitListWithSora(myHands);
   for (const memberIndexStr of Object.keys(result2)) {
     const memberIndex = parseInt(memberIndexStr, 10);
     const member = IDOL_LIST[memberIndex].name;
-    /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
-    output += `＋${member}　${result2[memberIndex]
-      .map(unitIndex => UNIT_LIST[unitIndex])
-      .map(unit => `\n　${unit.name}　${unit.member.join(', ')}`)
-      .join('')}\n`;
+    const temp = result2[memberIndex]
+    .map(unitIndex => UNIT_LIST[unitIndex])
+    .filter(unit => unit.member.length >= 3);
+    if (temp.length >= 1) {
+      /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
+      output += `＋${member}　${temp
+        .map(unit => `\n　${unit.name}　${unit.member.join(', ')}`)
+        .join('')}\n`;
+    }
+  }
+
+  output += '\n【リーチ役(その他)】\n';
+  for (const memberIndexStr of Object.keys(result2)) {
+    const memberIndex = parseInt(memberIndexStr, 10);
+    const member = IDOL_LIST[memberIndex].name;
+    const temp = result2[memberIndex]
+    .map(unitIndex => UNIT_LIST[unitIndex])
+    .filter(unit => unit.member.length <= 2);
+    if (temp.length >= 1) {
+      /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
+      output += `＋${member}　${temp
+        .map(unit => `\n　${unit.name}　${unit.member.join(', ')}`)
+        .join('')}\n`;
+    }
   }
   return output;
 };
