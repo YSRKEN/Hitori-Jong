@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "hitori-jong2",
     "public": "build",
     "ignore": [
       "firebase.json",
