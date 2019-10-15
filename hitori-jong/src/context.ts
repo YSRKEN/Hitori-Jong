@@ -1,11 +1,11 @@
 import { createContext } from 'react';
+import { SceneMode, Hand } from 'constant/other';
 import { Action } from './constant/action';
-import { SceneMode } from 'constant/other';
 
 // アプリケーションの状態
 interface ApplicationState {
   sceneMode: SceneMode;
-  handTileListS: number[];
+  simulationHand: Hand;
   myIdol: number;
   dispatch: (action: Action) => void;
 }
