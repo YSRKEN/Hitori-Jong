@@ -1,3 +1,5 @@
+import { stringToNumber } from 'service/HandService';
+
 // アプリケーションのバージョン
 export const APPLICATION_VERSION = '2.0.0';
 
@@ -27,3 +29,28 @@ export interface Hand {
   // 13人目のメンバー
   plusMember: number;
 }
+
+// 手牌の初期値
+export const DEFAULT_HAND: Hand = {
+  members: stringToNumber([
+    '紗代子',
+    '莉緒',
+    '環',
+    '風花',
+    '恵美',
+    '奈緒',
+    '響',
+    '育',
+    '育',
+    '千早',
+    '海美',
+    '朋花',
+  ]),
+  units: [1, -1, -1, 1, 1, 1, -1, 0, -1, -1, 1, 0],
+  unitIndexes: [12, 34],
+  unitChiFlg: [false, true],
+  plusMember: stringToNumber(['莉緒'])[0],
+};
+
+// 担当の初期値
+export const DEFAULT_NY_IDOL = stringToNumber(['静香'])[0];

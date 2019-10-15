@@ -7,6 +7,7 @@ interface ApplicationState {
   sceneMode: SceneMode;
   simulationHand: Hand;
   myIdol: number;
+  handCheckFlg: boolean[];
   dispatch: (action: Action) => void;
 }
 

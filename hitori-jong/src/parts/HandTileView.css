@@ -1,6 +1,23 @@
-.hand-tile-view {
-	display: flex;
-	margin-left: auto;
-	margin-right: auto;
-	width: calc(12vh * 13 + 1vh * 14);
+.idol-tile-list {
+  display: flex;
+  margin-left: 5vh;
+  margin-right: 5vh;
+}
+
+.tile-with-checkbox {
+  margin-left: 1vh;
+  margin-right: 1vh;
+  text-align: center;
+}
+
+.tile-with-checkbox .checkbox {
+  margin-bottom: 2vh;
+}
+
+.tile-with-checkbox .checkbox.hidden {
+  visibility: hidden;
+}
+
+.tile-with-checkbox .display-none {
+  display: none;
 }
