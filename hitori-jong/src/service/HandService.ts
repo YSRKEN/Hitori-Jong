@@ -1,11 +1,31 @@
 import { Hand, HAND_TILE_SIZE_PLUS } from 'constant/other';
 import { IDOL_LIST } from 'constant/idol';
+import { UnitInfo } from 'constant/unit';
 
 // 文字で表されたアイドル一覧を数字一覧に変換する
 export const stringToNumber = (memberList: string[]) => {
   return memberList.map(member =>
     IDOL_LIST.findIndex(idol => idol.name === member),
   );
+};
+
+// ユニット情報を、プログラム上から扱いやすい形式に変換する
+export const toUnitInfo = (name: string, member: string[]): UnitInfo => {
+  const calcScore = (length: number) => {
+    if (length <= 1) {
+      return 1000;
+    }
+
+    return (length - 1) * 20000;
+  };
+
+  return {
+    name,
+    member: stringToNumber(member),
+    memberCount: member.length,
+    score: calcScore(member.length),
+    scoreWithChi: calcScore(member.length - 1),
+  };
 };
 
 // 表示用に並び替えた手牌一覧を返す
