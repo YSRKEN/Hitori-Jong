@@ -30,7 +30,7 @@ const useStore = () => {
     loadSettingAsInteger('myIdol', DEFAULT_NY_IDOL),
   );
   // 手牌のチェックフラグ
-  const [handCheckFlg] = React.useState<boolean[]>(
+  const [handCheckFlg, setHandCheckFlg] = React.useState<boolean[]>(
     createFilledArray(HAND_TILE_SIZE, false),
   );
 
@@ -53,6 +53,13 @@ const useStore = () => {
         setSceneMode('TitleScene');
         saveSettingForString('sceneMode', 'TitleScene');
         break;
+      case 'checkIdolTile': {
+        const tileIndex = parseInt(action.message, 10);
+        const temp = [...handCheckFlg];
+        temp[tileIndex] = !temp[tileIndex];
+        setHandCheckFlg(temp);
+        break;
+      }
       default:
         break;
     }

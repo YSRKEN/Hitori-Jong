@@ -7,9 +7,12 @@ import { range } from 'service/UtilityService';
 import IdolTile from './IdolTile';
 
 const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
-  const { handCheckFlg } = React.useContext(StateContext);
+  const { handCheckFlg, dispatch } = React.useContext(StateContext);
 
   const memberList = calcShowMembers(hand);
+
+  const checkIdolTile = (tileIndex: number) =>
+    dispatch({ type: 'checkIdolTile', message: tileIndex.toString() });
 
   return (
     <div className="idol-tile-list">
@@ -33,6 +36,7 @@ const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
               className="checkbox"
               type="checkbox"
               checked={handCheckFlg[tileIndex]}
+              onChange={() => checkIdolTile(tileIndex)}
             />
             <IdolTile idolId={memberList[tileIndex]} />
           </div>
