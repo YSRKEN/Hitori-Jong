@@ -5,7 +5,9 @@ import { calcShowMembers } from 'service/HandService';
 import StateContext from 'context';
 import { range } from 'service/UtilityService';
 import IdolTile from './IdolTile';
+import { UNIT_LIST2 } from 'constant/unit';
 
+// 手牌一覧＋役表示＋チェックボックス
 const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
   const { handCheckFlg, dispatch } = React.useContext(StateContext);
 
@@ -14,7 +16,9 @@ const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
   const checkIdolTile = (tileIndex: number) =>
     dispatch({ type: 'checkIdolTile', message: tileIndex.toString() });
 
-  return (
+  console.log(hand);
+
+  return (<>
     <div className="idol-tile-list">
       {range(HAND_TILE_SIZE_PLUS).map(tileIndex => {
         if (tileIndex >= HAND_TILE_SIZE) {
@@ -43,7 +47,22 @@ const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
         );
       })}
     </div>
-  );
+    <div className="unit-block-list">
+      {range(hand.unitIndexes.length).map(index => {
+        const unit = UNIT_LIST2[hand.unitIndexes[index]];
+        const style = {
+          'width': `calc(${10 * unit.memberCount}vh + ${2 * (unit.memberCount - 1)}vh + ${2 * unit.memberCount}px)`,
+          'color': hand.unitChiFlg[index] ? 'red' : 'black',
+          'fontWeight': hand.unitChiFlg[index] ? 'bold' : 'normal',
+        } as React.CSSProperties;
+        return (
+          <span key={index} className="unit-block" style={style}>
+            {unit.name}
+          </span>
+        );
+      })}
+    </div>
+  </>);
 };
 
 export default HandTileView;

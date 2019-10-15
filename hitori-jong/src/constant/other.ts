@@ -47,7 +47,7 @@ export const DEFAULT_HAND: Hand = {
     '朋花',
   ]),
   units: [1, -1, -1, 1, 1, 1, -1, 0, -1, -1, 1, 0],
-  unitIndexes: [12, 34],
+  unitIndexes: [15, 125],
   unitChiFlg: [false, true],
   plusMember: stringToNumber(['莉緒'])[0],
 };
