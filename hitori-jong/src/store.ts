@@ -1,20 +1,34 @@
 import React from 'react';
-import { SceneMode, Hand, HAND_TILE_SIZE } from 'constant/other';
+import { SceneMode, Hand } from 'constant/other';
 import {
   loadSettingAsString,
   saveSettingForString,
   loadSettingAsObject,
   loadSettingAsInteger,
 } from 'service/SettingService';
-import { createFilledArray } from 'service/UtilityService';
+import { stringToNumber } from 'service/HandService';
 import { Action } from './constant/action';
 
 // 手牌の初期値
 const DEFAULT_HAND: Hand = {
-  members: [31, 41, 5, 9, 26, 5, 35, 8, 9, 7, 9, 32],
-  units: createFilledArray(HAND_TILE_SIZE, -1),
-  unitIndexes: [],
-  plusMember: 38,
+  members: stringToNumber([
+    '紗代子',
+    '莉緒',
+    '環',
+    '風花',
+    '恵美',
+    '奈緒',
+    '響',
+    '育',
+    '育',
+    '千早',
+    '海美',
+    '朋花',
+  ]),
+  units: [1, -1, -1, 1, 1, 1, -1, 0, -1, -1, 1, 0],
+  unitIndexes: [12, 34],
+  unitChiFlg: [false, true],
+  plusMember: stringToNumber(['莉緒'])[0],
 };
 
 // アプリケーションの状態

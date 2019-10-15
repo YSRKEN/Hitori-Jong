@@ -18,8 +18,11 @@ export interface Hand {
   // チーなどで確定しているユニット。1つ目から順に、ユニット番号が割り振られている
   units: number[];
 
-  // ユニット番号毎の、ユニットの種類。負数だとチーで生成されている
+  // ユニット番号毎の、ユニットの種類
   unitIndexes: number[];
+
+  // ユニット番号毎に、チーで生成されているかを表すフラグ
+  unitChiFlg: boolean[];
 
   // 13人目のメンバー
   plusMember: number;

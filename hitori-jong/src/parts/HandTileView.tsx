@@ -5,14 +5,17 @@ import { calcShowMembers } from 'service/HandService';
 import IdolTile from './IdolTile';
 
 const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
-  const temp = calcShowMembers(hand).map((idolIndex: number, index: number) => {
-    return { idolIndex, index };
-  });
+  // ESLintの制約により、各タイルに対するインデックスを事前に付与する必要がある
+  const memberList = calcShowMembers(hand).map(
+    (idolIndex: number, index: number) => {
+      return { idolIndex, index };
+    },
+  );
 
   return (
     <div className="hand-tile-view">
-      {temp.map(pair => (
-        <IdolTile key={pair.index} idolIndex={pair.idolIndex} />
+      {memberList.map(member => (
+        <IdolTile key={member.index} idolIndex={member.idolIndex} />
       ))}
     </div>
   );

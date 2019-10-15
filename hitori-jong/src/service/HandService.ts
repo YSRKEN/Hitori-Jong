@@ -1,4 +1,12 @@
 import { Hand, HAND_TILE_SIZE_PLUS } from 'constant/other';
+import { IDOL_LIST } from 'constant/idol';
+
+// 文字で表されたアイドル一覧を数字一覧に変換する
+export const stringToNumber = (memberList: string[]) => {
+  return memberList.map(member =>
+    IDOL_LIST.findIndex(idol => idol.name === member),
+  );
+};
 
 // 表示用に並び替えた手牌一覧を返す
 export const calcShowMembers = (hand: Hand): number[] => {
@@ -15,10 +23,10 @@ export const calcShowMembers = (hand: Hand): number[] => {
   const compareMemberIndex = (a: number, b: number) => {
     // 1. 13番目の要素は固定
     if (a === HAND_TILE_SIZE_PLUS - 1) {
-      return -1;
+      return 1;
     }
     if (b === HAND_TILE_SIZE_PLUS - 1) {
-      return 1;
+      return -1;
     }
 
     // 2. 役が確定しているものを手前、確定していないものを奥に
@@ -31,9 +39,9 @@ export const calcShowMembers = (hand: Hand): number[] => {
       return 1;
     }
 
-    // 3. 確定しているもの同士なら、「役の種類の数字の絶対値」が小さいものを手前に
-    const unitA = Math.abs(hand.unitIndexes[unitIndexA]);
-    const unitB = Math.abs(hand.unitIndexes[unitIndexB]);
+    // 3. 確定しているもの同士なら、「役の種類の数字」が小さいものを手前に
+    const unitA = hand.unitIndexes[unitIndexA];
+    const unitB = hand.unitIndexes[unitIndexB];
     if (unitA < unitB) {
       return -1;
     }
