@@ -6,6 +6,7 @@ import { range } from 'service/UtilityService';
 import { IDOL_LIST } from 'constant/idol';
 import './HandTileView.css';
 import { UNIT_LIST2, UnitInfo } from 'constant/unit';
+import Button from './Button';
 
 // 手牌一覧＋役表示＋チェックボックス
 const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
@@ -78,15 +79,12 @@ const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
 
             return (
               <td key={index} colSpan={unitMemberCount}>
-                <span
-                  role="button"
-                  tabIndex={index}
+                <Button
+                  text={unitName}
+                  buttonClassFlg={false}
                   className={`unit-block ${unitClass}`}
                   onClick={unitDialogImpl}
-                  onKeyUp={unitDialogImpl}
-                >
-                  {unitName}
-                </span>
+                />
               </td>
             );
           })}

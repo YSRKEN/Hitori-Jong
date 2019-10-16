@@ -2,6 +2,7 @@ import React from 'react';
 import StateContext from 'context';
 import './GameScene.css';
 import MyIdolView from 'parts/MyIdolView';
+import Button from 'parts/Button';
 
 // ゲーム画面
 const GameScene: React.FC = () => {
@@ -11,15 +12,11 @@ const GameScene: React.FC = () => {
 
   return (
     <div className="header-button-group">
-      <span
-        role="button"
-        tabIndex={0}
-        className="button back-to-title"
+      <Button
+        text="タイトルに戻る"
+        className="back-to-title"
         onClick={onClickGtoT}
-        onKeyUp={onClickGtoT}
-      >
-        タイトルに戻る
-      </span>
+      />
       <MyIdolView />
     </div>
   );

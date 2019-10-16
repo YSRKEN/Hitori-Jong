@@ -3,6 +3,7 @@ import StateContext from 'context';
 import HandTileView from 'parts/HandTileView';
 import MyIdolView from 'parts/MyIdolView';
 import './SimulationScene.css';
+import Button from 'parts/Button';
 
 // シミュレーション画面
 const SimulationScene: React.FC = () => {
@@ -13,15 +14,11 @@ const SimulationScene: React.FC = () => {
   return (
     <>
       <div className="header-button-group">
-        <span
-          className="button back-to-title"
-          role="button"
-          tabIndex={0}
+        <Button
+          text="タイトルに戻る"
+          className="back-to-title"
           onClick={onClickStoT}
-          onKeyUp={onClickStoT}
-        >
-          タイトルに戻る
-        </span>
+        />
         <MyIdolView />
       </div>
       <div className="footer-hand-tile-view">

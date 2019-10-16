@@ -3,6 +3,7 @@ import { APPLICATION_VERSION } from 'constant/other';
 import './TitleScene.css';
 import { TwitterShareButton } from 'react-share';
 import StateContext from 'context';
+import Button from 'parts/Button';
 
 // タイトル画面
 const TitleScene: React.FC = () => {
@@ -51,33 +52,23 @@ const TitleScene: React.FC = () => {
         </div>
       </div>
       <div className="button-group">
-        <span
-          role="button"
-          tabIndex={0}
+        <Button
+          text="ゲーム開始"
           className="top-button game"
           onClick={onClickTtoG}
-          onKeyUp={onClickTtoG}
-        >
-          ゲーム開始
-        </span>
-        <span
-          role="button"
-          tabIndex={0}
+        />
+        <Button
+          text="シミュレーション"
           className="top-button simulation"
           onClick={onClickTtoS}
-          onKeyUp={onClickTtoS}
-        >
-          シミュレーション
-        </span>
+        />
         <div className="share-wrap">
           <TwitterShareButton
             url="https://hitori-jong.firebaseapp.com"
             title="一人用ミリジャン「ヒトリジャン」。スマホ対応。"
             hashtags={['ミリジャン', 'ヒトリジャン']}
           >
-            <span role="button" tabIndex={0} className="top-button share">
-              Twitter にシェア
-            </span>
+            <Button text="Twitter にシェア" className="top-button share" />
           </TwitterShareButton>
         </div>
       </div>
