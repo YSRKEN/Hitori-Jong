@@ -14,6 +14,7 @@ const SimulationScene: React.FC = () => {
 
   // 各種コマンド
   const onClickStoT = () => dispatch({ type: 'changeSceneStoT', message: '' });
+  const ejectUnit = () => dispatch({ type: 'ejectUnit', message: '' });
 
   // コマンドパレットを動的生成
   const calcCommandJsxElement = (): JSX.Element => {
@@ -23,6 +24,7 @@ const SimulationScene: React.FC = () => {
         <>
           <Button text="ユニット検索" />
           <Button text="受け入れ検索" />
+          <Button text="自動理牌" />
         </>
       );
     }
@@ -58,8 +60,7 @@ const SimulationScene: React.FC = () => {
     // チェック位置にいずれかのユニットが存在する場合
     return (
       <>
-        <Button text="チー解除" />
-        <Button text="ユニット固定解除" />
+        <Button text="チー・ユニット固定解除" onClick={ejectUnit} />
       </>
     );
   };

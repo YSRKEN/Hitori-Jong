@@ -1,6 +1,7 @@
-import { Hand, HAND_TILE_SIZE_PLUS } from 'constant/other';
+import { Hand, HAND_TILE_SIZE } from 'constant/other';
 import { IDOL_LIST } from 'constant/idol';
 import { UnitInfo } from 'constant/unit';
+import { range } from './UtilityService';
 
 // 文字で表されたアイドル一覧を数字一覧に変換する
 export const stringToNumber = (memberList: string[]) => {
@@ -28,62 +29,78 @@ export const toUnitInfo = (name: string, member: string[]): UnitInfo => {
   };
 };
 
-// 表示用に並び替えた手牌一覧を返す
-export const calcShowMembers = (hand: Hand): number[] => {
-  // ソートのための準備
-  const newMemberIndexes: number[] = Array(HAND_TILE_SIZE_PLUS);
-  for (let i = 0; i < HAND_TILE_SIZE_PLUS; i += 1) {
-    newMemberIndexes[i] = i;
+// ソート前の手牌Aとソート後の手牌Bとの対応を調べる。
+// 引数のunitsがA、戻り値outputがBに対応する。
+// output[X] = iならば、B[X] = A[i]となる
+const calcSortedIndex = (units: number[], unitCount: number) => {
+  const output = Array<number>(units.length);
+  let index = 0;
+  for (let i = 0; i < unitCount; i += 1) {
+    for (let j = 0; j < units.length; j += 1) {
+      if (units[j] === i) {
+        output[index] = j;
+        index += 1;
+      }
+    }
   }
-
-  // ソートを行うための比較用関数を定義する。定義としては、
-  // 1. 13番目の要素は固定
-  // 2. 役が確定しているものを手前、確定していないものを奥に
-  // 3. 確定しているもの同士なら、「役の種類の数字の絶対値」が小さいものを手前に
-  const compareMemberIndex = (a: number, b: number) => {
-    // 1. 13番目の要素は固定
-    if (a === HAND_TILE_SIZE_PLUS - 1) {
-      return 1;
-    }
-    if (b === HAND_TILE_SIZE_PLUS - 1) {
-      return -1;
-    }
-
-    // 2. 役が確定しているものを手前、確定していないものを奥に
-    const unitIndexA = hand.units[a];
-    const unitIndexB = hand.units[b];
-    if (unitIndexA >= 0 && unitIndexB < 0) {
-      return -1;
-    }
-    if (unitIndexB >= 0 && unitIndexA < 0) {
-      return 1;
-    }
-
-    // 3. 確定しているもの同士なら、「役の種類の数字」が小さいものを手前に
-    const unitA = hand.unitIndexes[unitIndexA];
-    const unitB = hand.unitIndexes[unitIndexB];
-    if (unitA < unitB) {
-      return -1;
-    }
-    if (unitA > unitB) {
-      return 1;
-    }
-
-    return 0;
-  };
-
-  // ソート
-  newMemberIndexes.sort(compareMemberIndex);
-
-  // 結果を出力
-  const output: number[] = [];
-  for (const memberIndex of newMemberIndexes) {
-    if (memberIndex === HAND_TILE_SIZE_PLUS - 1) {
-      output.push(hand.plusMember);
-    } else {
-      output.push(hand.members[memberIndex]);
+  for (let j = 0; j < units.length; j += 1) {
+    if (units[j] === -1) {
+      output[index] = j;
+      index += 1;
     }
   }
 
   return output;
+};
+
+// 表示用に並び替えた手牌一覧を返す
+export const calcShowMembers = (hand: Hand): number[] => {
+  // ソート前の手牌Aとソート後の手牌Bとの対応を調べる
+  const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
+
+  // sortedIndexを利用してソートを行う
+  return [...sortedIndex.map(index => hand.members[index]), hand.plusMember];
+};
+
+// チェックされた牌を含むユニットを解除した後の手牌を生成する
+export const ejectUnit = (hand: Hand, handCheckFlg: boolean[]): Hand => {
+  // ソート前の手牌Aとソート後の手牌Bとの対応を調べる
+  const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
+
+  // ↑から、ソート前のどの位置の牌を選択されているかを調べ、それからどの種類のユニットを選択されているかを調べる
+  const checkedUnitSet = new Set(
+    range(HAND_TILE_SIZE)
+      .filter(i => handCheckFlg[i])
+      .map(i => hand.units[sortedIndex[i]])
+      .filter(unitIndex => unitIndex >= 0),
+  );
+
+  // 選択されたユニットを解除した、新たなHandを生成する
+  const unitConvertionDict: { [key: number]: number } = {};
+  unitConvertionDict[-1] = -1;
+  let newUnitIndex = 0;
+  for (let i = 0; i < hand.unitIndexes.length; i += 1) {
+    if (i in checkedUnitSet) {
+      unitConvertionDict[i] = -1;
+    } else {
+      unitConvertionDict[i] = newUnitIndex;
+      newUnitIndex += 1;
+    }
+  }
+  const newUnitIndexes: number[] = [];
+  const newUnitChiFlg: boolean[] = [];
+  for (let i = 0; i < hand.unitIndexes.length; i += 1) {
+    if (!(i in checkedUnitSet)) {
+      newUnitIndexes.push(hand.unitIndexes[i]);
+      newUnitChiFlg.push(hand.unitChiFlg[i]);
+    }
+  }
+
+  return {
+    members: [...hand.members],
+    units: hand.units.map(i => unitConvertionDict[i]),
+    unitIndexes: newUnitIndexes,
+    unitChiFlg: newUnitChiFlg,
+    plusMember: hand.plusMember,
+  };
 };

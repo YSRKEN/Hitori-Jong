@@ -8,7 +8,7 @@ import './HandTileView.css';
 import { UNIT_LIST2, UnitInfo } from 'constant/unit';
 import Button from './Button';
 
-// 手牌一覧＋役表示＋チェックボックス
+// 手牌一覧＋ユニット表示＋チェックボックス
 const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
   const { handCheckFlg, dispatch } = React.useContext(StateContext);
 

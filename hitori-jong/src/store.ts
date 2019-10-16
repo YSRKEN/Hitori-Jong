@@ -13,6 +13,7 @@ import {
   loadSettingAsInteger,
 } from 'service/SettingService';
 import { createFilledArray } from 'service/UtilityService';
+import { ejectUnit } from 'service/HandService';
 import { Action } from './constant/action';
 
 // アプリケーションの状態
@@ -22,7 +23,7 @@ const useStore = () => {
     loadSettingAsString('sceneMode', 'TitleScene') as SceneMode,
   );
   // シミュレーターにおける手牌
-  const [simulationHand] = React.useState<Hand>(
+  const [simulationHand, setSimulationHand] = React.useState<Hand>(
     loadSettingAsObject('simulationHand', DEFAULT_HAND),
   );
   // 担当
@@ -37,27 +38,41 @@ const useStore = () => {
   // Reduxライクなdispatch関数
   const dispatch = (action: Action) => {
     switch (action.type) {
+      // タイトル画面→ゲーム画面への遷移
       case 'changeSceneTtoG':
         setSceneMode('GameScene');
         saveSettingForString('sceneMode', 'GameScene');
         break;
+      // タイトル画面→シミュレーション画面への遷移
       case 'changeSceneTtoS':
         setSceneMode('SimulationScene');
         saveSettingForString('sceneMode', 'SimulationScene');
         break;
+      // ゲーム画面→タイトル画面への遷移
       case 'changeSceneGtoT':
         setSceneMode('TitleScene');
         saveSettingForString('sceneMode', 'TitleScene');
         break;
+      // シミュレーション画面→タイトル画面への遷移
       case 'changeSceneStoT':
         setSceneMode('TitleScene');
         saveSettingForString('sceneMode', 'TitleScene');
         break;
+      // 牌をチェックボックスで選択
       case 'checkIdolTile': {
         const tileIndex = parseInt(action.message, 10);
         const temp = [...handCheckFlg];
         temp[tileIndex] = !temp[tileIndex];
         setHandCheckFlg(temp);
+        break;
+      }
+      // チェックされた牌を含むユニットを解除
+      case 'ejectUnit': {
+        // 解除後の手牌を生成する
+        const newHand = ejectUnit(simulationHand, handCheckFlg);
+
+        // 解除後の手牌をセットする
+        setSimulationHand(newHand);
         break;
       }
       default:
