@@ -13,7 +13,7 @@ import {
   loadSettingAsInteger,
 } from 'service/SettingService';
 import { createFilledArray } from 'service/UtilityService';
-import { ejectUnit } from 'service/HandService';
+import { ejectUnit, shiftTileLeft, shiftTileRight } from 'service/HandService';
 import { Action } from './constant/action';
 
 // アプリケーションの状態
@@ -70,6 +70,26 @@ const useStore = () => {
       case 'ejectUnit': {
         // 解除後の手牌を生成する
         const newHand = ejectUnit(simulationHand, handCheckFlg);
+
+        // 解除後の手牌をセットする
+        setSimulationHand(newHand);
+        setHandCheckFlg(createFilledArray(HAND_TILE_SIZE, false));
+        break;
+      }
+      // 選択された(ユニットを組んでない)手牌を左シフト
+      case 'shiftLeft': {
+        // シフト後の手牌を生成する
+        const newHand = shiftTileLeft(simulationHand, handCheckFlg);
+
+        // 解除後の手牌をセットする
+        setSimulationHand(newHand);
+        setHandCheckFlg(createFilledArray(HAND_TILE_SIZE, false));
+        break;
+      }
+      // 選択された(ユニットを組んでない)手牌を右シフト
+      case 'shiftRight': {
+        // シフト後の手牌を生成する
+        const newHand = shiftTileRight(simulationHand, handCheckFlg);
 
         // 解除後の手牌をセットする
         setSimulationHand(newHand);

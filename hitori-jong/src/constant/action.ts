@@ -5,7 +5,9 @@ export type ActionType =
   | 'changeSceneGtoT'
   | 'changeSceneStoT'
   | 'checkIdolTile'
-  | 'ejectUnit';
+  | 'ejectUnit'
+  | 'shiftLeft'
+  | 'shiftRight';
 
 // Action
 export interface Action {

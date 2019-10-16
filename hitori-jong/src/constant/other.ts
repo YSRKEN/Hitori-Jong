@@ -1,4 +1,4 @@
-import { stringToNumber } from 'service/HandService';
+import { stringToNumber } from "service/HandService";
 
 // アプリケーションのバージョン
 export const APPLICATION_VERSION = '2.0.0';

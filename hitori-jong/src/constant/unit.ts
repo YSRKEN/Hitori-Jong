@@ -1,4 +1,4 @@
-import { toUnitInfo } from 'service/HandService';
+import { IDOL_LIST } from "./idol";
 
 // ユニット一覧
 // prettier-ignore
@@ -161,14 +161,36 @@ export const UNIT_LIST: { 'name': string; 'member': string[] }[] = [
 
 // ユニットの情報
 export interface UnitInfo {
-  name: string;
-  member: number[];
-  memberCount: number;
-  score: number;
-  scoreWithChi: number;
+	name: string;
+	member: number[];
+	memberCount: number;
+	score: number;
+	scoreWithChi: number;
 }
+
+// ユニット情報を、プログラム上から扱いやすい形式に変換する
+const toUnitInfo = (name: string, member: string[]): UnitInfo => {
+	const calcScore = (length: number) => {
+		if (length <= 1) {
+			return 1000;
+		}
+
+		return (length - 1) * 2000;
+	};
+	const memberIndex =  member.map(m =>
+		IDOL_LIST.findIndex(idol => idol.name === m),
+	);
+
+	return {
+		name,
+		member: memberIndex,
+		memberCount: member.length,
+		score: calcScore(member.length),
+		scoreWithChi: calcScore(member.length - 1),
+	};
+};
 
 // ユニット一覧(整形後)
 export const UNIT_LIST2: UnitInfo[] = UNIT_LIST.map(record =>
-  toUnitInfo(record.name, record.member),
+	toUnitInfo(record.name, record.member),
 );

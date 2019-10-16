@@ -1,32 +1,13 @@
 import { Hand, HAND_TILE_SIZE } from 'constant/other';
-import { IDOL_LIST } from 'constant/idol';
-import { UnitInfo } from 'constant/unit';
+import { UNIT_LIST2 } from 'constant/unit';
 import { range } from './UtilityService';
+import { IDOL_LIST } from 'constant/idol';
 
 // 文字で表されたアイドル一覧を数字一覧に変換する
 export const stringToNumber = (memberList: string[]) => {
-  return memberList.map(member =>
-    IDOL_LIST.findIndex(idol => idol.name === member),
-  );
-};
-
-// ユニット情報を、プログラム上から扱いやすい形式に変換する
-export const toUnitInfo = (name: string, member: string[]): UnitInfo => {
-  const calcScore = (length: number) => {
-    if (length <= 1) {
-      return 1000;
-    }
-
-    return (length - 1) * 2000;
-  };
-
-  return {
-    name,
-    member: stringToNumber(member),
-    memberCount: member.length,
-    score: calcScore(member.length),
-    scoreWithChi: calcScore(member.length - 1),
-  };
+	return memberList.map(member =>
+		IDOL_LIST.findIndex(idol => idol.name === member),
+	);
 };
 
 // ソート前の手牌Aとソート後の手牌Bとの対応を調べる。
@@ -102,5 +83,65 @@ export const ejectUnit = (hand: Hand, handCheckFlg: boolean[]): Hand => {
     unitIndexes: newUnitIndexes,
     unitChiFlg: newUnitChiFlg,
     plusMember: hand.plusMember,
+  };
+};
+
+// ユニットを組んでいるメンバーの総数を数える
+export const calcHandUnitLengthSum = (hand: Hand) => {
+  if (hand.unitIndexes.length === 0) {
+    return 0;
+  }
+  return hand.unitIndexes
+  .map(index => UNIT_LIST2[index].memberCount)
+  .reduce((p, c) => p + c);
+};
+
+// チェックされた牌を左にシフトした後の手牌を生成する
+export const shiftTileLeft = (hand: Hand, handCheckFlg: boolean[]): Hand => {
+  // ソート前の手牌Aとソート後の手牌Bとの対応を調べる
+  // sortedIndex[X] = i ⇔ B[X] = A[i]
+  const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
+
+  // ソート後の手牌Bとシフト後の手牌Cとの対応を調べ、交換を実施する
+  const handUnitLengthSum = calcHandUnitLengthSum(hand);
+  const shiftedmembers = [...hand.members];
+  for (let i = handUnitLengthSum + 1; i < HAND_TILE_SIZE; i += 1) {
+    if (handCheckFlg[i]) {
+      const temp = shiftedmembers[sortedIndex[i]];
+      shiftedmembers[sortedIndex[i]] = shiftedmembers[sortedIndex[i - 1]];
+      shiftedmembers[sortedIndex[i - 1]] = temp;
+    }
+  }
+  return {
+    members: shiftedmembers,
+    units: [...hand.units],
+    unitIndexes: [...hand.unitIndexes],
+    unitChiFlg: [...hand.unitChiFlg],
+    plusMember: hand.plusMember
+  };
+};
+
+// チェックされた牌を右にシフトした後の手牌を生成する
+export const shiftTileRight = (hand: Hand, handCheckFlg: boolean[]): Hand => {
+  // ソート前の手牌Aとソート後の手牌Bとの対応を調べる
+  // sortedIndex[X] = i ⇔ B[X] = A[i]
+  const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
+
+  // ソート後の手牌Bとシフト後の手牌Cとの対応を調べ、交換を実施する
+  const handUnitLengthSum = calcHandUnitLengthSum(hand);
+  const shiftedmembers = [...hand.members];
+  for (let i = handUnitLengthSum; i < HAND_TILE_SIZE - 1; i += 1) {
+    if (handCheckFlg[i]) {
+      const temp = shiftedmembers[sortedIndex[i]];
+      shiftedmembers[sortedIndex[i]] = shiftedmembers[sortedIndex[i + 1]];
+      shiftedmembers[sortedIndex[i + 1]] = temp;
+    }
+  }
+  return {
+    members: shiftedmembers,
+    units: [...hand.units],
+    unitIndexes: [...hand.unitIndexes],
+    unitChiFlg: [...hand.unitChiFlg],
+    plusMember: hand.plusMember
   };
 };
