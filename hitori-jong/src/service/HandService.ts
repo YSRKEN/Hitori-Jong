@@ -16,7 +16,7 @@ export const toUnitInfo = (name: string, member: string[]): UnitInfo => {
       return 1000;
     }
 
-    return (length - 1) * 20000;
+    return (length - 1) * 2000;
   };
 
   return {

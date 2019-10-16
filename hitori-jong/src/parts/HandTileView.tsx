@@ -1,11 +1,11 @@
 import React from 'react';
-import './HandTileView.css';
-import { Hand, HAND_TILE_SIZE_PLUS, HAND_TILE_SIZE } from 'constant/other';
+import { Hand, HAND_TILE_SIZE, HAND_TILE_SIZE_PLUS } from 'constant/other';
 import { calcShowMembers } from 'service/HandService';
 import StateContext from 'context';
 import { range } from 'service/UtilityService';
-import IdolTile from './IdolTile';
-import { UNIT_LIST2 } from 'constant/unit';
+import { IDOL_LIST } from 'constant/idol';
+import './HandTileView.css';
+import { UNIT_LIST2, UnitInfo } from 'constant/unit';
 
 // 手牌一覧＋役表示＋チェックボックス
 const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
@@ -16,53 +16,84 @@ const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
   const checkIdolTile = (tileIndex: number) =>
     dispatch({ type: 'checkIdolTile', message: tileIndex.toString() });
 
-  console.log(hand);
+  const unitDialog = (unit: UnitInfo, chiFlg: boolean) => {
+    let output = '';
+    output += `ユニット名：${unit.name}`;
+    output += `\nユニット：${unit.member
+      .map(i => IDOL_LIST[i].name)
+      .join('、')}`;
+    if (chiFlg) {
+      output += `\n点数(チー)：${unit.scoreWithChi}`;
+    } else {
+      output += `\n点数：${unit.score}`;
+    }
+    window.alert(output);
+  };
 
-  return (<>
-    <div className="idol-tile-list">
-      {range(HAND_TILE_SIZE_PLUS).map(tileIndex => {
-        if (tileIndex >= HAND_TILE_SIZE) {
-          return (
-            <div key={tileIndex} className="tile-with-checkbox bottom">
+  const unitCount = hand.unitIndexes.length;
+
+  return (
+    <table className="hand-tile-table">
+      <tbody>
+        <tr>
+          {range(HAND_TILE_SIZE).map(index => (
+            <td className="tile-checkbox" key={index}>
               <input
-                className="checkbox hidden"
                 type="checkbox"
-                checked={handCheckFlg[tileIndex]}
+                key={index}
+                checked={handCheckFlg[index]}
+                onChange={() => checkIdolTile(index)}
               />
-              <IdolTile idolId={memberList[tileIndex]} />
-            </div>
-          );
-        }
+            </td>
+          ))}
+          <td />
+        </tr>
+        <tr>
+          {range(HAND_TILE_SIZE_PLUS).map(index => {
+            const idol = IDOL_LIST[memberList[index]];
+            const idolName = idol.name;
+            const fontStyle =
+              idolName.length >= 4 ? 'font-size-small' : 'font-size-normal';
+            const colorStyle = `color-${idol.type}`;
 
-        return (
-          <div key={tileIndex} className="tile-with-checkbox">
-            <input
-              className="checkbox"
-              type="checkbox"
-              checked={handCheckFlg[tileIndex]}
-              onChange={() => checkIdolTile(tileIndex)}
-            />
-            <IdolTile idolId={memberList[tileIndex]} />
-          </div>
-        );
-      })}
-    </div>
-    <div className="unit-block-list">
-      {range(hand.unitIndexes.length).map(index => {
-        const unit = UNIT_LIST2[hand.unitIndexes[index]];
-        const style = {
-          'width': `calc(${10 * unit.memberCount}vh + ${2 * (unit.memberCount - 1)}vh + ${2 * unit.memberCount}px)`,
-          'color': hand.unitChiFlg[index] ? 'red' : 'black',
-          'fontWeight': hand.unitChiFlg[index] ? 'bold' : 'normal',
-        } as React.CSSProperties;
-        return (
-          <span key={index} className="unit-block" style={style}>
-            {unit.name}
-          </span>
-        );
-      })}
-    </div>
-  </>);
+            return (
+              <td key={index}>
+                <span className={`idol-tile ${fontStyle} ${colorStyle}`}>
+                  {idolName}
+                </span>
+              </td>
+            );
+          })}
+        </tr>
+        <tr>
+          {range(unitCount).map(index => {
+            const unit = UNIT_LIST2[hand.unitIndexes[index]];
+            const unitMemberCount = unit.memberCount;
+            const unitClass = hand.unitChiFlg[index]
+              ? 'unit-chi'
+              : 'unit-plane';
+            const unitName = unit.name.substring(0, unitMemberCount * 3);
+            const unitDialogImpl = () =>
+              unitDialog(unit, hand.unitChiFlg[index]);
+
+            return (
+              <td key={index} colSpan={unitMemberCount}>
+                <span
+                  role="button"
+                  tabIndex={index}
+                  className={`unit-block ${unitClass}`}
+                  onClick={unitDialogImpl}
+                  onKeyUp={unitDialogImpl}
+                >
+                  {unitName}
+                </span>
+              </td>
+            );
+          })}
+        </tr>
+      </tbody>
+    </table>
+  );
 };
 
 export default HandTileView;

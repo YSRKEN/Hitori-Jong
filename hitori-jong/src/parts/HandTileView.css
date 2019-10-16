@@ -1,41 +1,77 @@
-.idol-tile-list {
-  display: flex;
-  margin-left: 5vh;
-  margin-right: 5vh;
-}
-
-.tile-with-checkbox {
-  margin-left: 1vh;
-  margin-right: 1vh;
-  text-align: center;
-}
-
-.tile-with-checkbox .checkbox {
-  margin-bottom: 2vh;
-}
-
-.tile-with-checkbox .checkbox.hidden {
-  visibility: hidden;
-}
-
-.tile-with-checkbox .display-none {
-  display: none;
-}
-
-.unit-block-list {
-  display: flex;
-  margin-left: 5vh;
-  margin-right: 5vh;
-}
-
-.unit-block-list .unit-block {
-  margin-left: 1vh;
-  margin-right: 1vh;
+/* 牌自体のCSS */
+.idol-tile {
   border-color: black;
   border-style: solid;
   border-width: 1px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  height: 24vh;
+  text-align: center;
+  width: 11vh;
+  -webkit-writing-mode: vertical-rl;
+  -ms-writing-mode: tb-rl;
+  writing-mode: vertical-rl;
+}
+
+/* 牌のフォントサイズ */
+.idol-tile.font-size-normal {
+  font-size: 6vh;
+  line-height: 10vh;
+}
+
+.idol-tile.font-size-small { 
+  font-size: 5vh;
+  line-height: 11vh;
+}
+
+/* 牌の背景色 */
+.idol-tile.color-Princess {
+  background-color: pink;
+}
+
+.idol-tile.color-Fairy {
+  background-color: lightblue;
+}
+
+.idol-tile.color-Angel {
+  background-color: lemonchiffon;
+}
+
+.idol-tile.color-Extra {
+  background-color: lightgreen;
+}
+
+.idol-tile.color-Sora {
+  background-color: violet;
+}
+
+/* 牌選択用のチェックボックス */
+.tile-checkbox {
+  text-align: center;
+}
+
+/* ビュー全体のテーブル */
+.hand-tile-table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ユニット表示のCSS */
+.unit-block {
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
   display: block;
+  font-size: 4vh;
+  height: 6vh;
+  text-align: center;
+}
+
+/* ユニット表示の切り替え */
+.unit-block.unit-chi {
+  color: red;
+  font-weight: bold;
+}
+
+.unit-block.unit-plane {
+  color: black;
+  font-weight: normal;
 }
