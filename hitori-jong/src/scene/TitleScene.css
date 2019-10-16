@@ -1,53 +1,60 @@
 /* リンク表示絡み */
 .misc-links {
-	margin-top: 5vh;
-	margin-left: 5vh;
+  margin-left: 5vh;
+  margin-top: 5vh;
 }
+
 .misc-links > span {
-	font-size: 5vh;
-	margin-left: 2.5vh;
-	margin-right: 2.5vh;
+  font-size: 5vh;
+  margin-left: 2.5vh;
+  margin-right: 2.5vh;
 }
 
 /* タイトルロゴ絡み */
 .title-logo {
-	text-align: center;
-	font-size: 15vh;
+  font-size: 15vh;
+  text-align: center;
 }
+
 .version-logo {
-	text-align: center;
-	font-size: 7.5vh;
+  font-size: 7.5vh;
+  text-align: center;
 }
+
 .title-bar {
-	margin-top: 10vh;
+  margin-top: 10vh;
 }
 
 /* 各種ボタン絡み */
 .button-group {
-	display: flex;
-	width: calc(6vh * 21 + 3vh * 6 + 3vh * 6);
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 15vh;
+  margin-top: 15vh;
+  text-align: center;
 }
-.button-group span {
-	border-color: gray;
-	border-width: 2px;
-	border-style: solid;
-	border-radius: 2vh;
-	padding: 2vh 3vh 2vh 3vh;
-	font-size: 6vh;
-	display: block;
-	margin-left: 3vh;
-	margin-right: 3vh;
-	word-wrap: normal;
+
+span.top-button {
+  border-color: black;
+  border-radius: 2vh;
+  border-style: solid;
+  border-width: 1px;
+  font-size: 7vh;
+  margin-left: 2vh;
+  margin-right: 2vh;
+  padding: 2vh 3vh 2vh 3vh;
+  white-space: nowrap;
 }
-.game-button {
-	background-color: orange;
+
+span.top-button.game {
+  background-color: orange;
 }
-.simulation-button {
-	background-color: greenyellow;
+
+span.top-button.simulation {
+  background-color: greenyellow;
 }
-.share-button {
-	background-color: #00aced;
+
+span.top-button.share {
+  background-color: #00aced;
+}
+
+div.share-wrap {
+  display: inline-block;
 }

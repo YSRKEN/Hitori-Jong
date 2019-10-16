@@ -1,11 +1,13 @@
-.back-to-title-button span {
-	border-color: gray;
-	border-width: 2px;
-	border-style: solid;
-	border-radius: 2vh;
-	padding: 1vh 2vh 1vh 2vh;
-	font-size: 5vh;
-	display: inline-block;
-	word-wrap: normal;
-	background-color: lightgray;
+span.button {
+  border-color: black;
+  border-radius: 2vh;
+  border-style: solid;
+  border-width: 1px;
+  padding: 1vh 2vh 1vh 2vh;
+  white-space: nowrap;
+}
+
+span.button.back-to-title {
+  background-color: lightgray;
+  font-size: 5vh;
 }

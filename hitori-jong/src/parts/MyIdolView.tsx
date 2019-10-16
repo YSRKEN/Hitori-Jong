@@ -5,19 +5,11 @@ import { IDOL_LIST } from 'constant/idol';
 
 // シミュレーション画面
 const MyIdolView: React.FC = () => {
-	const { myIdol } = React.useContext(StateContext);
+  const { myIdol } = React.useContext(StateContext);
 
-	const idol = IDOL_LIST[myIdol];
-	const classList = ['my-idol-view'];
-	if (['Princess', 'Fairy', 'Angel'].includes(idol.type)) {
-		classList.push(`color-${idol.type}`);
-	}
+  const idol = IDOL_LIST[myIdol];
 
-	return (
-		<div className={classList.join(' ')}>
-			<span>担当：{idol.name}</span>
-		</div>
-	);
-}
+  return <span className={`button color-${idol.type}`}>担当：{idol.name}</span>;
+};
 
 export default MyIdolView;

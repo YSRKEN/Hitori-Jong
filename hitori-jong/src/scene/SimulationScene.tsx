@@ -13,16 +13,15 @@ const SimulationScene: React.FC = () => {
   return (
     <>
       <div className="header-button-group">
-        <div className="back-to-title-button">
-          <span
-            role="button"
-            tabIndex={0}
-            onClick={onClickStoT}
-            onKeyUp={onClickStoT}
-          >
-            タイトルに戻る
-          </span>
-        </div>
+        <span
+          className="button back-to-title"
+          role="button"
+          tabIndex={0}
+          onClick={onClickStoT}
+          onKeyUp={onClickStoT}
+        >
+          タイトルに戻る
+        </span>
         <MyIdolView />
       </div>
       <div className="footer-hand-tile-view">
