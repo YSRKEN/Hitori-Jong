@@ -145,3 +145,55 @@ export const shiftTileRight = (hand: Hand, handCheckFlg: boolean[]): Hand => {
     plusMember: hand.plusMember
   };
 };
+
+export const injectUnit = (hand: Hand, handCheckFlg: boolean[], chiFlg: boolean): Hand => {
+  // ソート前の手牌Aとソート後の手牌Bとの対応を調べる
+  // sortedIndex[X] = i ⇔ B[X] = A[i]
+  const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
+
+  // チェックした位置の牌の一覧を取り出す
+  const idolList = range(HAND_TILE_SIZE).filter(i => handCheckFlg[i]).map(i => hand.members[sortedIndex[i]]);
+  const idolSet = new Set(idolList);
+  
+  // 完全に一致するユニットを検索する
+  let unitIndex = -1;
+  for (let i = 0; i < UNIT_LIST2.length; i += 1) {
+    const unit = UNIT_LIST2[i];
+    if (unit.memberCount !== idolList.length) {
+      continue;
+    }
+    let flg = true;
+    for (const member of unit.member) {
+      if (!idolSet.has(member)) {
+        flg = false;
+        break;
+      }
+    }
+    if (flg) {
+      unitIndex = i;
+      break;
+    }
+  }
+
+  // 一致するユニットがいれば、そのユニットを割り当てる
+  if (unitIndex >= 0) {
+    const unitId = hand.unitIndexes.length;
+    const newUnits = [...hand.units];
+    range(HAND_TILE_SIZE).filter(i => handCheckFlg[i]).forEach(i => newUnits[sortedIndex[i]] = unitId);
+    return {
+      members: [...hand.members],
+      units: newUnits,
+      unitIndexes: [...hand.unitIndexes, unitIndex],
+      unitChiFlg: [...hand.unitChiFlg, chiFlg],
+      plusMember: hand.plusMember
+    };
+  } else {
+    return {
+      members: [...hand.members],
+      units: [...hand.units],
+      unitIndexes: [...hand.unitIndexes],
+      unitChiFlg: [...hand.unitChiFlg],
+      plusMember: hand.plusMember
+    };
+  }
+};

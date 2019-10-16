@@ -17,6 +17,8 @@ const SimulationScene: React.FC = () => {
   const ejectUnit = () => dispatch({ type: 'ejectUnit', message: '' });
   const shiftLeft = () => dispatch({ type: 'shiftLeft', message: '' });
   const shiftRight = () => dispatch({ type: 'shiftRight', message: '' });
+  const injectUnitChi = () => dispatch({ type: 'injectUnitChi', message: '' });
+  const injectUnitFixed = () => dispatch({ type: 'injectUnitFixed', message: '' });
 
   // コマンドパレットを動的生成
   const calcCommandJsxElement = (): JSX.Element => {
@@ -35,14 +37,25 @@ const SimulationScene: React.FC = () => {
     const handUnitLengthSum = calcHandUnitLengthSum(simulationHand);
     if (handUnitLengthSum === 0 || handCheckFlg.slice(0, handUnitLengthSum).findIndex(flg => flg) < 0) {
       // チェック位置にいずれのユニットも存在しない
-      return (
-        <>
-          <Button text="チー" />
-          <Button text="ユニット固定" />
-          <Button text="左シフト" onClick={shiftLeft} />
-          <Button text="右シフト" onClick={shiftRight} />
-        </>
-      );
+      const handCheckCount = handCheckFlg.filter(flg => flg).length;
+      if (handCheckCount >= 3) {
+        return (
+          <>
+            <Button text="チー" onClick={injectUnitChi} />
+            <Button text="ユニット固定" onClick={injectUnitFixed} />
+            <Button text="左シフト" onClick={shiftLeft} />
+            <Button text="右シフト" onClick={shiftRight} />
+          </>
+        );
+      } else {
+        return (
+          <>
+            <Button text="ユニット固定" onClick={injectUnitFixed} />
+            <Button text="左シフト" onClick={shiftLeft} />
+            <Button text="右シフト" onClick={shiftRight} />
+          </>
+        );
+      }
     }
 
     // チェック位置にいずれかのユニットが存在する場合

@@ -7,7 +7,9 @@ export type ActionType =
   | 'checkIdolTile'
   | 'ejectUnit'
   | 'shiftLeft'
-  | 'shiftRight';
+  | 'shiftRight'
+  | 'injectUnitChi'
+  | 'injectUnitFixed';
 
 // Action
 export interface Action {
