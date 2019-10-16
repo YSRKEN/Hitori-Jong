@@ -73,6 +73,7 @@ const useStore = () => {
 
         // 解除後の手牌をセットする
         setSimulationHand(newHand);
+        setHandCheckFlg(createFilledArray(HAND_TILE_SIZE, false));
         break;
       }
       default:

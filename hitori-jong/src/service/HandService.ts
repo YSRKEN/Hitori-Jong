@@ -80,7 +80,7 @@ export const ejectUnit = (hand: Hand, handCheckFlg: boolean[]): Hand => {
   unitConvertionDict[-1] = -1;
   let newUnitIndex = 0;
   for (let i = 0; i < hand.unitIndexes.length; i += 1) {
-    if (i in checkedUnitSet) {
+    if (checkedUnitSet.has(i)) {
       unitConvertionDict[i] = -1;
     } else {
       unitConvertionDict[i] = newUnitIndex;
@@ -90,7 +90,7 @@ export const ejectUnit = (hand: Hand, handCheckFlg: boolean[]): Hand => {
   const newUnitIndexes: number[] = [];
   const newUnitChiFlg: boolean[] = [];
   for (let i = 0; i < hand.unitIndexes.length; i += 1) {
-    if (!(i in checkedUnitSet)) {
+    if (!checkedUnitSet.has(i)) {
       newUnitIndexes.push(hand.unitIndexes[i]);
       newUnitChiFlg.push(hand.unitChiFlg[i]);
     }
