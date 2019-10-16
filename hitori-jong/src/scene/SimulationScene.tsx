@@ -21,6 +21,14 @@ const SimulationScene: React.FC = () => {
         />
         <MyIdolView />
       </div>
+      <div className="command-button-group">
+        <Button text="チー／解除" />
+        <Button text="ユニット固定／解除" />
+        <Button text="左シフト" />
+        <Button text="右シフト" />
+        <Button text="ユニット検索" />
+        <Button text="受け入れ検索" />
+      </div>
       <div className="footer-hand-tile-view">
         <HandTileView hand={simulationHand} />
       </div>

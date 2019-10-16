@@ -14,3 +14,14 @@
   margin-left: 2.5vh;
   margin-top: 2.5vh;
 }
+
+.command-button-group {
+  margin-left: 10vh;
+  margin-top: 5vh;
+}
+
+.command-button-group span.button {
+  background-color: greenyellow;
+  font-size: 6vh;
+  margin-left: 5vh;
+}
