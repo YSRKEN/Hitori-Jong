@@ -15,7 +15,8 @@ export type ActionType =
   | 'injectUnitFixed'
   | 'setKana'
   | 'selectIdol'
-  | 'selectIdolTile';
+  | 'selectIdolTile'
+  | 'findUnit';
 
 // Action
 export interface Action {

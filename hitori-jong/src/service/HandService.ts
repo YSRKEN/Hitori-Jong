@@ -235,3 +235,24 @@ export const changeMember = (
     plusMember: hand.plusMember,
   };
 };
+
+// 後0・1・2枚あれば完成する役一覧を生成する
+// ただし、既にユニットを組んでいる牌は使えないとする
+export const findUnit = (hand: Hand): { id: number; member: number[] }[][] => {
+  const output: { id: number; member: number[] }[][] = [[], [], []];
+  const memberSet = new Set([
+    ...range(HAND_TILE_SIZE)
+      .filter(i => hand.units[i] < 0)
+      .map(i => hand.members[i]),
+    hand.plusMember,
+  ]);
+  UNIT_LIST2.forEach((unitInfo, index) => {
+    const nonMatchMember = unitInfo.member.filter(i => !memberSet.has(i));
+    const memberCountDiff = nonMatchMember.length;
+    if (memberCountDiff <= 2) {
+      output[memberCountDiff].push({ id: index, member: nonMatchMember });
+    }
+  });
+
+  return output;
+};

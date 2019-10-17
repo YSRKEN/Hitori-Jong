@@ -21,7 +21,10 @@ import {
   injectUnit,
   calcHandUnitLengthSum,
   changeMember,
+  findUnit,
 } from 'service/HandService';
+import { UNIT_LIST2 } from 'constant/unit';
+import { IDOL_LIST } from 'constant/idol';
 import { Action } from './constant/action';
 
 // アプリケーションの状態
@@ -169,6 +172,25 @@ const useStore = () => {
         // 解除後の手牌をセットする
         setSimulationHand2(newHand);
         setSceneMode2('SimulationScene');
+        break;
+      }
+      case 'findUnit': {
+        const result = findUnit(simulationHand);
+        for (let i = 0; i < result.length; i += 1) {
+          console.log(`【後${i}枚で完成する役】`);
+          for (const record of result[i]) {
+            const { name } = UNIT_LIST2[record.id];
+            const member = UNIT_LIST2[record.id].member
+              .map(j => `${IDOL_LIST[j].name}`)
+              .join('、');
+            const addMember = record.member
+              .map(j => `＋${IDOL_LIST[j].name}`)
+              .join('');
+            /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
+            console.log(`・${name}　[${member}]　${addMember}`);
+          }
+          console.log('');
+        }
         break;
       }
       default:
