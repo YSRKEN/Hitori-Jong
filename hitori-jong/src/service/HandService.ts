@@ -219,21 +219,31 @@ export const changeMember = (
   selectedIdolSortedIndex: number,
   selectIdolIndex: number,
 ): Hand => {
-  // ソート前の手牌Aとソート後の手牌Bとの対応を調べる
-  // sortedIndex[X] = i ⇔ B[X] = A[i]
-  const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
+  if (selectedIdolSortedIndex === HAND_TILE_SIZE_PLUS - 1) {
+    return {
+      members: [...hand.members],
+      units: [...hand.units],
+      unitIndexes: [...hand.unitIndexes],
+      unitChiFlg: [...hand.unitChiFlg],
+      plusMember: selectIdolIndex,
+    };
+  } else {
+    // ソート前の手牌Aとソート後の手牌Bとの対応を調べる
+    // sortedIndex[X] = i ⇔ B[X] = A[i]
+    const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
 
-  // 新しい手牌を生成する
-  const newMembers = [...hand.members];
-  newMembers[sortedIndex[selectedIdolSortedIndex]] = selectIdolIndex;
+    // 新しい手牌を生成する
+    const newMembers = [...hand.members];
+    newMembers[sortedIndex[selectedIdolSortedIndex]] = selectIdolIndex;
 
-  return {
-    members: newMembers,
-    units: [...hand.units],
-    unitIndexes: [...hand.unitIndexes],
-    unitChiFlg: [...hand.unitChiFlg],
-    plusMember: hand.plusMember,
-  };
+    return {
+      members: newMembers,
+      units: [...hand.units],
+      unitIndexes: [...hand.unitIndexes],
+      unitChiFlg: [...hand.unitChiFlg],
+      plusMember: hand.plusMember,
+    };
+  }
 };
 
 // 後0・1・2枚あれば完成する役一覧を生成する
