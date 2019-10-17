@@ -70,11 +70,10 @@ export const IDOL_LIST: IdolInfo[] = [
 ];
 
 // ひらがな1文字→アイドル名の対応表
+export const KANA_LIST =
+  'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもや　ゆ　よらりるれろわ　を　ん';
 const calcKanaToIdol = (): { kana: string; idol: number[] }[] => {
-  const kanaList =
-    'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもや　ゆ　よらりるれろわをんー　';
-
-  return kanaList.split('').map(kana => {
+  return KANA_LIST.split('').map(kana => {
     return {
       kana,
       idol: range(IDOL_LIST.length).filter(
@@ -87,8 +86,3 @@ export const KANA_TO_IDOL_LIST: {
   kana: string;
   idol: number[];
 }[] = calcKanaToIdol();
-console.log(
-  KANA_TO_IDOL_LIST.filter(r => r.idol.length > 0).map(r => {
-    return { kana: r.kana, idol: r.idol.map(i => IDOL_LIST[i].name) };
-  }),
-);

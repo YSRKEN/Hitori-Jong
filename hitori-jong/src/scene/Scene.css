@@ -11,3 +11,14 @@ span.button.back-to-title {
   background-color: lightgray;
   font-size: 5vh;
 }
+
+.header-button-group {
+  display: flex;
+  margin-left: 5vh;
+  margin-top: 5vh;
+}
+
+.header-button-group > span {
+  margin-left: 2.5vh;
+  margin-top: 2.5vh;
+}

@@ -1,0 +1,28 @@
+.back-to-simulation {
+  background-color: lightgray;
+  font-size: 5vh;
+}
+
+table.kana-table {
+  border-spacing: 3vh;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 3vh;
+}
+
+td.kana-button {
+  border-color: black;
+  border-style: solid;
+  border-width: 2px;
+  color: black;
+  font-size: 7vh;
+  font-weight: bold;
+}
+
+td.kana-button-disabled {
+  border-color: gray;
+  border-style: solid;
+  border-width: 1px;
+  color: gray;
+  font-size: 7vh;
+}

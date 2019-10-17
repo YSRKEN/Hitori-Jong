@@ -16,6 +16,8 @@ const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
 
   const checkIdolTile = (tileIndex: number) =>
     dispatch({ type: 'checkIdolTile', message: tileIndex.toString() });
+  const onClickStoK = (sortedHandIndex: number) =>
+    dispatch({ type: 'changeSceneStoK', message: `${sortedHandIndex}` });
 
   const unitDialog = (unit: UnitInfo, chiFlg: boolean) => {
     let output = '';
@@ -50,18 +52,21 @@ const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {
           <td />
         </tr>
         <tr>
-          {range(HAND_TILE_SIZE_PLUS).map(index => {
-            const idol = IDOL_LIST[memberList[index]];
+          {range(HAND_TILE_SIZE_PLUS).map(sortedHandIndex => {
+            const idol = IDOL_LIST[memberList[sortedHandIndex]];
             const idolName = idol.name;
             const fontStyle =
               idolName.length >= 4 ? 'font-size-small' : 'font-size-normal';
             const colorStyle = `color-${idol.type}`;
 
             return (
-              <td key={index}>
-                <span className={`idol-tile ${fontStyle} ${colorStyle}`}>
-                  {idolName}
-                </span>
+              <td key={sortedHandIndex}>
+                <Button
+                  text={idolName}
+                  className={`idol-tile ${fontStyle} ${colorStyle}`}
+                  buttonClassFlg={false}
+                  onClick={() => onClickStoK(sortedHandIndex)}
+                />
               </td>
             );
           })}

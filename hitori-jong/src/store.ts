@@ -13,7 +13,12 @@ import {
   loadSettingAsInteger,
 } from 'service/SettingService';
 import { createFilledArray } from 'service/UtilityService';
-import { ejectUnit, shiftTileLeft, shiftTileRight, injectUnit } from 'service/HandService';
+import {
+  ejectUnit,
+  shiftTileLeft,
+  shiftTileRight,
+  injectUnit,
+} from 'service/HandService';
 import { Action } from './constant/action';
 
 // アプリケーションの状態
@@ -57,6 +62,16 @@ const useStore = () => {
       case 'changeSceneStoT':
         setSceneMode('TitleScene');
         saveSettingForString('sceneMode', 'TitleScene');
+        break;
+      // シミュレーション画面→キーボード画面への遷移
+      case 'changeSceneStoK':
+        setSceneMode('KanaKeyBoardScene');
+        saveSettingForString('sceneMode', 'KanaKeyBoardScene');
+        break;
+      // キーボード画面→シミュレーション画面への遷移
+      case 'changeSceneKtoS':
+        setSceneMode('SimulationScene');
+        saveSettingForString('sceneMode', 'SimulationScene');
         break;
       // 牌をチェックボックスで選択
       case 'checkIdolTile': {

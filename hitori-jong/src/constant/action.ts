@@ -4,6 +4,8 @@ export type ActionType =
   | 'changeSceneTtoS'
   | 'changeSceneGtoT'
   | 'changeSceneStoT'
+  | 'changeSceneStoK'
+  | 'changeSceneKtoS'
   | 'checkIdolTile'
   | 'ejectUnit'
   | 'shiftLeft'

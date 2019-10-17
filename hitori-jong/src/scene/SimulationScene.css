@@ -4,17 +4,6 @@
   width: 100vw;
 }
 
-.header-button-group {
-  display: flex;
-  margin-left: 5vh;
-  margin-top: 5vh;
-}
-
-.header-button-group > span {
-  margin-left: 2.5vh;
-  margin-top: 2.5vh;
-}
-
 .command-button-group {
   margin-left: 10vh;
   margin-top: 5vh;
