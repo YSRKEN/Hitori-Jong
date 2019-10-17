@@ -9,7 +9,7 @@ const IdolSelectScene: React.FC = () => {
   const { selectedKana, dispatch } = React.useContext(StateContext);
 
   // 各種コマンド
-  const onClickItoS = () => dispatch({ type: 'changeSceneItoS', message: '' });
+  const onClickToS = () => dispatch({ type: 'changeSceneToS', message: '' });
   const onClickSelectIdol = (idolIndex: number) =>
     dispatch({ type: 'selectIdol', message: `${idolIndex}` });
 
@@ -26,7 +26,7 @@ const IdolSelectScene: React.FC = () => {
         <Button
           className="back-to-simulation"
           text="シミュレーション画面に戻る"
-          onClick={onClickItoS}
+          onClick={onClickToS}
         />
       </div>
       <div className="idol-tile-list">

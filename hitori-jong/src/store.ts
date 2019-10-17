@@ -23,8 +23,6 @@ import {
   changeMember,
   findUnit,
 } from 'service/HandService';
-import { UNIT_LIST2 } from 'constant/unit';
-import { IDOL_LIST } from 'constant/idol';
 import { Action } from './constant/action';
 
 // アプリケーションの状態
@@ -59,6 +57,8 @@ const useStore = () => {
   );
   // アイドル選択におけるカナ
   const [selectedKana, setSelectedKana] = React.useState('');
+  // ユニット検索結果
+  const [unitCandidateData, setUnitCandidateData] = React.useState<{id: number, member: number[]}[][]>([]);
 
   // Reduxライクなdispatch関数
   const dispatch = (action: Action) => {
@@ -89,12 +89,8 @@ const useStore = () => {
         setSceneMode('KanaKeyBoardScene');
         break;
       }
-      // キーボード画面→シミュレーション画面への遷移
-      case 'changeSceneKtoS':
-        setSceneMode2('SimulationScene');
-        break;
-      // アイドル選択画面→シミュレーション画面への遷移
-      case 'changeSceneItoS':
+      // シミュレーション画面への遷移
+      case 'changeSceneToS':
         setSceneMode2('SimulationScene');
         break;
       // 牌をチェックボックスで選択
@@ -174,25 +170,10 @@ const useStore = () => {
         setSceneMode2('SimulationScene');
         break;
       }
-      case 'findUnit': {
-        const result = findUnit(simulationHand);
-        for (let i = 0; i < result.length; i += 1) {
-          console.log(`【後${i}枚で完成する役】`);
-          for (const record of result[i]) {
-            const { name } = UNIT_LIST2[record.id];
-            const member = UNIT_LIST2[record.id].member
-              .map(j => `${IDOL_LIST[j].name}`)
-              .join('、');
-            const addMember = record.member
-              .map(j => `＋${IDOL_LIST[j].name}`)
-              .join('');
-            /* eslint no-irregular-whitespace: ["error", {"skipTemplates": true}] */
-            console.log(`・${name}　[${member}]　${addMember}`);
-          }
-          console.log('');
-        }
+      case 'findUnit':
+        setUnitCandidateData(findUnit(simulationHand));
+        setSceneMode('UnitResultScene');
         break;
-      }
       default:
         break;
     }
@@ -204,6 +185,7 @@ const useStore = () => {
     myIdol,
     handCheckFlg,
     selectedKana,
+    unitCandidateData,
     dispatch,
   };
 };

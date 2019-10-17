@@ -9,6 +9,7 @@ interface ApplicationState {
   myIdol: number;
   handCheckFlg: boolean[];
   selectedKana: string;
+  unitCandidateData: {id: number, member: number[]}[][];
   dispatch: (action: Action) => void;
 }
 

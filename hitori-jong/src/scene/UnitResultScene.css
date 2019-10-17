@@ -1,0 +1,23 @@
+.table-block {
+	margin-top: 5vh;
+	margin-bottom: 5vh;
+}
+.table-block > h2 {
+	margin-left: 15vh;
+}
+.table-block > table {
+	margin-left: 15vh;
+	border-spacing: 0;
+	border-collapse:  collapse;
+	table-layout: fixed;
+	font-size: 4.5vh;
+}
+.table-block th {
+	border: 1px black solid;
+	padding: 1vh;
+	background-color: lightblue;
+}
+.table-block td {
+	border: 1px black solid;
+	padding: 1vh;
+}

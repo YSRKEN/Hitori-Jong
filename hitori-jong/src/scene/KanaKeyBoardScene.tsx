@@ -10,7 +10,7 @@ const KanaKeyBoardScene: React.FC = () => {
   const { dispatch } = React.useContext(StateContext);
 
   // 各種コマンド
-  const onClickKtoS = () => dispatch({ type: 'changeSceneKtoS', message: '' });
+  const onClickToS = () => dispatch({ type: 'changeSceneToS', message: '' });
   const onClickSetKana = (kana: string) =>
     dispatch({ type: 'setKana', message: kana });
 
@@ -20,7 +20,7 @@ const KanaKeyBoardScene: React.FC = () => {
         <Button
           className="back-to-simulation"
           text="シミュレーション画面に戻る"
-          onClick={onClickKtoS}
+          onClick={onClickToS}
         />
       </div>
       <div>

@@ -6,6 +6,7 @@ import GameScene from './GameScene';
 import SimulationScene from './SimulationScene';
 import KanaKeyBoardScene from './KanaKeyBoardScene';
 import IdolSelectScene from './IdolSelectScene';
+import UnitResultScene from './UnitResultScene';
 
 // 表示シーンに応じて表示内容を切り替える
 const SceneSelector: React.FC = () => {
@@ -22,6 +23,8 @@ const SceneSelector: React.FC = () => {
       return <KanaKeyBoardScene />;
     case 'IdolSelectScene':
       return <IdolSelectScene />;
+    case 'UnitResultScene':
+      return <UnitResultScene />;
     default:
       return <></>;
   }

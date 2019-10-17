@@ -1,4 +1,4 @@
-import { Hand, HAND_TILE_SIZE } from 'constant/other';
+import { Hand, HAND_TILE_SIZE, HAND_TILE_SIZE_PLUS } from 'constant/other';
 import { UNIT_LIST2 } from 'constant/unit';
 import { IDOL_LIST } from 'constant/idol';
 import { range } from './UtilityService';
@@ -237,7 +237,8 @@ export const changeMember = (
 };
 
 // 後0・1・2枚あれば完成する役一覧を生成する
-// ただし、既にユニットを組んでいる牌は使えないとする
+// ただし、既にユニットを組んでいる牌は使えないとする。
+// また、残数がX枚の時、(X+1)人以上のユニットは選択しないとする
 export const findUnit = (hand: Hand): { id: number; member: number[] }[][] => {
   const output: { id: number; member: number[] }[][] = [[], [], []];
   const memberSet = new Set([
@@ -246,7 +247,11 @@ export const findUnit = (hand: Hand): { id: number; member: number[] }[][] => {
       .map(i => hand.members[i]),
     hand.plusMember,
   ]);
+  const maxUnitMembers = HAND_TILE_SIZE_PLUS - calcHandUnitLengthSum(hand);
   UNIT_LIST2.forEach((unitInfo, index) => {
+    if (unitInfo.member.length > maxUnitMembers) {
+      return;
+    }
     const nonMatchMember = unitInfo.member.filter(i => !memberSet.has(i));
     const memberCountDiff = nonMatchMember.length;
     if (memberCountDiff <= 2) {

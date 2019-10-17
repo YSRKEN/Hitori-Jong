@@ -9,7 +9,8 @@ export type SceneMode =
   | 'GameScene'
   | 'SimulationScene'
   | 'KanaKeyBoardScene'
-  | 'IdolSelectScene';
+  | 'IdolSelectScene'
+  | 'UnitResultScene';
 
 // 手牌の枚数
 export const HAND_TILE_SIZE = 12;
