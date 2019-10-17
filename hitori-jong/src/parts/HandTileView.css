@@ -1,5 +1,6 @@
 /* 牌自体のCSS */
-.idol-tile {
+
+span.idol-tile {
   border-color: black;
   border-style: solid;
   border-width: 1px;
@@ -11,50 +12,60 @@
   writing-mode: vertical-rl;
 }
 
+
 /* 牌のフォントサイズ */
-.idol-tile.font-size-normal {
+
+span.idol-tile.font-size-normal {
   font-size: 6vh;
   line-height: 10vh;
 }
 
-.idol-tile.font-size-small { 
+span.idol-tile.font-size-small {
   font-size: 5vh;
   line-height: 11vh;
 }
 
+
 /* 牌の背景色 */
-.idol-tile.color-Princess {
+
+span.idol-tile.color-Princess {
   background-color: pink;
 }
 
-.idol-tile.color-Fairy {
+span.idol-tile.color-Fairy {
   background-color: lightblue;
 }
 
-.idol-tile.color-Angel {
+span.idol-tile.color-Angel {
   background-color: lemonchiffon;
 }
 
-.idol-tile.color-Extra {
+span.idol-tile.color-Extra {
   background-color: lightgreen;
 }
 
-.idol-tile.color-Sora {
+span.idol-tile.color-Sora {
   background-color: violet;
 }
 
+
 /* 牌選択用のチェックボックス */
+
 .tile-checkbox {
   text-align: center;
 }
 
+
 /* ビュー全体のテーブル */
+
 .hand-tile-table {
   margin-left: auto;
   margin-right: auto;
 }
 
+
 /* ユニット表示のCSS */
+
 .unit-block {
   border-color: black;
   border-style: solid;
@@ -65,7 +76,9 @@
   text-align: center;
 }
 
+
 /* ユニット表示の切り替え */
+
 .unit-block.unit-chi {
   color: red;
   font-weight: bold;
