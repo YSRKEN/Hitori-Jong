@@ -5,8 +5,9 @@ from contextlib import closing
 import pandas
 
 with closing(sqlite3.connect('765pro.sqlite3')) as conn:
-    df = pandas.read_sql('SELECT short_name AS name, type FROM member ORDER BY id', con=conn)
-    df.to_json('member.json', force_ascii=False, orient='records')
+    df = pandas.read_sql('SELECT short_name AS name, kana, type FROM member ORDER BY id', con=conn)
+    with open('member.json', 'w', encoding='utf-8') as f:
+        df.to_json(f, force_ascii=False, orient='records')
 
     df = pandas.read_sql('SELECT unit.unit, member.short_name AS member FROM unit LEFT JOIN member ON'
                          ' member.name=unit.member ORDER BY unit.id', con=conn)
