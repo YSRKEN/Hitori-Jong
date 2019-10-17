@@ -10,7 +10,7 @@ table.kana-table {
   margin-top: 3vh;
 }
 
-td.kana-button {
+.kana-button {
   border-color: black;
   border-style: solid;
   border-width: 2px;

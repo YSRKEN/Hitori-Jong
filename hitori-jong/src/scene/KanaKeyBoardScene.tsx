@@ -5,12 +5,14 @@ import { KANA_LIST, KANA_TO_IDOL_LIST } from 'constant/idol';
 import Button from 'parts/Button';
 import './KanaKeyBoardScene.css';
 
-// ゲーム画面
+// キーボード画面
 const KanaKeyBoardScene: React.FC = () => {
   const { dispatch } = React.useContext(StateContext);
 
   // 各種コマンド
   const onClickKtoS = () => dispatch({ type: 'changeSceneKtoS', message: '' });
+  const onClickSetKana = (kana: string) =>
+    dispatch({ type: 'setKana', message: kana });
 
   return (
     <>
@@ -35,8 +37,15 @@ const KanaKeyBoardScene: React.FC = () => {
                     )[0];
                     if (members.idol.length > 0) {
                       return (
-                        <td className="kana-button" key={x}>
-                          {kana}
+                        <td key={x} className="kana-button">
+                          <span
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => onClickSetKana(kana)}
+                            onKeyUp={() => onClickSetKana(kana)}
+                          >
+                            {kana}
+                          </span>
                         </td>
                       );
                     }

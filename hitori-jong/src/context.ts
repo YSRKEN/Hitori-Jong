@@ -8,6 +8,7 @@ interface ApplicationState {
   simulationHand: Hand;
   myIdol: number;
   handCheckFlg: boolean[];
+  selectedKana: string;
   dispatch: (action: Action) => void;
 }
 

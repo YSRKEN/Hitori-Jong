@@ -6,12 +6,15 @@ export type ActionType =
   | 'changeSceneStoT'
   | 'changeSceneStoK'
   | 'changeSceneKtoS'
+  | 'changeSceneItoS'
   | 'checkIdolTile'
   | 'ejectUnit'
   | 'shiftLeft'
   | 'shiftRight'
   | 'injectUnitChi'
-  | 'injectUnitFixed';
+  | 'injectUnitFixed'
+  | 'setKana'
+  | 'selectIdol';
 
 // Action
 export interface Action {

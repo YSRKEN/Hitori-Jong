@@ -39,6 +39,8 @@ const useStore = () => {
   const [handCheckFlg, setHandCheckFlg] = React.useState<boolean[]>(
     createFilledArray(HAND_TILE_SIZE, false),
   );
+  // アイドル選択におけるカナ
+  const [selectedKana, setSelectedKana] = React.useState('');
 
   // Reduxライクなdispatch関数
   const dispatch = (action: Action) => {
@@ -66,10 +68,14 @@ const useStore = () => {
       // シミュレーション画面→キーボード画面への遷移
       case 'changeSceneStoK':
         setSceneMode('KanaKeyBoardScene');
-        saveSettingForString('sceneMode', 'KanaKeyBoardScene');
         break;
       // キーボード画面→シミュレーション画面への遷移
       case 'changeSceneKtoS':
+        setSceneMode('SimulationScene');
+        saveSettingForString('sceneMode', 'SimulationScene');
+        break;
+      // アイドル選択画面→シミュレーション画面への遷移
+      case 'changeSceneItoS':
         setSceneMode('SimulationScene');
         saveSettingForString('sceneMode', 'SimulationScene');
         break;
@@ -131,6 +137,14 @@ const useStore = () => {
         setHandCheckFlg(createFilledArray(HAND_TILE_SIZE, false));
         break;
       }
+      case 'setKana':
+        setSelectedKana(action.message);
+        setSceneMode('IdolSelectScene');
+        break;
+      case 'selectIdol':
+        setSceneMode('SimulationScene');
+        saveSettingForString('sceneMode', 'SimulationScene');
+        break;
       default:
         break;
     }
@@ -141,6 +155,7 @@ const useStore = () => {
     simulationHand,
     myIdol,
     handCheckFlg,
+    selectedKana,
     dispatch,
   };
 };
