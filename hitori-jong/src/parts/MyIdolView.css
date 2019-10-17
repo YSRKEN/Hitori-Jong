@@ -1,15 +1,20 @@
+/* 表示自体 */
+span.button.my-idol {
+  font-size: 5vh;
+}
+
 /* 表示の背景色 */
-span.button.color-Princess {
+span.button.my-idol.color-Princess {
   border-color: red;
   color: red;
 }
 
-span.button.color-Fairy {
+span.button.my-idol.color-Fairy {
   border-color: blue;
   color: blue;
 }
 
-span.button.color-Angel {
+span.button.my-idol.color-Angel {
   border-color: orange;
   color: orange;
 }

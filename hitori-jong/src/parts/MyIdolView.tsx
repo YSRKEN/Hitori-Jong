@@ -9,7 +9,11 @@ const MyIdolView: React.FC = () => {
 
   const idol = IDOL_LIST[myIdol];
 
-  return <span className={`button color-${idol.type}`}>担当：{idol.name}</span>;
+  return (
+    <span className={`button my-idol color-${idol.type}`}>
+      担当：{idol.name}
+    </span>
+  );
 };
 
 export default MyIdolView;
