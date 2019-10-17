@@ -133,7 +133,7 @@ export const UNIT_LIST: { "name": string; "member": string[] }[] = [
 	{ "name": "White Vows", "member": ["風花", "莉緒", "このみ", "歌織", "千鶴"] },
 	{ "name": "Chrono-Lexica", "member": ["百合子", "昴", "ロコ", "杏奈", "瑞希"] },
 	{ "name": "(TC 孤島サスペンスホラー)", "member": ["茜", "エレナ", "歌織", "千鶴", "志保"] },
-	{ "name": "(TC 近未来アウトサイダー)", "member": ["千早", "美希", "エミリー", "真", "春香"] },
+	{ "name": "'World changer", "member": ["千早", "美希", "エミリー", "真", "春香"] },
 	{ "name": "Girl meets Wonder", "member": ["星梨花", "桃子", "まつり", "響", "昴"] },
 	{ "name": "Vault That Borderline!(カバー)", "member": ["翼", "ジュリア", "百合子", "紗代子", "瑞希"] },
 	{ "name": "私はアイドル♡(カバー)", "member": ["瑞希", "恵美", "美也", "桃子", "まつり"] },
