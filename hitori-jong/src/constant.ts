@@ -12,7 +12,7 @@ export type ActionType =
   | 'setMIB';
 
 // アプリケーションの動作モード
-export type ApplicationMode = 'StartForm' | 'GameForm' | 'SelectForm';
+export type ApplicationMode = 'StartForm' | 'GameForm' | 'SelectForm' | 'InfoForm';
 
 // アイドルの属性
 export type IdolType = 'Princess' | 'Fairy' | 'Angel' | 'Extra' | 'Sora';

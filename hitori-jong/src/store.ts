@@ -3,11 +3,11 @@ import {
   getShuffledTileDeck,
   checkTempai,
   checkUnits,
-  calcUnitListWithSora,
   unitListToScore,
   unitListToHumansCount,
   unitListToHandsBoldFlg,
   sortHands,
+  calcUnitList,
 } from 'algorithm';
 import { ApplicationMode, Action, HANDS_SIZE, nameToIndex } from './constant';
 
@@ -25,6 +25,7 @@ const useStore = () => {
   const [editFlg, setEditFlg] = useState(0);
   const [selectedTileIndex, setSelectedTileIndex] = useState(0);
   const [mainIdolIndex, setMainIdolIndex] = useState(nameToIndex('静香'));
+  const [infoText, setInfoText] = useState('');
 
   // 牌山と手札を初期化する
   const resetTileDeck = () => {
@@ -57,15 +58,15 @@ const useStore = () => {
   useEffect(() => {
     // 役判定
     const startTime = Date.now();
-    const result = calcUnitListWithSora(myHands, mainIdolIndex);
-    const score = unitListToScore(result.unit, mainIdolIndex);
-    const humans = unitListToHumansCount(result.unit);
+    const result = calcUnitList(myHands, mainIdolIndex);
+    const score = unitListToScore(result, mainIdolIndex);
+    const humans = unitListToHumansCount(result);
     console.log('成立役判定');
     console.log(result);
     console.log(`${Date.now() - startTime}[ms]`);
 
     // フラグ処理
-    setHandsBoldFlg(unitListToHandsBoldFlg(result.hands, result.unit));
+    setHandsBoldFlg(unitListToHandsBoldFlg(myHands, result));
 
     // ユニットの人数合計＝枚数なら上がり
     if (humans === HANDS_SIZE && applicationMode === 'GameForm') {
@@ -145,7 +146,8 @@ const useStore = () => {
         setStatusOfCalcTempai(true);
         break;
       case 'checkUnits':
-        checkUnits(myHands, mainIdolIndex);
+        setInfoText(checkUnits(myHands, mainIdolIndex));
+        setApplicationMode('InfoForm');
         break;
       case 'requestSort':
         setMyHands(sortHands(myHands, mainIdolIndex));
@@ -187,6 +189,7 @@ const useStore = () => {
     editFlg,
     mainIdolIndex,
     selectedTileIndex,
+    infoText,
     dispatch,
   };
 };
