@@ -18,6 +18,8 @@ import {
   shiftTileLeft,
   shiftTileRight,
   injectUnit,
+  calcHandUnitLengthSum,
+  changeMember,
 } from 'service/HandService';
 import { Action } from './constant/action';
 
@@ -38,6 +40,10 @@ const useStore = () => {
   // 手牌のチェックフラグ
   const [handCheckFlg, setHandCheckFlg] = React.useState<boolean[]>(
     createFilledArray(HAND_TILE_SIZE, false),
+  );
+  // アイドル選択における変更対象
+  const [selectedIdolSortedIndex, setSelectedIdolSortedIndex] = React.useState(
+    0,
   );
   // アイドル選択におけるカナ
   const [selectedKana, setSelectedKana] = React.useState('');
@@ -66,9 +72,15 @@ const useStore = () => {
         saveSettingForString('sceneMode', 'TitleScene');
         break;
       // シミュレーション画面→キーボード画面への遷移
-      case 'changeSceneStoK':
+      case 'changeSceneStoK': {
+        const selectIdolIndex = parseInt(action.message, 10);
+        if (calcHandUnitLengthSum(simulationHand) > selectIdolIndex) {
+          break;
+        }
+        setSelectedIdolSortedIndex(selectIdolIndex);
         setSceneMode('KanaKeyBoardScene');
         break;
+      }
       // キーボード画面→シミュレーション画面への遷移
       case 'changeSceneKtoS':
         setSceneMode('SimulationScene');
@@ -141,10 +153,23 @@ const useStore = () => {
         setSelectedKana(action.message);
         setSceneMode('IdolSelectScene');
         break;
-      case 'selectIdol':
+      case 'selectIdol': {
+        const selectIdolIndex = parseInt(action.message, 10);
+
+        // 交換後の手牌を生成する
+        const newHand = changeMember(
+          simulationHand,
+          selectedIdolSortedIndex,
+          selectIdolIndex,
+        );
+
+        // 解除後の手牌をセットする
+        setSimulationHand(newHand);
+
         setSceneMode('SimulationScene');
         saveSettingForString('sceneMode', 'SimulationScene');
         break;
+      }
       default:
         break;
     }

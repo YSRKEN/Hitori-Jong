@@ -10,6 +10,15 @@ const IdolSelectScene: React.FC = () => {
 
   // 各種コマンド
   const onClickItoS = () => dispatch({ type: 'changeSceneItoS', message: '' });
+  const onClickSelectIdol = (idolIndex: number) =>
+    dispatch({ type: 'selectIdol', message: `${idolIndex}` });
+
+  // 1択しかない時は自動選択
+  const idolList = KANA_TO_IDOL_LIST.filter(r => r.kana === selectedKana)[0]
+    .idol;
+  if (idolList.length === 1) {
+    onClickSelectIdol(idolList[0]);
+  }
 
   return (
     <>
@@ -21,23 +30,22 @@ const IdolSelectScene: React.FC = () => {
         />
       </div>
       <div className="idol-tile-list">
-        {KANA_TO_IDOL_LIST.filter(r => r.kana === selectedKana)[0].idol.map(
-          idolIndex => {
-            const idol = IDOL_LIST[idolIndex];
-            const fontStyle =
-              idol.name.length >= 4 ? 'font-size-small' : 'font-size-normal';
+        {idolList.map(idolIndex => {
+          const idol = IDOL_LIST[idolIndex];
+          const fontStyle =
+            idol.name.length >= 4 ? 'font-size-small' : 'font-size-normal';
 
-            return (
-              <button
-                type="button"
-                className={`idol-tile color-${idol.type} ${fontStyle}`}
-                key={idolIndex}
-              >
-                {idol.name}
-              </button>
-            );
-          },
-        )}
+          return (
+            <button
+              type="button"
+              className={`idol-tile color-${idol.type} ${fontStyle}`}
+              key={idolIndex}
+              onClick={() => onClickSelectIdol(idolIndex)}
+            >
+              {idol.name}
+            </button>
+          );
+        })}
       </div>
     </>
   );

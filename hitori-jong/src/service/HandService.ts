@@ -1,13 +1,13 @@
 import { Hand, HAND_TILE_SIZE } from 'constant/other';
 import { UNIT_LIST2 } from 'constant/unit';
-import { range } from './UtilityService';
 import { IDOL_LIST } from 'constant/idol';
+import { range } from './UtilityService';
 
 // 文字で表されたアイドル一覧を数字一覧に変換する
 export const stringToNumber = (memberList: string[]) => {
-	return memberList.map(member =>
-		IDOL_LIST.findIndex(idol => idol.name === member),
-	);
+  return memberList.map(member =>
+    IDOL_LIST.findIndex(idol => idol.name === member),
+  );
 };
 
 // ソート前の手牌Aとソート後の手牌Bとの対応を調べる。
@@ -91,9 +91,10 @@ export const calcHandUnitLengthSum = (hand: Hand) => {
   if (hand.unitIndexes.length === 0) {
     return 0;
   }
+
   return hand.unitIndexes
-  .map(index => UNIT_LIST2[index].memberCount)
-  .reduce((p, c) => p + c);
+    .map(index => UNIT_LIST2[index].memberCount)
+    .reduce((p, c) => p + c);
 };
 
 // チェックされた牌を左にシフトした後の手牌を生成する
@@ -112,12 +113,13 @@ export const shiftTileLeft = (hand: Hand, handCheckFlg: boolean[]): Hand => {
       shiftedmembers[sortedIndex[i - 1]] = temp;
     }
   }
+
   return {
     members: shiftedmembers,
     units: [...hand.units],
     unitIndexes: [...hand.unitIndexes],
     unitChiFlg: [...hand.unitChiFlg],
-    plusMember: hand.plusMember
+    plusMember: hand.plusMember,
   };
 };
 
@@ -137,24 +139,32 @@ export const shiftTileRight = (hand: Hand, handCheckFlg: boolean[]): Hand => {
       shiftedmembers[sortedIndex[i + 1]] = temp;
     }
   }
+
   return {
     members: shiftedmembers,
     units: [...hand.units],
     unitIndexes: [...hand.unitIndexes],
     unitChiFlg: [...hand.unitChiFlg],
-    plusMember: hand.plusMember
+    plusMember: hand.plusMember,
   };
 };
 
-export const injectUnit = (hand: Hand, handCheckFlg: boolean[], chiFlg: boolean): Hand => {
+// チェックされた牌で構成されたユニットを追加した後の手牌を生成する
+export const injectUnit = (
+  hand: Hand,
+  handCheckFlg: boolean[],
+  chiFlg: boolean,
+): Hand => {
   // ソート前の手牌Aとソート後の手牌Bとの対応を調べる
   // sortedIndex[X] = i ⇔ B[X] = A[i]
   const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
 
   // チェックした位置の牌の一覧を取り出す
-  const idolList = range(HAND_TILE_SIZE).filter(i => handCheckFlg[i]).map(i => hand.members[sortedIndex[i]]);
+  const idolList = range(HAND_TILE_SIZE)
+    .filter(i => handCheckFlg[i])
+    .map(i => hand.members[sortedIndex[i]]);
   const idolSet = new Set(idolList);
-  
+
   // 完全に一致するユニットを検索する
   let unitIndex = -1;
   for (let i = 0; i < UNIT_LIST2.length; i += 1) {
@@ -179,21 +189,49 @@ export const injectUnit = (hand: Hand, handCheckFlg: boolean[], chiFlg: boolean)
   if (unitIndex >= 0) {
     const unitId = hand.unitIndexes.length;
     const newUnits = [...hand.units];
-    range(HAND_TILE_SIZE).filter(i => handCheckFlg[i]).forEach(i => newUnits[sortedIndex[i]] = unitId);
+    range(HAND_TILE_SIZE)
+      .filter(i => handCheckFlg[i])
+      .forEach(i => {
+        newUnits[sortedIndex[i]] = unitId;
+      });
+
     return {
       members: [...hand.members],
       units: newUnits,
       unitIndexes: [...hand.unitIndexes, unitIndex],
       unitChiFlg: [...hand.unitChiFlg, chiFlg],
-      plusMember: hand.plusMember
-    };
-  } else {
-    return {
-      members: [...hand.members],
-      units: [...hand.units],
-      unitIndexes: [...hand.unitIndexes],
-      unitChiFlg: [...hand.unitChiFlg],
-      plusMember: hand.plusMember
+      plusMember: hand.plusMember,
     };
   }
+
+  return {
+    members: [...hand.members],
+    units: [...hand.units],
+    unitIndexes: [...hand.unitIndexes],
+    unitChiFlg: [...hand.unitChiFlg],
+    plusMember: hand.plusMember,
+  };
+};
+
+// 選択した手牌を指定したメンバーと置き換えた後の手牌を生成する
+export const changeMember = (
+  hand: Hand,
+  selectedIdolSortedIndex: number,
+  selectIdolIndex: number,
+): Hand => {
+  // ソート前の手牌Aとソート後の手牌Bとの対応を調べる
+  // sortedIndex[X] = i ⇔ B[X] = A[i]
+  const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
+
+  // 新しい手牌を生成する
+  const newMembers = [...hand.members];
+  newMembers[sortedIndex[selectedIdolSortedIndex]] = selectIdolIndex;
+
+  return {
+    members: newMembers,
+    units: [...hand.units],
+    unitIndexes: [...hand.unitIndexes],
+    unitChiFlg: [...hand.unitChiFlg],
+    plusMember: hand.plusMember,
+  };
 };

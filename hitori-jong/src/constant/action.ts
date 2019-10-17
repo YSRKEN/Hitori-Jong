@@ -14,7 +14,8 @@ export type ActionType =
   | 'injectUnitChi'
   | 'injectUnitFixed'
   | 'setKana'
-  | 'selectIdol';
+  | 'selectIdol'
+  | 'selectIdolTile';
 
 // Action
 export interface Action {
