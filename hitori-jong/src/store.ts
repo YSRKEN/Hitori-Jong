@@ -11,6 +11,7 @@ import {
   saveSettingForString,
   loadSettingAsObject,
   loadSettingAsInteger,
+  saveSettingForObject,
 } from 'service/SettingService';
 import { createFilledArray } from 'service/UtilityService';
 import {
@@ -29,10 +30,18 @@ const useStore = () => {
   const [sceneMode, setSceneMode] = React.useState<SceneMode>(
     loadSettingAsString('sceneMode', 'TitleScene') as SceneMode,
   );
+  const setSceneMode2 = (s: SceneMode) => {
+    setSceneMode(s);
+    saveSettingForString('sceneMode', s);
+  };
   // シミュレーターにおける手牌
   const [simulationHand, setSimulationHand] = React.useState<Hand>(
     loadSettingAsObject('simulationHand', DEFAULT_HAND),
   );
+  const setSimulationHand2 = (h: Hand) => {
+    setSimulationHand(h);
+    saveSettingForObject('simulationHand', h);
+  };
   // 担当
   const [myIdol] = React.useState<number>(
     loadSettingAsInteger('myIdol', DEFAULT_NY_IDOL),
@@ -53,23 +62,19 @@ const useStore = () => {
     switch (action.type) {
       // タイトル画面→ゲーム画面への遷移
       case 'changeSceneTtoG':
-        setSceneMode('GameScene');
-        saveSettingForString('sceneMode', 'GameScene');
+        setSceneMode2('GameScene');
         break;
       // タイトル画面→シミュレーション画面への遷移
       case 'changeSceneTtoS':
-        setSceneMode('SimulationScene');
-        saveSettingForString('sceneMode', 'SimulationScene');
+        setSceneMode2('SimulationScene');
         break;
       // ゲーム画面→タイトル画面への遷移
       case 'changeSceneGtoT':
-        setSceneMode('TitleScene');
-        saveSettingForString('sceneMode', 'TitleScene');
+        setSceneMode2('TitleScene');
         break;
       // シミュレーション画面→タイトル画面への遷移
       case 'changeSceneStoT':
-        setSceneMode('TitleScene');
-        saveSettingForString('sceneMode', 'TitleScene');
+        setSceneMode2('TitleScene');
         break;
       // シミュレーション画面→キーボード画面への遷移
       case 'changeSceneStoK': {
@@ -83,13 +88,11 @@ const useStore = () => {
       }
       // キーボード画面→シミュレーション画面への遷移
       case 'changeSceneKtoS':
-        setSceneMode('SimulationScene');
-        saveSettingForString('sceneMode', 'SimulationScene');
+        setSceneMode2('SimulationScene');
         break;
       // アイドル選択画面→シミュレーション画面への遷移
       case 'changeSceneItoS':
-        setSceneMode('SimulationScene');
-        saveSettingForString('sceneMode', 'SimulationScene');
+        setSceneMode2('SimulationScene');
         break;
       // 牌をチェックボックスで選択
       case 'checkIdolTile': {
@@ -105,7 +108,7 @@ const useStore = () => {
         const newHand = ejectUnit(simulationHand, handCheckFlg);
 
         // 解除後の手牌をセットする
-        setSimulationHand(newHand);
+        setSimulationHand2(newHand);
         setHandCheckFlg(createFilledArray(HAND_TILE_SIZE, false));
         break;
       }
@@ -115,7 +118,7 @@ const useStore = () => {
         const newHand = shiftTileLeft(simulationHand, handCheckFlg);
 
         // 解除後の手牌をセットする
-        setSimulationHand(newHand);
+        setSimulationHand2(newHand);
         setHandCheckFlg(createFilledArray(HAND_TILE_SIZE, false));
         break;
       }
@@ -125,7 +128,7 @@ const useStore = () => {
         const newHand = shiftTileRight(simulationHand, handCheckFlg);
 
         // 解除後の手牌をセットする
-        setSimulationHand(newHand);
+        setSimulationHand2(newHand);
         setHandCheckFlg(createFilledArray(HAND_TILE_SIZE, false));
         break;
       }
@@ -135,7 +138,7 @@ const useStore = () => {
         const newHand = injectUnit(simulationHand, handCheckFlg, true);
 
         // 解除後の手牌をセットする
-        setSimulationHand(newHand);
+        setSimulationHand2(newHand);
         setHandCheckFlg(createFilledArray(HAND_TILE_SIZE, false));
         break;
       }
@@ -145,7 +148,7 @@ const useStore = () => {
         const newHand = injectUnit(simulationHand, handCheckFlg, false);
 
         // 解除後の手牌をセットする
-        setSimulationHand(newHand);
+        setSimulationHand2(newHand);
         setHandCheckFlg(createFilledArray(HAND_TILE_SIZE, false));
         break;
       }
@@ -164,10 +167,8 @@ const useStore = () => {
         );
 
         // 解除後の手牌をセットする
-        setSimulationHand(newHand);
-
-        setSceneMode('SimulationScene');
-        saveSettingForString('sceneMode', 'SimulationScene');
+        setSimulationHand2(newHand);
+        setSceneMode2('SimulationScene');
         break;
       }
       default:
