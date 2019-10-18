@@ -36,3 +36,6 @@ export interface Hand {
 
 // 各アイドルが何枚づつ存在するかを表す
 export type IdolCountArray = number[];
+
+// 番兵
+export const MILLION_SCORE = 1000000;
