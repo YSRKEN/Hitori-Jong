@@ -1,5 +1,3 @@
-import { range } from 'service/UtilityService';
-
 // アイドルの属性
 export type IdolType = 'Princess' | 'Fairy' | 'Angel' | 'Extra' | 'Sora';
 
@@ -73,17 +71,3 @@ export const IDOL_LIST_COUNT = IDOL_LIST.length;
 // ひらがな1文字→アイドル名の対応表
 export const KANA_LIST =
   'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもや　ゆ　よらりるれろわ　を　ん';
-const calcKanaToIdol = (): { kana: string; idol: number[] }[] => {
-  return KANA_LIST.split('').map(kana => {
-    return {
-      kana,
-      idol: range(IDOL_LIST.length).filter(
-        i => IDOL_LIST[i].kana.substring(0, 1).replace('じ', 'し') === kana,
-      ),
-    };
-  });
-};
-export const KANA_TO_IDOL_LIST: {
-  kana: string;
-  idol: number[];
-}[] = calcKanaToIdol();

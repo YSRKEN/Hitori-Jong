@@ -2,8 +2,8 @@ import React from 'react';
 import StateContext from 'context';
 import './UnitResultScene.css';
 import Button from 'parts/Button';
-import { UNIT_LIST2 } from 'constant/unit';
 import { IDOL_LIST } from 'constant/idol';
+import { UNIT_LIST2 } from 'service/HandService';
 
 const UnitResultScene: React.FC = () => {
   const { unitCandidateData, dispatch } = React.useContext(StateContext);

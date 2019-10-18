@@ -4,8 +4,8 @@ import {
   HAND_TILE_SIZE_PLUS,
   IdolCountArray,
 } from 'constant/other';
-import { UNIT_LIST2 } from 'constant/unit';
-import { IDOL_LIST, IDOL_LIST_COUNT } from 'constant/idol';
+import { IDOL_LIST, IDOL_LIST_COUNT, KANA_LIST } from 'constant/idol';
+import { UNIT_LIST } from 'constant/unit';
 import { range, createFilledArray } from './UtilityService';
 
 // 文字で表されたアイドル一覧を数字一覧に変換する
@@ -14,6 +14,67 @@ export const stringToNumber = (memberList: string[]) => {
     IDOL_LIST.findIndex(idol => idol.name === member),
   );
 };
+
+// かなとアイドルの対応表を作成する
+const calcKanaToIdol = (): { kana: string; idol: number[] }[] => {
+  return KANA_LIST.split('').map(kana => {
+    return {
+      kana,
+      idol: range(IDOL_LIST.length).filter(
+        i => IDOL_LIST[i].kana.substring(0, 1).replace('じ', 'し') === kana,
+      ),
+    };
+  });
+};
+export const KANA_TO_IDOL_LIST: {
+  kana: string;
+  idol: number[];
+}[] = calcKanaToIdol();
+
+// ユニットの情報
+export interface UnitInfo {
+  name: string;
+  member: number[];
+  memberCount: number;
+  memberICA: IdolCountArray;
+  score: number;
+  scoreWithChi: number;
+}
+
+// ユニット情報を、プログラム上から扱いやすい形式に変換する
+const toUnitInfo = (name: string, member: string[]): UnitInfo => {
+  const calcScore = (length: number) => {
+    if (length <= 1) {
+      return 1000;
+    }
+
+    return (length - 1) * 2000;
+  };
+  const memberIndex = member.map(m =>
+    IDOL_LIST.findIndex(idol => idol.name === m),
+  );
+  const memberICA: IdolCountArray = Array<number>(IDOL_LIST_COUNT);
+  for (let i = 0; i < IDOL_LIST_COUNT; i += 1) {
+    memberICA[i] = 0;
+  }
+  for (const member2 of memberIndex) {
+    memberICA[member2] += 1;
+  }
+
+  return {
+    name,
+    member: memberIndex,
+    memberCount: member.length,
+    memberICA,
+    score: calcScore(member.length),
+    scoreWithChi: calcScore(member.length - 1),
+  };
+};
+
+// ユニット一覧(整形後)
+export const UNIT_LIST2: UnitInfo[] = UNIT_LIST.map(record =>
+  toUnitInfo(record.name, record.member),
+);
 
 // ソート前の手牌Aとソート後の手牌Bとの対応を調べる。
 // 引数のunitsがA、戻り値outputがBに対応する。
