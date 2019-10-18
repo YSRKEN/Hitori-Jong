@@ -21,6 +21,8 @@ const SimulationScene: React.FC = () => {
   const injectUnitFixed = () =>
     dispatch({ type: 'injectUnitFixed', message: '' });
   const findUnit = () => dispatch({ type: 'findUnit', message: '' });
+  const findWantedIdol = () =>
+    dispatch({ type: 'findWantedIdol', message: '' });
 
   // コマンドパレットを動的生成
   const calcCommandJsxElement = (): JSX.Element => {
@@ -29,7 +31,7 @@ const SimulationScene: React.FC = () => {
       return (
         <>
           <Button text="ユニット検索" onClick={findUnit} />
-          <Button text="受け入れ検索" />
+          <Button text="受け入れ検索" onClick={findWantedIdol} />
           <Button text="自動理牌" />
         </>
       );

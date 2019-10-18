@@ -1,7 +1,12 @@
-import { Hand, HAND_TILE_SIZE, HAND_TILE_SIZE_PLUS } from 'constant/other';
+import {
+  Hand,
+  HAND_TILE_SIZE,
+  HAND_TILE_SIZE_PLUS,
+  IdolCountArray,
+} from 'constant/other';
 import { UNIT_LIST2 } from 'constant/unit';
-import { IDOL_LIST } from 'constant/idol';
-import { range } from './UtilityService';
+import { IDOL_LIST, IDOL_LIST_COUNT } from 'constant/idol';
+import { range, createFilledArray } from './UtilityService';
 
 // 文字で表されたアイドル一覧を数字一覧に変換する
 export const stringToNumber = (memberList: string[]) => {
@@ -245,28 +250,39 @@ export const changeMember = (
   };
 };
 
-// 後0・1・2枚あれば完成する役一覧を生成する
+// 後0・1・2枚あれば完成するユニット一覧を生成する
 // ただし、既にユニットを組んでいる牌は使えないとする。
 // また、残数がX枚の時、(X+1)人以上のユニットは選択しないとする
 export const findUnit = (hand: Hand): { id: number; member: number[] }[][] => {
-  const output: { id: number; member: number[] }[][] = [[], [], []];
+  // 「ユニットに組み込まれていない手牌＋ツモ牌」を選択する
   const memberSet = new Set([
     ...range(HAND_TILE_SIZE)
       .filter(i => hand.units[i] < 0)
       .map(i => hand.members[i]),
     hand.plusMember,
   ]);
+  // 新しくユニットを構成できる最大枚数
   const maxUnitMembers = HAND_TILE_SIZE_PLUS - calcHandUnitLengthSum(hand);
+
+  // ユニットを検索する
+  const output: { id: number; member: number[] }[][] = [[], [], []];
   UNIT_LIST2.forEach((unitInfo, index) => {
+    // ユニットの枚数が多すぎるものは無視する
     if (unitInfo.member.length > maxUnitMembers) {
       return;
     }
+
+    // 追加したいメンバーを割り出す
     const nonMatchMember = unitInfo.member.filter(i => !memberSet.has(i));
+
+    // 追加したいメンバーの人数が2枚以下ならば、出力結果に追加する
     const memberCountDiff = nonMatchMember.length;
     if (memberCountDiff < output.length) {
       output[memberCountDiff].push({ id: index, member: nonMatchMember });
     }
   });
+
+  // 「追加したいメンバーの人数」が同じ場合、ユニットにおけるメンバー数が多いもの順に並び替える
   for (let countDiff = 0; countDiff < output.length; countDiff += 1) {
     output[countDiff].sort(
       (a, b) => UNIT_LIST2[b.id].memberCount - UNIT_LIST2[a.id].memberCount,
@@ -274,4 +290,126 @@ export const findUnit = (hand: Hand): { id: number; member: number[] }[][] => {
   }
 
   return output;
+};
+
+// アイドルIDの配列を、各アイドルの枚数の配列(ICA)に変換する。
+// 前者をA、後者をBとした場合、アイドルID=iがA内にj件あると、B[i] = j
+export const memberListToICA = (memberList: number[]) => {
+  const idolCountArray: IdolCountArray = createFilledArray(IDOL_LIST_COUNT, 0);
+  for (const member of memberList) {
+    idolCountArray[member] += 1;
+  }
+
+  return idolCountArray;
+};
+
+// ICA型の値でA - Bを計算する
+export const minusICA = (
+  a: IdolCountArray,
+  b: IdolCountArray,
+): IdolCountArray => {
+  return range(IDOL_LIST_COUNT).map(i => a[i] - b[i]);
+};
+
+// ICA型の値でA // Bを計算する
+export const divideICA = (a: IdolCountArray, b: IdolCountArray): number => {
+  let output = 3;
+  for (let i = 0; i < IDOL_LIST_COUNT; i += 1) {
+    if (a[i] === 0) {
+      if (b[i] > 0) {
+        return 0;
+      }
+    } else if (b[i] > 0) {
+      output = Math.min(output, Math.floor(a[i] / b[i]));
+    }
+  }
+
+  return output;
+};
+
+// ロンできる牌、およびチーできる牌について検索を行う
+export const findWantedIdol = (hand: Hand) => {
+  // 「ユニットに組み込まれていない手牌」を選択する
+  const memberList = [
+    ...range(HAND_TILE_SIZE)
+      .filter(i => hand.units[i] < 0)
+      .map(i => hand.members[i]),
+  ];
+  const memberSet = new Set(memberList);
+
+  // 新しくユニットを構成できる最大枚数
+  const maxUnitMembers = memberList.length + 1;
+  // 完成したユニット
+  const completedUnitList: number[] = [];
+  // リーチ状態のユニット(※処理の都合上、完成したユニットから1枚を取り去ったものも含む)
+  const reachedUnitList: {
+    id: number;
+    member: number[];
+    nonMember: number;
+  }[] = [];
+  UNIT_LIST2.forEach((unitInfo, index) => {
+    // ユニットの枚数が多すぎるものは無視する
+    if (unitInfo.member.length > maxUnitMembers) {
+      return;
+    }
+
+    // 追加したいメンバーを割り出す
+    const matchMember = unitInfo.member.filter(i => memberSet.has(i));
+    const nonMatchMember = unitInfo.member.filter(i => !memberSet.has(i));
+
+    // 追加したいメンバーの人数によって分岐
+    if (nonMatchMember.length === 0) {
+      completedUnitList.push(index);
+      for (const nonMember of matchMember) {
+        reachedUnitList.push({
+          id: index,
+          member: matchMember.filter(i => i !== nonMember),
+          nonMember,
+        });
+      }
+    } else if (nonMatchMember.length === 1) {
+      reachedUnitList.push({
+        id: index,
+        member: matchMember,
+        nonMember: nonMatchMember[0],
+      });
+    }
+  });
+
+  // リーチ状態のユニット1つ＋完成したユニットで残りを構成できるかを調べる(ロン検索)
+  const memberArray = memberListToICA(memberList);
+  reachedUnitList.forEach(pair => {
+    // 「ユニットに組み込まれていない手牌」から、「リーチ状態のユニット」を取り除いた手牌
+    const newMemberArray = minusICA(memberArray, memberListToICA(pair.member));
+
+    // newMemberArrayに含まれているユニットと、そのユニットをnewMemberArrayから何回取れるかの情報
+    const unitIdAndCount = completedUnitList
+      .map(i => {
+        const unit = UNIT_LIST2[i];
+        const count = divideICA(newMemberArray, unit.memberICA);
+
+        return { id: i, count };
+      })
+      .filter(pair2 => pair2.count > 0);
+    if (unitIdAndCount.length === 0) {
+      return;
+    }
+
+    // unitIdAndCountに含まれるユニットの組み合わせでnewMemberArrayを構成できるかを検索する
+
+    console.log(
+      `${UNIT_LIST2[pair.id].name} ${IDOL_LIST[pair.nonMember].name}`,
+    );
+    console.log(
+      unitIdAndCount.map(
+        pair2 => `${UNIT_LIST2[pair2.id].name} ${pair2.count}`,
+      ),
+    );
+    console.log(
+      range(IDOL_LIST_COUNT)
+        .filter(i => newMemberArray[i] > 0)
+        .map(i => `${IDOL_LIST[i].name} ${newMemberArray[i]}`),
+    );
+    console.log('');
+  });
 };

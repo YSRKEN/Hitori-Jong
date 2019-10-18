@@ -68,6 +68,7 @@ export const IDOL_LIST: IdolInfo[] = [
 	{ 'name': '詩花', 'kana': 'しいか', 'type': 'Extra' },
 	{ 'name': 'そら', 'kana': 'そら', 'type': 'Sora' }
 ];
+export const IDOL_LIST_COUNT = IDOL_LIST.length;
 
 // ひらがな1文字→アイドル名の対応表
 export const KANA_LIST =

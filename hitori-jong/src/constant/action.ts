@@ -15,7 +15,8 @@ export type ActionType =
   | 'setKana'
   | 'selectIdol'
   | 'selectIdolTile'
-  | 'findUnit';
+  | 'findUnit'
+  | 'findWantedIdol';
 
 // Action
 export interface Action {

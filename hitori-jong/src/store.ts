@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  SceneMode,
-  Hand,
-  DEFAULT_HAND,
-  DEFAULT_NY_IDOL,
-  HAND_TILE_SIZE,
-} from 'constant/other';
+import { SceneMode, Hand, HAND_TILE_SIZE } from 'constant/other';
 import {
   loadSettingAsString,
   saveSettingForString,
@@ -22,8 +16,35 @@ import {
   calcHandUnitLengthSum,
   changeMember,
   findUnit,
+  findWantedIdol,
+  stringToNumber,
 } from 'service/HandService';
 import { Action } from './constant/action';
+
+// 手牌の初期値
+export const DEFAULT_HAND: Hand = {
+  members: stringToNumber([
+    '紗代子',
+    '莉緒',
+    '環',
+    '風花',
+    '恵美',
+    '奈緒',
+    '響',
+    '育',
+    '育',
+    '千早',
+    '海美',
+    '朋花',
+  ]),
+  units: [1, -1, -1, 1, 1, 1, -1, 0, -1, -1, 1, 0],
+  unitIndexes: [15, 125],
+  unitChiFlg: [false, true],
+  plusMember: stringToNumber(['莉緒'])[0],
+};
+
+// 担当の初期値
+export const DEFAULT_NY_IDOL = stringToNumber(['静香'])[0];
 
 // アプリケーションの状態
 const useStore = () => {
@@ -58,7 +79,9 @@ const useStore = () => {
   // アイドル選択におけるカナ
   const [selectedKana, setSelectedKana] = React.useState('');
   // ユニット検索結果
-  const [unitCandidateData, setUnitCandidateData] = React.useState<{id: number, member: number[]}[][]>([]);
+  const [unitCandidateData, setUnitCandidateData] = React.useState<
+    { id: number; member: number[] }[][]
+  >([]);
 
   // Reduxライクなdispatch関数
   const dispatch = (action: Action) => {
@@ -173,6 +196,9 @@ const useStore = () => {
       case 'findUnit':
         setUnitCandidateData(findUnit(simulationHand));
         setSceneMode('UnitResultScene');
+        break;
+      case 'findWantedIdol':
+        findWantedIdol(simulationHand);
         break;
       default:
         break;
