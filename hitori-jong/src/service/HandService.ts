@@ -227,23 +227,22 @@ export const changeMember = (
       unitChiFlg: [...hand.unitChiFlg],
       plusMember: selectIdolIndex,
     };
-  } else {
-    // ソート前の手牌Aとソート後の手牌Bとの対応を調べる
-    // sortedIndex[X] = i ⇔ B[X] = A[i]
-    const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
-
-    // 新しい手牌を生成する
-    const newMembers = [...hand.members];
-    newMembers[sortedIndex[selectedIdolSortedIndex]] = selectIdolIndex;
-
-    return {
-      members: newMembers,
-      units: [...hand.units],
-      unitIndexes: [...hand.unitIndexes],
-      unitChiFlg: [...hand.unitChiFlg],
-      plusMember: hand.plusMember,
-    };
   }
+  // ソート前の手牌Aとソート後の手牌Bとの対応を調べる
+  // sortedIndex[X] = i ⇔ B[X] = A[i]
+  const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
+
+  // 新しい手牌を生成する
+  const newMembers = [...hand.members];
+  newMembers[sortedIndex[selectedIdolSortedIndex]] = selectIdolIndex;
+
+  return {
+    members: newMembers,
+    units: [...hand.units],
+    unitIndexes: [...hand.unitIndexes],
+    unitChiFlg: [...hand.unitChiFlg],
+    plusMember: hand.plusMember,
+  };
 };
 
 // 後0・1・2枚あれば完成する役一覧を生成する
@@ -264,10 +263,15 @@ export const findUnit = (hand: Hand): { id: number; member: number[] }[][] => {
     }
     const nonMatchMember = unitInfo.member.filter(i => !memberSet.has(i));
     const memberCountDiff = nonMatchMember.length;
-    if (memberCountDiff <= 2) {
+    if (memberCountDiff < output.length) {
       output[memberCountDiff].push({ id: index, member: nonMatchMember });
     }
   });
+  for (let countDiff = 0; countDiff < output.length; countDiff += 1) {
+    output[countDiff].sort(
+      (a, b) => UNIT_LIST2[b.id].memberCount - UNIT_LIST2[a.id].memberCount,
+    );
+  }
 
   return output;
 };
