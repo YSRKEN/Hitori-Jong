@@ -460,7 +460,6 @@ export const findWantedIdol = (hand: Hand) => {
 
   // リーチ状態のユニット1つ＋完成したユニットで残りを構成できるかを調べる(ロン検索)
   const memberArray = memberListToICA(memberList);
-  console.log(reachedUnitList);
   reachedUnitList.forEach(pair => {
     console.log(`${UNIT_LIST2[pair.id].name} ＋${IDOL_LIST[pair.nonMember].name}`);
     // 「ユニットに組み込まれていない手牌」から、「リーチ状態のユニット」を取り除いた手牌
@@ -475,6 +474,16 @@ export const findWantedIdol = (hand: Hand) => {
         return { id: i, count };
       })
       .filter(pair2 => pair2.count > 0);
+    if (newMemberArray.filter(count => count !== 0).length === 0) {
+      // アガリ
+      console.log(`　必要牌：${IDOL_LIST[pair.nonMember].name}`);
+      console.log(`　点数：${UNIT_LIST2[pair.id].score + calcPreScore(hand)}`);
+      const units1 = range(hand.unitIndexes.length).map(i => {return {id: hand.unitIndexes[i], flg: hand.unitChiFlg[i]};});
+      const unitsAll = [...units1, {id: pair.id, flg: false}];
+      const unitsAllString = unitsAll.map(pair => `${UNIT_LIST2[pair.id].name}${pair.flg ? '(チー)' : ''}`).join(', ');
+      console.log(`　ユニット：${unitsAllString}`);
+      return;
+    }
     if (unitIdAndCount.length === 0) {
       return;
     }
@@ -536,9 +545,9 @@ export const findWantedIdol = (hand: Hand) => {
       }
     }
     if (maxScore >= MILLION_SCORE) {
-      console.log('アガリパターン発見！');
-      console.log(`必要牌：${IDOL_LIST[pair.nonMember].name}`);
-      console.log(`点数：${(maxScore % MILLION_SCORE) + calcPreScore(hand)}`);
+      console.log('　アガリパターン発見！');
+      console.log(`　必要牌：${IDOL_LIST[pair.nonMember].name}`);
+      console.log(`　点数：${(maxScore % MILLION_SCORE) + calcPreScore(hand)}`);
       const units1 = range(hand.unitIndexes.length).map(i => {return {id: hand.unitIndexes[i], flg: hand.unitChiFlg[i]};});
       const units2: {id: number, flg: boolean}[] = [];
       for (let i = 0; i < unitIdAndCount.length; i += 1) {
@@ -548,7 +557,7 @@ export const findWantedIdol = (hand: Hand) => {
       }
       const unitsAll = [...units1, ...units2];
       const unitsAllString = unitsAll.map(pair => `${UNIT_LIST2[pair.id].name}${pair.flg ? '(チー)' : ''}`).join(', ');
-      console.log(`ユニット：${unitsAllString}`);
+      console.log(`　ユニット：${unitsAllString}`);
     }
   });
   console.log('ロン検索完了');
