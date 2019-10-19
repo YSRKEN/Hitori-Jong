@@ -1,0 +1,18 @@
+.ron-block {
+	margin-top: 5vh;
+	margin-bottom: 5vh;
+}
+.ron-block > h2 {
+	margin-left: 15vh;
+	font-size: 5vh;
+	margin-bottom: 0;
+}
+.table-block > h3 {
+	margin-left: 15vh;
+	font-size: 4vh;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+.member-list {
+	white-space: nowrap;
+}

@@ -10,6 +10,8 @@ interface ApplicationState {
   handCheckFlg: boolean[];
   selectedKana: string;
   unitCandidateData: {id: number, member: number[]}[][];
+  ronList: {member: number, unit: {id: number, chiFlg: boolean}[]}[];
+  chiList: {member: number, unit: number, otherMember: number[]}[];
   dispatch: (action: Action) => void;
 }
 

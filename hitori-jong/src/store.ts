@@ -83,9 +83,9 @@ const useStore = () => {
     { id: number; member: number[] }[][]
   >([]);
   // ロン牌検索結果
-  const [,setRonList] = React.useState<{member: number, unit: {id: number, chiFlg: boolean}[]}[]>([]);
+  const [ronList, setRonList] = React.useState<{member: number, unit: {id: number, chiFlg: boolean}[]}[]>([]);
   // チー牌検索結果
-  const [,setChiList] = React.useState<{member: number, unit: number, otherMember: number[]}[]>([]);
+  const [chiList, setChiList] = React.useState<{member: number, unit: number, otherMember: number[]}[]>([]);
 
   // Reduxライクなdispatch関数
   const dispatch = (action: Action) => {
@@ -203,9 +203,9 @@ const useStore = () => {
         break;
       case 'findWantedIdol':{
         const result = findWantedIdol(simulationHand);
-        console.log(result);
         setRonList(result.ron);
         setChiList(result.chi);
+        setSceneMode('WantedIdolResultScene');
         break;
       }
       default:
@@ -220,6 +220,8 @@ const useStore = () => {
     handCheckFlg,
     selectedKana,
     unitCandidateData,
+    ronList,
+    chiList,
     dispatch,
   };
 };

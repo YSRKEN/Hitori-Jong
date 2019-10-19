@@ -1,9 +1,11 @@
 .table-block {
 	margin-top: 5vh;
 	margin-bottom: 5vh;
+	width: 90vw;
 }
 .table-block > h2 {
 	margin-left: 15vh;
+	font-size: 5vh;
 }
 .table-block > table {
 	margin-left: 15vh;
