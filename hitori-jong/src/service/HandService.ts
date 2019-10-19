@@ -334,6 +334,11 @@ const showMembers = (members: number[], message: string) => {
   console.log(`${message}：${members.map(i => IDOL_LIST[i].name).join('、')}`);
 };
 
+// ユニットを表示(デバッグ用)
+const showUnits = (unitIndexes: number[], message: string) => {
+  console.log(`${message}：${unitIndexes.map(i => UNIT_LIST2[i].name).join('、')}`);
+};
+
 // 後X枚あれば揃うユニットを検索する
 const findUnitFromMembers = (members: number[], x: number): { id: number, member: number[], nonMember: number[] }[] => {
   const memberSet = new Set(members);
@@ -418,141 +423,99 @@ export const calcPreScore = (hand: Hand) => {
     .reduce((p, c) => p + c);
 };
 
+// a>=bならtrue
+export const hasICA = (a: IdolCountArray, b: IdolCountArray): boolean => {
+  for (let i = 0; i < IDOL_LIST_COUNT; i += 1) {
+    if (a[i] < b[i]) {
+      return false;
+    }
+  }
+  return true;
+};
+
+// メンバーから取りうるユニット一覧を算出する
+const findUnitICAFromMemberICA = (memberICA: IdolCountArray): { id: number, score: number, ica: IdolCountArray }[] => {
+  const temp: { id: number, count: number, score: number, ica: IdolCountArray }[] = [];
+  for (let unitId = 0; unitId < UNIT_LIST2.length; unitId += 1) {
+    const unit = UNIT_LIST2[unitId];
+    if (!hasICA(memberICA, unit.memberICA)) {
+      continue;
+    }
+    temp.push({ id: unitId, count: unit.memberCount, score: unit.score, ica: unit.memberICA });
+  }
+  return temp.sort((a, b) => b.count - a.count).map(record => {
+    return {id: record.id, score: record.score, ica: record.ica};
+  });
+};
+
+// 全ての要素の値が0か？
+const isZero = (a: IdolCountArray) => {
+  for (let i = 0; i < IDOL_LIST_COUNT; i += 1) {
+    if (a[i] > 0) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// 与えられた手牌から完成しているユニットの組み合わせを検索する。
+// 最も高得点な組み合わせを戻り値として返す
+export const findBestUnitPattern = (memberICA: IdolCountArray): {unit: number[], score: number} => {
+  // 手牌を使い切った＝アガリなのでボーナスを付与する
+  if (isZero(memberICA)) {
+    return {unit: Array<number>(), score: MILLION_SCORE};
+  }
+
+  // 考えられるユニットの候補を検索する
+  const completedUnits = findUnitICAFromMemberICA(memberICA);
+
+  // いずれかのユニットを選択する
+  let bestResult = {unit: Array<number>(), score: 0};
+  for (const completedUnit of completedUnits) {
+    const result = findBestUnitPattern(minusICA(memberICA, completedUnit.ica));
+    if (bestResult.score < result.score + completedUnit.score) {
+      bestResult = {unit: [...result.unit, completedUnit.id], score: result.score + completedUnit.score};
+    }
+  }
+  return bestResult;
+};
+
 // ロンできる牌、およびチーできる牌について検索を行う
 export const findWantedIdol = (hand: Hand) => {
   // 「ユニットに組み込まれていない手牌」を選択する
   const freeMembers = selectFreeMembers(hand, false);
 
-  // 新しくユニットを構成できる最大枚数を算出する
-  const maxUnitMembers = freeMembers.length + 1;
-
   // 既に完成しているユニット、および後1枚で完成するユニットを検索する
-  const completedUnits = findUnitFromMembers(freeMembers, 0)
-    .filter(record => UNIT_LIST2[record.id].memberCount <= maxUnitMembers);
-  const reachedUnits = findUnitFromMembers(freeMembers, 1)
-    .filter(record => UNIT_LIST2[record.id].memberCount <= maxUnitMembers);
+  const completedUnits = findUnitFromMembers(freeMembers, 0);
+  const reachedUnits = findUnitFromMembers(freeMembers, 1);
 
   // 既に完成しているユニットでもとりあえず「鳴く」ことはできることを利用して、
   // 「アガリ牌の可能性がある」一覧を取り出す
-  const wantedIdolCandiList = Array.from(new Set([
-    ...completedUnits.map(record => record.member).flat(),
-    ...reachedUnits.map(record => record.nonMember).flat()
-  ]));
-  
-  console.log(completedUnits);
-  console.log(reachedUnits);
-  showMembers(wantedIdolCandiList, '候補');
+  const wantedIdolCandiList = Array.from(new Set(reachedUnits.map(record => record.nonMember).flat()));
+  completedUnits.forEach(record => {
+    record.member.forEach(member => {
+      if (!wantedIdolCandiList.includes(member)) {
+        wantedIdolCandiList.push(member);
+      }
+    });
+  });
+
+  showMembers(wantedIdolCandiList, 'ロン牌候補');
 
   // 順に確かめる
   for (const wantedIdolCandi of wantedIdolCandiList) {
-    // とりうるユニットの可能性＝既に完成しているユニット＋選択したユニット
-    
+    // 手牌を完成させる
+    const freeMembers2 = [...freeMembers, wantedIdolCandi];
+
+    // 最も高得点な組み合わせを探索する
+    const result = findBestUnitPattern(memberListToICA(freeMembers2));
+
+    // ロン上がりできる＝スコアがMILLION_SCORE以上
+    if (result.score >= MILLION_SCORE) {
+      console.log(`ツモ牌：${IDOL_LIST[wantedIdolCandi].name}`)
+      console.log(`点数：${result.score}`);
+      showUnits(result.unit, '手役');
+    }
   }
-
-  console.log('完了');
-/*
-  // リーチ状態のユニット1つ＋完成したユニットで残りを構成できるかを調べる(ロン検索)
-  const memberArray = memberListToICA(memberList);
-  reachedUnitList.forEach(pair => {
-    console.log(`${UNIT_LIST2[pair.id].name} ＋${IDOL_LIST[pair.nonMember].name}`);
-    // 「ユニットに組み込まれていない手牌」から、「リーチ状態のユニット」を取り除いた手牌
-    const newMemberArray = minusICA(memberArray, memberListToICA(pair.member));
-
-    // newMemberArrayに含まれているユニットと、そのユニットをnewMemberArrayから何回取れるかの情報
-    const unitIdAndCount = completedUnitList
-      .map(i => {
-        const unit = UNIT_LIST2[i];
-        const count = divideICA(newMemberArray, unit.memberICA);
-
-        return { id: i, count };
-      })
-      .filter(pair2 => pair2.count > 0);
-    if (newMemberArray.filter(count => count !== 0).length === 0) {
-      // アガリ
-      console.log(`　必要牌：${IDOL_LIST[pair.nonMember].name}`);
-      console.log(`　点数：${UNIT_LIST2[pair.id].score + calcPreScore(hand)}`);
-      const units1 = range(hand.unitIndexes.length).map(i => {return {id: hand.unitIndexes[i], flg: hand.unitChiFlg[i]};});
-      const unitsAll = [...units1, {id: pair.id, flg: false}];
-      const unitsAllString = unitsAll.map(pair => `${UNIT_LIST2[pair.id].name}${pair.flg ? '(チー)' : ''}`).join(', ');
-      console.log(`　ユニット：${unitsAllString}`);
-      return;
-    }
-    if (unitIdAndCount.length === 0) {
-      return;
-    }
-
-    // unitIdAndCountに含まれるユニットの組み合わせでnewMemberArrayを構成できるかを検索する
-    const unitPattern: number[] = unitIdAndCount.map(pair => pair.count);
-    const allPattern = unitPattern.map(count => count + 1).reduce((p, c) => p * c);
-    const newMemberCount = countICA(newMemberArray);
-    let maxScorePattern: number[] = [];
-    let maxScore: number = 0;
-    for (let count = 0; count < allPattern; count += 1) {
-      // 指定したパターンにおけるスコアを計算する
-      let score = 0;
-      let tileCount = 0;
-      for (let i = 0; i < unitIdAndCount.length; i += 1) {
-        score += UNIT_LIST2[unitIdAndCount[i].id].score * unitPattern[i];
-        tileCount += UNIT_LIST2[unitIdAndCount[i].id].memberCount * unitPattern[i];
-      }
-      if (tileCount === newMemberCount) {
-        score += MILLION_SCORE;
-      }
-
-      // スコアが既存の最高点を上回らない場合は無視する
-      if (maxScore < score) {
-        // 指定したパターンにおける、各牌の枚数を計算する
-        let unitAllICA: number[] = createFilledArray(IDOL_LIST_COUNT, 0);
-        for (let i = 0; i < unitIdAndCount.length; i += 1) {
-          unitAllICA = fmaICA(UNIT_LIST2[unitIdAndCount[i].id].memberICA, unitPattern[i], unitAllICA);
-        }
-
-        // 各牌の枚数が既存の枚数を上回らないことを確認する
-        let flg = true;
-        for (let i = 0; i < IDOL_LIST_COUNT; i += 1) {
-          if (unitAllICA[i] > newMemberArray[i]) {
-            flg = false;
-            break;
-          }
-        }
-        if (flg) {
-          maxScore = score;
-          maxScorePattern = [...unitPattern];
-        }
-      }
-
-      // unitPatternをインクリメントする
-      let decrementFlg = false;
-      for (let i = 0; i < unitIdAndCount.length; i += 1) {
-        if (unitPattern[i] > 0) {
-          unitPattern[i] -= 1;
-          for (let j = 0; j < i; j += 1) {
-            unitPattern[j] = unitIdAndCount[j].count;
-          }
-          decrementFlg = true;
-          break;
-        }
-      }
-      if (!decrementFlg) {
-        break;
-      }
-    }
-    if (maxScore >= MILLION_SCORE) {
-      console.log('　アガリパターン発見！');
-      console.log(`　必要牌：${IDOL_LIST[pair.nonMember].name}`);
-      console.log(`　点数：${(maxScore % MILLION_SCORE) + calcPreScore(hand)}`);
-      const units1 = range(hand.unitIndexes.length).map(i => {return {id: hand.unitIndexes[i], flg: hand.unitChiFlg[i]};});
-      const units2: {id: number, flg: boolean}[] = [];
-      for (let i = 0; i < unitIdAndCount.length; i += 1) {
-        for (let j = 0; j < maxScorePattern[i]; j += 1) {
-          units2.push({id: unitIdAndCount[i].id, flg: false});
-        }
-      }
-      const unitsAll = [...units1, ...units2];
-      const unitsAllString = unitsAll.map(pair => `${UNIT_LIST2[pair.id].name}${pair.flg ? '(チー)' : ''}`).join(', ');
-      console.log(`　ユニット：${unitsAllString}`);
-    }
-  });
-  */
   console.log('ロン検索完了');
 };
