@@ -330,11 +330,13 @@ const selectFreeMembers = (hand: Hand, addFlg: boolean): number[] => {
 }
 
 // メンバーを表示(デバッグ用)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const showMembers = (members: number[], message: string) => {
   console.log(`${message}：${members.map(i => IDOL_LIST[i].name).join('、')}`);
 };
 
 // ユニットを表示(デバッグ用)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const showUnits = (unitIndexes: number[], message: string, unitChiFlg: boolean[] = []) => {
   if (unitChiFlg.length === 0) {
     console.log(`${message}：${unitIndexes.map(i => UNIT_LIST2[i].name).join('、')}`);
@@ -485,7 +487,9 @@ export const findBestUnitPattern = (memberICA: IdolCountArray): {unit: number[],
 };
 
 // ロンできる牌、およびチーできる牌について検索を行う
-export const findWantedIdol = (hand: Hand) => {
+export const findWantedIdol = (hand: Hand): {
+  ron: {member: number, unit: {id: number, chiFlg: boolean}[]}[],
+  chi: {member: number, unit: number, otherMember: number[]}[]} => {
   // 「ユニットに組み込まれていない手牌」を選択する
   const freeMembers = selectFreeMembers(hand, false);
 
@@ -527,20 +531,12 @@ export const findWantedIdol = (hand: Hand) => {
       });
     }
   }
-  console.log('ロン検索完了');
-  ronList.forEach(record => {
-    console.log(`ツモ牌：${IDOL_LIST[record.member].name}`)
-    showUnits(record.unit.map(r => r.id), 'ユニット', record.unit.map(r => r.chiFlg));
-  });
 
   const ronIdolSet = new Set(ronList.map(record => record.member));
   const chiList: {member: number, unit: number, otherMember: number[]}[] = reachedUnits.map(record => {
     return {member: record.nonMember[0], unit: record.id, otherMember: record.member};
-  }).filter(record => !ronIdolSet.has(record.member));
+  }).filter(record => !ronIdolSet.has(record.member) && record.otherMember.length >= 2)
+  .sort((a, b) => a.member - b.member);
 
-  console.log('');
-  console.log('チー検索完了');
-  chiList.forEach(record => {
-    console.log(`チー牌：${IDOL_LIST[record.member].name}　ユニット：${UNIT_LIST2[record.unit].name}　他のメンバー：${record.otherMember.map(id => IDOL_LIST[id].name).join('、')}`);
-  });
+  return {ron: ronList, chi: chiList};
 };

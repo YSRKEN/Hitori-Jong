@@ -82,6 +82,10 @@ const useStore = () => {
   const [unitCandidateData, setUnitCandidateData] = React.useState<
     { id: number; member: number[] }[][]
   >([]);
+  // ロン牌検索結果
+  const [,setRonList] = React.useState<{member: number, unit: {id: number, chiFlg: boolean}[]}[]>([]);
+  // チー牌検索結果
+  const [,setChiList] = React.useState<{member: number, unit: number, otherMember: number[]}[]>([]);
 
   // Reduxライクなdispatch関数
   const dispatch = (action: Action) => {
@@ -197,9 +201,13 @@ const useStore = () => {
         setUnitCandidateData(findUnit(simulationHand));
         setSceneMode('UnitResultScene');
         break;
-      case 'findWantedIdol':
-        findWantedIdol(simulationHand);
+      case 'findWantedIdol':{
+        const result = findWantedIdol(simulationHand);
+        console.log(result);
+        setRonList(result.ron);
+        setChiList(result.chi);
         break;
+      }
       default:
         break;
     }
