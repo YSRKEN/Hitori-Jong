@@ -504,10 +504,8 @@ export const findWantedIdol = (hand: Hand) => {
     });
   });
 
-  showMembers(wantedIdolCandiList, 'ロン牌候補');
-
   // 順に確かめる
-  const ronList: {member: number, unit: number[], score: number}[] = [];
+  const ronList: {member: number, unit: {id: number, chiFlg: boolean}[]}[] = [];
   for (const wantedIdolCandi of wantedIdolCandiList) {
     // 手牌を完成させる
     const freeMembers2 = [...freeMembers, wantedIdolCandi];
@@ -517,18 +515,32 @@ export const findWantedIdol = (hand: Hand) => {
 
     // ロン上がりできる＝スコアがMILLION_SCORE以上
     if (result.score >= MILLION_SCORE) {
+      const handUnits = zip(hand.unitIndexes, hand.unitChiFlg).map(pair => {
+        return {id: pair.first, chiFlg: pair.second}
+      });
+      const resultUnits = result.unit.map(i => {
+        return {id: i, chiFlg: false};
+      });
       ronList.push({
         member: wantedIdolCandi,
-        unit: result.unit,
-        score: result.score - MILLION_SCORE
+        unit: [...handUnits, ...resultUnits]
       });
     }
   }
   console.log('ロン検索完了');
   ronList.forEach(record => {
     console.log(`ツモ牌：${IDOL_LIST[record.member].name}`)
-    console.log(`点数：${record.score + calcPreScore(hand)}`);
-    showUnits(hand.unitIndexes, '手役', hand.unitChiFlg);
-    showUnits(record.unit, '追加の手役');
+    showUnits(record.unit.map(r => r.id), 'ユニット', record.unit.map(r => r.chiFlg));
+  });
+
+  const ronIdolSet = new Set(ronList.map(record => record.member));
+  const chiList: {member: number, unit: number, otherMember: number[]}[] = reachedUnits.map(record => {
+    return {member: record.nonMember[0], unit: record.id, otherMember: record.member};
+  }).filter(record => !ronIdolSet.has(record.member));
+
+  console.log('');
+  console.log('チー検索完了');
+  chiList.forEach(record => {
+    console.log(`チー牌：${IDOL_LIST[record.member].name}　ユニット：${UNIT_LIST2[record.unit].name}　他のメンバー：${record.otherMember.map(id => IDOL_LIST[id].name).join('、')}`);
   });
 };
