@@ -335,8 +335,12 @@ const showMembers = (members: number[], message: string) => {
 };
 
 // ユニットを表示(デバッグ用)
-const showUnits = (unitIndexes: number[], message: string) => {
-  console.log(`${message}：${unitIndexes.map(i => UNIT_LIST2[i].name).join('、')}`);
+const showUnits = (unitIndexes: number[], message: string, unitChiFlg: boolean[] = []) => {
+  if (unitChiFlg.length === 0) {
+    console.log(`${message}：${unitIndexes.map(i => UNIT_LIST2[i].name).join('、')}`);
+  } else {
+    console.log(`${message}：${zip(unitIndexes, unitChiFlg).map(pair => UNIT_LIST2[pair.first].name + (pair.second ? '(チー)' : '')).join('、')}`);
+  }
 };
 
 // 後X枚あれば揃うユニットを検索する
@@ -503,19 +507,28 @@ export const findWantedIdol = (hand: Hand) => {
   showMembers(wantedIdolCandiList, 'ロン牌候補');
 
   // 順に確かめる
+  const ronList: {member: number, unit: number[], score: number}[] = [];
   for (const wantedIdolCandi of wantedIdolCandiList) {
     // 手牌を完成させる
     const freeMembers2 = [...freeMembers, wantedIdolCandi];
 
     // 最も高得点な組み合わせを探索する
-    const result = findBestUnitPattern(memberListToICA(freeMembers2));
+    const result: {unit: number[], score: number} = findBestUnitPattern(memberListToICA(freeMembers2));
 
     // ロン上がりできる＝スコアがMILLION_SCORE以上
     if (result.score >= MILLION_SCORE) {
-      console.log(`ツモ牌：${IDOL_LIST[wantedIdolCandi].name}`)
-      console.log(`点数：${result.score}`);
-      showUnits(result.unit, '手役');
+      ronList.push({
+        member: wantedIdolCandi,
+        unit: result.unit,
+        score: result.score - MILLION_SCORE
+      });
     }
   }
   console.log('ロン検索完了');
+  ronList.forEach(record => {
+    console.log(`ツモ牌：${IDOL_LIST[record.member].name}`)
+    console.log(`点数：${record.score + calcPreScore(hand)}`);
+    showUnits(hand.unitIndexes, '手役', hand.unitChiFlg);
+    showUnits(record.unit, '追加の手役');
+  });
 };
