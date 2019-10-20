@@ -27,10 +27,19 @@ export const findUnit = (hand: Hand): { id: number; member: number[] }[][] => {
 	const maxUnitMembers = freeMembers.length;
 
 	// ユニットを検索する
-	return [0, 1, 2].map(x => {
-		return findUnitFromMembers(freeMembers, x)
-			.filter(record => UNIT_LIST2[record.id].memberCount <= maxUnitMembers);
-	});
+	const memberSet = new Set(freeMembers);
+	const temp = UNIT_LIST2.filter(unit => unit.memberCount <= maxUnitMembers)
+		.map(unit => {
+			const matchedMember = unit.member.filter(i => memberSet.has(i));
+			return {
+				id: unit.id,
+				member: matchedMember,
+				nonMemberCount: unit.memberCount - matchedMember.length
+			}
+		}).sort((a, b) => b.member.length - a.member.length);
+	return [0, 1, 2].map(x => temp.filter(record => record.nonMemberCount === x).map(record => {
+		return {id: record.id, member: record.member};
+	}));
 };
 
 // 既存のユニットにおける点数を計算する
