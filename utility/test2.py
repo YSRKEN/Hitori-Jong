@@ -1,5 +1,6 @@
+import time
 from pprint import pprint
-from typing import List, Dict, Union, Set
+from typing import List, Dict, Union, Set, Tuple
 
 UNIT_LIST: List[Dict[str, Union[str, Set[str]]]] = [
     {"name": "(詩花)", "member": {"詩花"}},
@@ -214,16 +215,12 @@ def judge_info(hands_info: Dict[str, int], units_info: Dict[str, int]) -> bool:
     return True
 
 
-def main():
-    # 手牌
-    hands = ['春香', '未来', '杏奈', '百合子', 'やよい', '真', '亜美', '真美', '響', '詩花', 'あずさ', '伊織', '貴音']
-
+def find_best_unit_pattern_old(hands: List[str]) -> Tuple[List[Dict[str, Union[str, Set[str]]]], int]:
     # 手牌をあらかじめSetしたものを用意する
     hands_set = set(hands)
 
     # 役のそれぞれにアクセスし、当てはまるものを抽出する
     hand_unit_list = [x for x in UNIT_LIST if len(x['member'] & hands_set) == len(x['member'])]
-    pprint(hand_unit_list)
 
     # 手牌におけるカウント
     hands_info = tile_info(hands)
@@ -236,7 +233,6 @@ def main():
 
     # 含まれる役の個数
     unit_count_list = [unit_count_in_hands(hands_info, x) for x in unit_info_list]
-    pprint(unit_count_list)
 
     # 組み合わせを展開
     unit_patterns: List[List[int]] = []
@@ -262,21 +258,120 @@ def main():
         if judge_info(hands_info, selected_units_info):
             score = 0
             tile_count = 0
+            index = 0
             for p, s in zip(unit_score_list, unit_pattern):
                 score += p * s
-                tile_count += s
+                tile_count += s * len(hand_unit_list[index]['member'])
+                index += 1
             if tile_count == 13:
-                score += 100000000
+                score += 10000000
             if score > max_score:
                 max_score = score
                 max_unit_pattern = unit_pattern
-    max_score = max_score % 100000000
-
-    # 結果を出力する
-    print(f'点数：{max_score}点')
+    max_unit_pattern2 = []
     for pattern, unit in zip(max_unit_pattern, hand_unit_list):
         if pattern > 0:
-            print(f'[{pattern}回] {unit["name"]} {unit["member"]}')
+            for k in range(0, pattern):
+                max_unit_pattern2.append(unit)
+    return max_unit_pattern2, max_score
+
+
+def find_best_unit_pattern(hands: List[str]) -> Tuple[List[Dict[str, Union[str, Set[str]]]], int]:
+
+    # 手牌がない＝使い切れたのでアガリとみなす
+    if len(hands) == 0:
+        return [], 1000000
+
+    # 手牌をあらかじめSetしたものを用意する
+    hands_set = set(hands)
+
+    # 役のそれぞれにアクセスし、当てはまるものを抽出する
+    hand_unit_list = [x for x in UNIT_LIST if len(x['member'] & hands_set) == len(x['member'])]
+
+    # 役を1つ選択し、それを取り去った残りで探索
+    best_pattern = ([], 0)
+    for unit in hand_unit_list:
+        temp = set()
+        new_hands = []
+        for hand in hands:
+            if hand in unit['member'] and hand not in temp:
+                temp.add(hand)
+                continue
+            new_hands.append(hand)
+        result = find_best_unit_pattern(new_hands)
+        unit_score = SCORE_DICT[len(unit['member'])]
+        if result[1] + unit_score > best_pattern[1]:
+            best_pattern = (result[0] + [unit], result[1] + unit_score)
+    return best_pattern
+
+
+cache: Dict[str, Tuple[List[Dict[str, Union[str, Set[str]]]], int]] = {}
+
+
+def find_best_unit_pattern_2(hands: List[str], pre_unit_list=None) -> Tuple[List[Dict[str, Union[str, Set[str]]]], int]:
+    hands_key = ','.join(hands)
+    if hands_key in cache:
+        return cache[hands_key]
+
+    if pre_unit_list is None:
+        pre_unit_list = UNIT_LIST
+
+    # 手牌がない＝使い切れたのでアガリとみなす
+    if len(hands) == 0:
+        return [], 1000000
+
+    # 手牌をあらかじめSetしたものを用意する
+    hands_set = set(hands)
+
+    # 役のそれぞれにアクセスし、当てはまるものを抽出する
+    hand_unit_list = [x for x in pre_unit_list if len(x['member'] & hands_set) == len(x['member'])]
+
+    # 役を1つ選択し、それを取り去った残りで探索
+    best_pattern = ([], 0)
+    for unit in hand_unit_list:
+        temp = set()
+        new_hands = []
+        for hand in hands:
+            if hand in unit['member'] and hand not in temp:
+                temp.add(hand)
+                continue
+            new_hands.append(hand)
+        result = find_best_unit_pattern_2(new_hands, hand_unit_list)
+        unit_score = SCORE_DICT[len(unit['member'])]
+        if result[1] + unit_score > best_pattern[1]:
+            best_pattern = (result[0] + [unit], result[1] + unit_score)
+
+    cache[hands_key] = best_pattern
+    return best_pattern
+
+
+def main():
+    # 手牌
+    # hands = ['志保', '星梨花', '海美', '可奈', 'まつり', 'このみ', '瑞希', '翼', 'ジュリア', '律子', '春香', '千早', 'あずさ']
+    hands = ['春香', '千早', '美希', '真', '貴音', 'やよい', 'まつり', '真美', 'エミリー', '亜美', '桃子', '伊織', '育']
+
+    """
+    start_time = time.perf_counter()
+    for i in range(0, 10):
+        find_best_unit_pattern_old(hands)
+    elapsed_time = time.perf_counter() - start_time
+    print(elapsed_time / 10)
+    """
+
+    start_time = time.perf_counter()
+    for i in range(0, 100):
+        find_best_unit_pattern(hands)
+    elapsed_time = time.perf_counter() - start_time
+    print(elapsed_time / 100)
+
+    start_time = time.perf_counter()
+    global cache
+    for i in range(0, 1000):
+        find_best_unit_pattern_2(hands)
+        cache = {}
+    elapsed_time = time.perf_counter() - start_time
+    print(elapsed_time / 1000)
+    pprint(find_best_unit_pattern_2(hands))
 
 
 if __name__ == '__main__':
