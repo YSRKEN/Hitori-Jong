@@ -163,8 +163,7 @@ export const injectUnit = (
 
   // 完全に一致するユニットを検索する
   let unitIndex = -1;
-  for (let i = 0; i < UNIT_LIST2.length; i += 1) {
-    const unit = UNIT_LIST2[i];
+  for (const unit of UNIT_LIST2) {
     if (unit.memberCount !== idolList.length) {
       continue;
     }
@@ -176,7 +175,7 @@ export const injectUnit = (
       }
     }
     if (flg) {
-      unitIndex = i;
+      unitIndex = unit.id;
       break;
     }
   }

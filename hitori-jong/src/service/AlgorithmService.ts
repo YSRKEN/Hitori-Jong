@@ -51,7 +51,7 @@ const findUnitICAFromMemberICA = (
 	const temp: { id: number, count: number, score: number, ica: IdolCountArray }[] = [];
 
 	const unitList = preCompletedUnits.length === 0
-		? UNIT_LIST2.map((unit, index) => { return { id: index, count: unit.memberCount, score: unit.score, ica: unit.memberICA }; })
+		? UNIT_LIST2.map(unit => { return { id: unit.id, count: unit.memberCount, score: unit.score, ica: unit.memberICA }; })
 		: preCompletedUnits;
 
 	for (const record of unitList) {
