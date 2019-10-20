@@ -117,20 +117,26 @@ export const findWantedIdol = (hand: Hand): {
 	// 「ユニットに組み込まれていない手牌」を選択する
 	const freeMembers = selectFreeMembers(hand, false);
 
-	// 既に完成しているユニット、および後1枚で完成するユニットを検索する
-	const completedUnits = findUnitFromMembers(freeMembers, 0);
-	const reachedUnits = findUnitFromMembers(freeMembers, 1);
-
 	// 既に完成しているユニットでもとりあえず「鳴く」ことはできることを利用して、
 	// 「アガリ牌の可能性がある」一覧を取り出す
-	const wantedIdolCandiList = Array.from(new Set(reachedUnits.map(record => record.nonMember).flat()));
-	completedUnits.forEach(record => {
-		record.member.forEach(member => {
-			if (!wantedIdolCandiList.includes(member)) {
-				wantedIdolCandiList.push(member);
-			}
-		});
-	});
+	const freeMembersSet = new Set(freeMembers);
+	const wantedIdolCandiSet = new Set<number>();
+	for (const unit of UNIT_LIST2) {
+		const nonMembers = unit.member.filter(i => !freeMembersSet.has(i));
+		switch (nonMembers.length) {
+			case 0:
+				for (const member of unit.member) {
+					wantedIdolCandiSet.add(member);
+				}
+				break;
+			case 1:
+					wantedIdolCandiSet.add(nonMembers[0]);
+				break;
+			default:
+				break;
+		}
+	}
+	const wantedIdolCandiList = Array.from(wantedIdolCandiSet);
 
 	// 順に確かめる
 	const ronList: { member: number, unit: { id: number, chiFlg: boolean }[] }[] = [];
@@ -156,11 +162,17 @@ export const findWantedIdol = (hand: Hand): {
 		}
 	}
 
+	// チーできる牌一覧を検索する
 	const ronIdolSet = new Set(ronList.map(record => record.member));
-	const chiList: { member: number, unit: number, otherMember: number[] }[] = reachedUnits.map(record => {
-		return { member: record.nonMember[0], unit: record.id, otherMember: record.member };
-	}).filter(record => !ronIdolSet.has(record.member) && record.otherMember.length >= 2)
-		.sort((a, b) => a.member - b.member);
+	const chiList: { member: number, unit: number, otherMember: number[] }[] = [];
+	for (const unit of UNIT_LIST2) {
+		const members = unit.member.filter(i => freeMembersSet.has(i));
+		const nonMembers = unit.member.filter(i => !freeMembersSet.has(i));
+		if (members.length >= 2 && nonMembers.length === 1 && !ronIdolSet.has(nonMembers[0])) {
+			chiList.push( { member: nonMembers[0], unit: unit.id, otherMember: members });
+		}
+	}
+	chiList.sort((a, b) => a.member - b.member);
 
 	console.log(`処理時間：${Date.now() - startTime}[ms]`);
 
