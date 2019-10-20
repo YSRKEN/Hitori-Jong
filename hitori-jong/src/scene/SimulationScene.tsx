@@ -32,7 +32,7 @@ const SimulationScene: React.FC = () => {
         <>
           <Button text="ユニット検索" onClick={findUnit} />
           <Button text="受け入れ検索" onClick={findWantedIdol} />
-          <Button text="自動理牌" />
+          <Button text="何切る検索" />
         </>
       );
     }

@@ -440,14 +440,21 @@ export const hasICA = (a: IdolCountArray, b: IdolCountArray): boolean => {
 };
 
 // メンバーから取りうるユニット一覧を算出する
-const findUnitICAFromMemberICA = (memberICA: IdolCountArray): { id: number, score: number, ica: IdolCountArray }[] => {
+const findUnitICAFromMemberICA = (
+  memberICA: IdolCountArray,
+  preCompletedUnits: { id: number, score: number, ica: IdolCountArray }[])
+  : { id: number, score: number, ica: IdolCountArray }[] => {
   const temp: { id: number, count: number, score: number, ica: IdolCountArray }[] = [];
-  for (let unitId = 0; unitId < UNIT_LIST2.length; unitId += 1) {
-    const unit = UNIT_LIST2[unitId];
-    if (!hasICA(memberICA, unit.memberICA)) {
+
+  const unitList = preCompletedUnits.length === 0
+    ? UNIT_LIST2.map((unit, index) => { return {id: index, count: unit.memberCount, score: unit.score, ica: unit.memberICA}; })
+    : preCompletedUnits;
+
+  for (const record of unitList) {
+    if (!hasICA(memberICA, record.ica)) {
       continue;
     }
-    temp.push({ id: unitId, count: unit.memberCount, score: unit.score, ica: unit.memberICA });
+    temp.push({ id: record.id, count: UNIT_LIST2[record.id].memberCount, score: record.score, ica: record.ica });
   }
   return temp.sort((a, b) => b.count - a.count).map(record => {
     return {id: record.id, score: record.score, ica: record.ica};
@@ -466,23 +473,34 @@ const isZero = (a: IdolCountArray) => {
 
 // 与えられた手牌から完成しているユニットの組み合わせを検索する。
 // 最も高得点な組み合わせを戻り値として返す
-export const findBestUnitPattern = (memberICA: IdolCountArray): {unit: number[], score: number} => {
-  // 手牌を使い切った＝アガリなのでボーナスを付与する
+const fBPcache: {[key: string]: {unit: number[], score: number}} = {};
+export const findBestUnitPattern = (
+  memberICA: IdolCountArray,
+  preCompletedUnits: { id: number, score: number, ica: IdolCountArray }[] = [])
+  : {unit: number[], score: number} => {
+  const key = memberICA.map(i => `${i}`).join(',');
+  if (key in fBPcache) {
+    return fBPcache[key];
+  }
+
+    // 手牌を使い切った＝アガリなのでボーナスを付与する
   if (isZero(memberICA)) {
+    fBPcache[key] = {unit: Array<number>(), score: MILLION_SCORE};
     return {unit: Array<number>(), score: MILLION_SCORE};
   }
 
   // 考えられるユニットの候補を検索する
-  const completedUnits = findUnitICAFromMemberICA(memberICA);
+  const completedUnits = findUnitICAFromMemberICA(memberICA, preCompletedUnits);
 
   // いずれかのユニットを選択する
   let bestResult = {unit: Array<number>(), score: 0};
   for (const completedUnit of completedUnits) {
-    const result = findBestUnitPattern(minusICA(memberICA, completedUnit.ica));
+    const result = findBestUnitPattern(minusICA(memberICA, completedUnit.ica), completedUnits);
     if (bestResult.score < result.score + completedUnit.score) {
       bestResult = {unit: [...result.unit, completedUnit.id], score: result.score + completedUnit.score};
     }
   }
+  fBPcache[key] = bestResult;
   return bestResult;
 };
 
@@ -490,6 +508,8 @@ export const findBestUnitPattern = (memberICA: IdolCountArray): {unit: number[],
 export const findWantedIdol = (hand: Hand): {
   ron: {member: number, unit: {id: number, chiFlg: boolean}[]}[],
   chi: {member: number, unit: number, otherMember: number[]}[]} => {
+  const startTime = Date.now();
+  
   // 「ユニットに組み込まれていない手牌」を選択する
   const freeMembers = selectFreeMembers(hand, false);
 
@@ -537,6 +557,8 @@ export const findWantedIdol = (hand: Hand): {
     return {member: record.nonMember[0], unit: record.id, otherMember: record.member};
   }).filter(record => !ronIdolSet.has(record.member) && record.otherMember.length >= 2)
   .sort((a, b) => a.member - b.member);
+
+  console.log(`処理時間：${Date.now() - startTime}[ms]`);
 
   return {ron: ronList, chi: chiList};
 };
