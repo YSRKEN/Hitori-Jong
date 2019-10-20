@@ -3,19 +3,6 @@ import { Hand, MILLION_SCORE } from "constant/other";
 import { selectFreeMembers, getUnitsWithChiFlg } from "./HandService";
 import { IdolCountArray, hasICA, isZero, minusICA, memberListToICA } from "constant2/ica";
 
-// 後X枚あれば揃うユニットを検索する
-const findUnitFromMembers = (members: number[], x: number): { id: number, member: number[], nonMember: number[] }[] => {
-	const memberSet = new Set(members);
-	const temp = UNIT_LIST2.map(unit => {
-		return {
-			id: unit.id,
-			member: unit.member.filter(i => memberSet.has(i)),
-			nonMember: unit.member.filter(i => !memberSet.has(i))
-		}
-	}).filter(record => record.nonMember.length === x);
-	return temp.sort((a, b) => b.member.length - a.member.length);
-};
-
 // 後0・1・2枚あれば完成するユニット一覧を生成する
 // ただし、既にユニットを組んでいる牌は使えないとする。
 // また、残数がX枚の時、(X+1)人以上のユニットは選択しないとする
