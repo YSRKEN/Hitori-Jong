@@ -3,8 +3,8 @@ import StateContext from 'context';
 import './WantedIdolResultScene.css';
 import Button from 'parts/Button';
 import { IDOL_LIST } from 'constant/idol';
-import { UNIT_LIST2 } from 'service/HandService';
 import { range } from 'service/UtilityService';
+import { UNIT_LIST2 } from 'constant2/unit';
 
 const WantedIdolResultScene: React.FC = () => {
 	const { ronList, chiList, dispatch } = React.useContext(StateContext);

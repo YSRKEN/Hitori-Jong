@@ -1,11 +1,12 @@
 import React from 'react';
 import { Hand, HAND_TILE_SIZE, HAND_TILE_SIZE_PLUS } from 'constant/other';
-import { calcShowMembers, UnitInfo, UNIT_LIST2 } from 'service/HandService';
+import { calcShowMembers } from 'service/HandService';
 import StateContext from 'context';
 import { range } from 'service/UtilityService';
 import { IDOL_LIST } from 'constant/idol';
 import './HandTileView.css';
 import Button from './Button';
+import { UnitInfo, UNIT_LIST2 } from 'constant2/unit';
 
 // 手牌一覧＋ユニット表示＋チェックボックス
 const HandTileView: React.FC<{ hand: Hand }> = ({ hand }) => {

@@ -4,7 +4,7 @@ import { range } from 'service/UtilityService';
 import { KANA_LIST } from 'constant/idol';
 import Button from 'parts/Button';
 import './KanaKeyBoardScene.css';
-import { KANA_TO_IDOL_LIST } from 'service/HandService';
+import { KANA_TO_IDOL_LIST } from 'constant2/kana';
 
 // キーボード画面
 const KanaKeyBoardScene: React.FC = () => {

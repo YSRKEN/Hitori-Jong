@@ -15,11 +15,17 @@ import {
   injectUnit,
   calcHandUnitLengthSum,
   changeMember,
-  findUnit,
-  findWantedIdol,
-  stringToNumber,
 } from 'service/HandService';
 import { Action } from './constant/action';
+import { IDOL_LIST } from 'constant/idol';
+import { findUnit, findWantedIdol } from 'service/AlgorithmService';
+
+// 文字で表されたアイドル一覧を数字一覧に変換する
+const stringToNumber = (memberList: string[]) => {
+  return memberList.map(member =>
+    IDOL_LIST.findIndex(idol => idol.name === member),
+  );
+};
 
 // 手牌の初期値
 export const DEFAULT_HAND: Hand = {

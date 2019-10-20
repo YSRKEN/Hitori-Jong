@@ -3,7 +3,7 @@ import Button from 'parts/Button';
 import StateContext from 'context';
 import { IDOL_LIST } from 'constant/idol';
 import './IdolSelectScene.css';
-import { KANA_TO_IDOL_LIST } from 'service/HandService';
+import { KANA_TO_IDOL_LIST } from 'constant2/kana';
 
 // アイドル選択画面
 const IdolSelectScene: React.FC = () => {
