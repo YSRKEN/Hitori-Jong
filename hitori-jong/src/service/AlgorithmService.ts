@@ -9,6 +9,7 @@ import {
   toHashICA,
 } from 'constant2/ica';
 import { IDOL_LIST, IDOL_LIST_COUNT } from 'constant/idol';
+import { SORA_INDEX } from 'constant2/other';
 import {
   selectFreeMembers,
   getUnitsWithChiFlg,
@@ -151,18 +152,9 @@ export const findBestUnitPattern = (
   return bestResult;
 };
 
-// ロンできる牌一覧を検索する
-const findRonList = (
-  hand: Hand,
-): { member: number; unit: { id: number; chiFlg: boolean }[] }[] => {
-  // 「ユニットに組み込まれていない手牌」を選択する
-  const freeMembers = selectFreeMembers(hand, false);
-
-  // 既存のユニットとチーフラグを取得する
-  const unitsWithChiFlg = getUnitsWithChiFlg(hand);
-
-  // 既に完成しているユニットでもとりあえず「鳴く」ことはできることを利用して、
-  // 「アガリ牌の可能性がある」一覧を取り出す
+// 既に完成しているユニットでもとりあえず「鳴く」ことはできることを利用して、
+// 「アガリ牌の可能性がある」一覧を取り出す
+const calcRawWantedIdolCandiList = (freeMembers: number[]) => {
   const freeMembersSet = new Set(freeMembers);
   const wantedIdolCandiSet = new Set<number>();
   for (const unit of UNIT_LIST2) {
@@ -180,7 +172,23 @@ const findRonList = (
         break;
     }
   }
-  const wantedIdolCandiList = Array.from(wantedIdolCandiSet);
+
+  return Array.from(wantedIdolCandiSet);
+};
+
+// ロンできる牌一覧を検索する
+const findRonList = (
+  hand: Hand,
+): { member: number; unit: { id: number; chiFlg: boolean }[] }[] => {
+  // 「ユニットに組み込まれていない手牌」を選択する
+  const freeMembers = selectFreeMembers(hand, false);
+
+  // 既存のユニットとチーフラグを取得する
+  const unitsWithChiFlg = getUnitsWithChiFlg(hand);
+
+  // 既に完成しているユニットでもとりあえず「鳴く」ことはできることを利用して、
+  // 「アガリ牌の可能性がある」一覧を取り出す
+  const wantedIdolCandiList = calcRawWantedIdolCandiList(freeMembers);
 
   // 順に確かめる
   const ronList: {
@@ -360,16 +368,26 @@ calcExpectdValue12 = (
   }
 
   // 期待値を計算する
+  // ただ、「有効牌ではない」ものを一括りにすることで高速化を狙う
   let expectedScore = 0.0;
-  for (let i = 0; i < IDOL_LIST_COUNT; i += 1) {
+  const wantedIdolList = calcRawWantedIdolCandiList(
+    selectFreeMembers(hand, false),
+  );
+  for (const idol of wantedIdolList) {
     // 新たな牌をツモった際の手牌を算出する
-    const newHand = drawTile(hand, i);
+    const newHand = drawTile(hand, idol);
 
     // 手牌に対する期待値を計算して加算する
     expectedScore +=
       (1.0 * calcExpectdValue13(newHand, myIdol, maxDepth, depth + 1)) /
       IDOL_LIST_COUNT;
   }
+  const newHandOther = drawTile(hand, SORA_INDEX);
+  expectedScore +=
+    (1.0 *
+      (IDOL_LIST_COUNT - wantedIdolList.length) *
+      calcExpectdValue13(newHandOther, myIdol, maxDepth, depth + 1)) /
+    IDOL_LIST_COUNT;
 
   if (depth <= 1) {
     console.log(
@@ -409,6 +427,7 @@ export const findTradingIdol = (hand: Hand, myIdol: number, evDepth = 3) => {
   }
   temp.sort((a, b) => b.eValue - a.eValue);
   console.log(`処理時間：${Date.now() - startTime}[ms]`);
+  console.log(Object.keys(fBPcache).length);
   const temp2 = temp.map(pair => `・${pair.name}―${pair.eValue}`).join('\n');
   const output = `アガリ形ではありません。\n期待値探索深さ：${evDepth}\n打牌―得点期待値：\n${temp2}`;
   window.alert(output);
