@@ -1,10 +1,7 @@
-import {
-  Hand,
-  HAND_TILE_SIZE,
-  HAND_TILE_SIZE_PLUS,
-} from 'constant/other';
-import { range } from './UtilityService';
+import { Hand, HAND_TILE_SIZE, HAND_TILE_SIZE_PLUS } from 'constant/other';
 import { UNIT_LIST2 } from 'constant2/unit';
+import { IDOL_LIST } from 'constant/idol';
+import { range } from './UtilityService';
 
 // ソート前の手牌Aとソート後の手牌Bとの対応を調べる。
 // 引数のunitsがA、戻り値outputがBに対応する。
@@ -242,29 +239,97 @@ export const changeMember = (
 
 // メンバーと担当ユニットとのペアを取り出す
 export const getMembersWithUnit = (hand: Hand) => {
-  const result = Array<{member: number, unit: number}>(HAND_TILE_SIZE);
+  const result = Array<{ member: number; unit: number }>(HAND_TILE_SIZE);
   for (let i = 0; i < HAND_TILE_SIZE; i += 1) {
-    result.push({member: hand.members[i], unit: hand.units[i]});
+    result.push({ member: hand.members[i], unit: hand.units[i] });
   }
+
   return result;
-}
+};
 
 // ユニットとチー判定のペアを取り出す
 export const getUnitsWithChiFlg = (hand: Hand) => {
-  const result: {unit: number, chiFlg: boolean}[] = [];
+  const result: { unit: number; chiFlg: boolean }[] = [];
   for (let i = 0; i < hand.unitIndexes.length; i += 1) {
-    result.push({unit: hand.unitIndexes[i], chiFlg: hand.unitChiFlg[i]});
+    result.push({ unit: hand.unitIndexes[i], chiFlg: hand.unitChiFlg[i] });
   }
+
   return result;
-}
+};
 
 // ユニットに組み込まれていない手牌を選択する
 // addFlg = trueならツモ牌も選択する
 export const selectFreeMembers = (hand: Hand, addFlg: boolean): number[] => {
   if (addFlg) {
-    return [...getMembersWithUnit(hand).filter(pair => pair.unit < 0)
-      .map(pair => pair.member), hand.plusMember];
-  } else {
-    return getMembersWithUnit(hand).filter(pair => pair.unit < 0).map(pair => pair.member);
+    return [
+      ...getMembersWithUnit(hand)
+        .filter(pair => pair.unit < 0)
+        .map(pair => pair.member),
+      hand.plusMember,
+    ];
   }
-}
+
+  return getMembersWithUnit(hand)
+    .filter(pair => pair.unit < 0)
+    .map(pair => pair.member);
+};
+
+// 手牌を文字列化する
+export const toStringList = (hand: Hand, plusFlg: boolean): string => {
+  return [
+    ...getUnitsWithChiFlg(hand).map(
+      pair => UNIT_LIST2[pair.unit].name + (pair.chiFlg ? '(チー)' : ''),
+    ),
+    ...selectFreeMembers(hand, plusFlg).map(id => IDOL_LIST[id].name),
+  ].join(', ');
+};
+
+// 指定した位置の牌を切る
+// ただしユニットが組まれているところの牌は切られないものとする
+export const dropTile = (hand: Hand, index: number, nextTile = 0): Hand => {
+  // ツモ切りの場合の処理
+  if (index === HAND_TILE_SIZE_PLUS - 1) {
+    return {
+      members: [...hand.members],
+      units: [...hand.units],
+      unitIndexes: [...hand.unitIndexes],
+      unitChiFlg: [...hand.unitChiFlg],
+      plusMember: nextTile,
+    };
+  }
+
+  // いずれかのユニットが組まれているところの牌は切られないものとする
+  const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
+  const handUnitLengthSum = calcHandUnitLengthSum(hand);
+  if (handUnitLengthSum > index) {
+    throw new Error('ユニットが組まれているところの牌が切られました');
+  }
+
+  // 指定した位置の牌を切り、それ以外の手牌を左にシフトさせる
+  const shiftedmembers = [...hand.members];
+  for (let i = index + 1; i < HAND_TILE_SIZE; i += 1) {
+    const temp = shiftedmembers[sortedIndex[i]];
+    shiftedmembers[sortedIndex[i]] = shiftedmembers[sortedIndex[i - 1]];
+    shiftedmembers[sortedIndex[i - 1]] = temp;
+  }
+  shiftedmembers[HAND_TILE_SIZE - 1] = hand.plusMember;
+
+  return {
+    members: shiftedmembers,
+    units: [...hand.units],
+    unitIndexes: [...hand.unitIndexes],
+    unitChiFlg: [...hand.unitChiFlg],
+    plusMember: nextTile,
+  };
+};
+
+// 牌をツモる
+export const drawTile = (hand: Hand, nextTile: number): Hand => {
+  return {
+    members: [...hand.members],
+    units: [...hand.units],
+    unitIndexes: [...hand.unitIndexes],
+    unitChiFlg: [...hand.unitChiFlg],
+    plusMember: nextTile,
+  };
+};

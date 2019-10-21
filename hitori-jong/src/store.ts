@@ -16,9 +16,13 @@ import {
   calcHandUnitLengthSum,
   changeMember,
 } from 'service/HandService';
-import { Action } from './constant/action';
 import { IDOL_LIST } from 'constant/idol';
-import { findUnit, findWantedIdol } from 'service/AlgorithmService';
+import {
+  findUnit,
+  findWantedIdol,
+  findTradingIdol,
+} from 'service/AlgorithmService';
+import { Action } from './constant/action';
 
 // 文字で表されたアイドル一覧を数字一覧に変換する
 const stringToNumber = (memberList: string[]) => {
@@ -89,9 +93,13 @@ const useStore = () => {
     { id: number; member: number[] }[][]
   >([]);
   // ロン牌検索結果
-  const [ronList, setRonList] = React.useState<{member: number, unit: {id: number, chiFlg: boolean}[]}[]>([]);
+  const [ronList, setRonList] = React.useState<
+    { member: number; unit: { id: number; chiFlg: boolean }[] }[]
+  >([]);
   // チー牌検索結果
-  const [chiList, setChiList] = React.useState<{member: number, unit: number, otherMember: number[]}[]>([]);
+  const [chiList, setChiList] = React.useState<
+    { member: number; unit: number; otherMember: number[] }[]
+  >([]);
 
   // Reduxライクなdispatch関数
   const dispatch = (action: Action) => {
@@ -207,13 +215,16 @@ const useStore = () => {
         setUnitCandidateData(findUnit(simulationHand));
         setSceneMode('UnitResultScene');
         break;
-      case 'findWantedIdol':{
+      case 'findWantedIdol': {
         const result = findWantedIdol(simulationHand);
         setRonList(result.ron);
         setChiList(result.chi);
         setSceneMode('WantedIdolResultScene');
         break;
       }
+      case 'findDropIdol':
+        findTradingIdol(simulationHand, myIdol);
+        break;
       default:
         break;
     }

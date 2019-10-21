@@ -23,6 +23,7 @@ const SimulationScene: React.FC = () => {
   const findUnit = () => dispatch({ type: 'findUnit', message: '' });
   const findWantedIdol = () =>
     dispatch({ type: 'findWantedIdol', message: '' });
+  const findTradingIdol = () => dispatch({ type: 'findDropIdol', message: '' });
 
   // コマンドパレットを動的生成
   const calcCommandJsxElement = (): JSX.Element => {
@@ -32,7 +33,7 @@ const SimulationScene: React.FC = () => {
         <>
           <Button text="ユニット検索" onClick={findUnit} />
           <Button text="受け入れ検索" onClick={findWantedIdol} />
-          <Button text="何切る検索" />
+          <Button text="何切る検索" onClick={findTradingIdol} />
         </>
       );
     }
