@@ -382,7 +382,8 @@ calcExpectdValue12 = (
 };
 
 // どの牌を切るのが良いか・鳴くべきか鳴かざるべきかを判断する
-export const findTradingIdol = (hand: Hand, myIdol: number) => {
+// evDepth……探索深さ。深いほど正確になるが処理が重くなる
+export const findTradingIdol = (hand: Hand, myIdol: number, evDepth = 3) => {
   // 既にアガリ形でないかを調べる
   const rawScore = calcScore(hand, myIdol);
   if (rawScore >= MILLION_SCORE) {
@@ -393,18 +394,17 @@ export const findTradingIdol = (hand: Hand, myIdol: number) => {
   }
 
   // アガリ形ではないので、各手牌を打牌した際の期待値を計算する
-  const EV_DEPTH = 3; // 期待値計算における「深さ」
   const temp: { name: string; eValue: number }[] = [];
   for (let i = calcHandUnitLengthSum(hand); i < HAND_TILE_SIZE_PLUS; i += 1) {
     const { name } = IDOL_LIST[calcShowMembers(hand)[i]];
     if (temp.filter(pair => pair.name === name).length === 0) {
       const newHand = dropTile(hand, i);
-      const eValue = calcExpectdValue12(newHand, myIdol, EV_DEPTH);
+      const eValue = calcExpectdValue12(newHand, myIdol, evDepth);
       temp.push({ name, eValue });
     }
   }
   temp.sort((a, b) => b.eValue - a.eValue);
   const temp2 = temp.map(pair => `・${pair.name}―${pair.eValue}`).join('\n');
-  const output = `アガリ形ではありません。\n期待値探索深さ：${EV_DEPTH}\n打牌―得点期待値：\n${temp2}`;
+  const output = `アガリ形ではありません。\n期待値探索深さ：${evDepth}\n打牌―得点期待値：\n${temp2}`;
   window.alert(output);
 };

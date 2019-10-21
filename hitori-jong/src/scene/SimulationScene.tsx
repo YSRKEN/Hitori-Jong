@@ -23,7 +23,10 @@ const SimulationScene: React.FC = () => {
   const findUnit = () => dispatch({ type: 'findUnit', message: '' });
   const findWantedIdol = () =>
     dispatch({ type: 'findWantedIdol', message: '' });
-  const findTradingIdol = () => dispatch({ type: 'findDropIdol', message: '' });
+  const findTradingIdol = () =>
+    dispatch({ type: 'findDropIdol', message: '3' });
+  const findTradingIdolDeep = () =>
+    dispatch({ type: 'findDropIdol', message: '4' });
 
   // コマンドパレットを動的生成
   const calcCommandJsxElement = (): JSX.Element => {
@@ -31,9 +34,10 @@ const SimulationScene: React.FC = () => {
     if (handCheckFlg.findIndex(flg => flg) < 0) {
       return (
         <>
-          <Button text="ユニット検索" onClick={findUnit} />
-          <Button text="受け入れ検索" onClick={findWantedIdol} />
-          <Button text="何切る検索" onClick={findTradingIdol} />
+          <Button text="ユニット？" onClick={findUnit} />
+          <Button text="受け入れ？" onClick={findWantedIdol} />
+          <Button text="何切る(浅)" onClick={findTradingIdol} />
+          <Button text="何切る(深)" onClick={findTradingIdolDeep} />
         </>
       );
     }
