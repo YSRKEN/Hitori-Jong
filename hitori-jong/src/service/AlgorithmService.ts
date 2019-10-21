@@ -306,6 +306,7 @@ let calcExpectdValue12 = (
   maxDepth: number,
   depth = 0,
 ) => {
+  console.log(`calcExpectdValue12_dummy(maxDepth=${maxDepth}, depth=${depth})`);
   const hoge = myIdol * maxDepth * depth * hand.members.length >= 0 ? 0 : 0;
 
   return hoge;
@@ -330,14 +331,6 @@ const calcExpectdValue13 = (
   if (rawScore >= MILLION_SCORE) {
     // 結果を返す
     const score = rawScore % MILLION_SCORE;
-    if (depth === 0) {
-      console.log(
-        `期待値＝${score}点 ${toStringList(hand, true)}+${
-          IDOL_LIST[myIdol].name
-        }担当`,
-      );
-    }
-
     return score;
   }
   // アガリ形でないので、打牌してそれぞれの期待値を出す
@@ -350,14 +343,6 @@ const calcExpectdValue13 = (
   }
   // 最も良かったものを結果として返す
   const score = Math.max(...temp);
-  if (depth === 0) {
-    console.log(
-      `期待値＝${score}点 ${toStringList(hand, true)}+${
-        IDOL_LIST[myIdol].name
-      }担当`,
-    );
-  }
-
   return score;
 };
 
@@ -429,7 +414,9 @@ export const findTradingIdol = (hand: Hand, myIdol: number) => {
     for (let i = calcHandUnitLengthSum(hand); i < HAND_TILE_SIZE_PLUS; i += 1) {
       const { name } = IDOL_LIST[calcShowMembers(hand)[i]];
       if (temp.filter(pair => pair.name === name).length === 0) {
+        console.log(toStringList(hand, true));
         const newHand = dropTile(hand, i);
+        console.log(toStringList(newHand, true));
         const eValue = calcExpectdValue12(newHand, myIdol, evDepth);
         temp.push({ name, eValue });
       }

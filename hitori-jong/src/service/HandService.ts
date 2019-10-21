@@ -307,16 +307,21 @@ export const dropTile = (hand: Hand, index: number, nextTile = 0): Hand => {
 
   // 指定した位置の牌を切り、それ以外の手牌を左にシフトさせる
   const shiftedmembers = [...hand.members];
+  const shiftedunits = [...hand.units];
   for (let i = index + 1; i < HAND_TILE_SIZE; i += 1) {
     const temp = shiftedmembers[sortedIndex[i]];
     shiftedmembers[sortedIndex[i]] = shiftedmembers[sortedIndex[i - 1]];
     shiftedmembers[sortedIndex[i - 1]] = temp;
+    const temp2 = shiftedunits[sortedIndex[i]];
+    shiftedunits[sortedIndex[i]] = shiftedunits[sortedIndex[i - 1]];
+    shiftedunits[sortedIndex[i - 1]] = temp2;
   }
   shiftedmembers[HAND_TILE_SIZE - 1] = hand.plusMember;
+  shiftedunits[HAND_TILE_SIZE - 1] = -1;
 
   return {
     members: shiftedmembers,
-    units: [...hand.units],
+    units: shiftedunits,
     unitIndexes: [...hand.unitIndexes],
     unitChiFlg: [...hand.unitChiFlg],
     plusMember: nextTile,
