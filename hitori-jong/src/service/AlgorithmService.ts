@@ -1,4 +1,4 @@
-import { UNIT_LIST2 } from 'constant2/unit';
+import { UNIT_LIST2, UNIT_LIST3 } from 'constant2/unit';
 import { Hand, MILLION_SCORE, HAND_TILE_SIZE_PLUS } from 'constant/other';
 import {
   IdolCountArray,
@@ -80,19 +80,7 @@ const findUnitICAFromMemberICA = (
     ica: IdolCountArray;
   }[] = [];
 
-  const unitList =
-    preCompletedUnits.length === 0
-      ? UNIT_LIST2.map(unit => {
-          return {
-            id: unit.id,
-            count: unit.memberCount,
-            score: unit.score,
-            ica: unit.memberICA,
-          };
-        })
-      : preCompletedUnits;
-
-  for (const record of unitList) {
+  for (const record of preCompletedUnits) {
     if (!hasICA(memberICA, record.ica)) {
       continue;
     }
@@ -116,7 +104,7 @@ const findUnitICAFromMemberICA = (
 const fBPcache: { [key: string]: { unit: number[]; score: number } } = {};
 export const findBestUnitPattern = (
   memberICA: IdolCountArray,
-  preCompletedUnits: { id: number; score: number; ica: IdolCountArray }[] = [],
+  preCompletedUnits: { id: number; score: number; ica: IdolCountArray }[],
 ): { unit: number[]; score: number } => {
   const key = toHashICA(memberICA);
   if (key in fBPcache) {
@@ -154,7 +142,22 @@ export const findBestUnitPattern = (
 
 // 既に完成しているユニットでもとりあえず「鳴く」ことはできることを利用して、
 // 「アガリ牌の可能性がある」一覧を取り出す
+const wantedCache: { [key: string]: number[] } = {};
+const toHashMembers = (members: number[]) => {
+  const sortedMembers = members.sort((a, b) => a - b);
+  let x = 0;
+  for (let i = 0; i < sortedMembers.length; i += 1) {
+    x = (x * 137 + sortedMembers[i]) % 4294967296;
+  }
+
+  return `${x}`;
+};
 const calcRawWantedIdolCandiList = (freeMembers: number[]) => {
+  const key = toHashMembers(freeMembers);
+  if (key in wantedCache) {
+    return wantedCache[key];
+  }
+
   const freeMembersSet = new Set(freeMembers);
   const wantedIdolCandiSet = new Set<number>();
   for (const unit of UNIT_LIST2) {
@@ -173,7 +176,10 @@ const calcRawWantedIdolCandiList = (freeMembers: number[]) => {
     }
   }
 
-  return Array.from(wantedIdolCandiSet);
+  const result = Array.from(wantedIdolCandiSet);
+  wantedCache[key] = result;
+
+  return result;
 };
 
 // ロンできる牌一覧を検索する
@@ -202,9 +208,10 @@ const findRonList = (
     // 最も高得点な組み合わせを探索する
     const result: { unit: number[]; score: number } = findBestUnitPattern(
       memberListToICA(freeMembers2),
+      UNIT_LIST3,
     );
 
-    // ロン上がりできる＝スコアがMILLION_SCORE以上
+    // ロン上がりできる＝スコアがMILLIONf_SCORE以上
     if (result.score >= MILLION_SCORE) {
       const handUnits = unitsWithChiFlg.map(pair => {
         return { id: pair.unit, chiFlg: pair.chiFlg };
@@ -283,7 +290,7 @@ export const findWantedIdol = (
 // ツモ牌含めた13枚での点数を計算する。アガリ形だと、定数MILLION_SCOREがプラスされている
 const calcScore = (hand: Hand, myIdol: number) => {
   const freeMembers = selectFreeMembers(hand, true);
-  const result = findBestUnitPattern(memberListToICA(freeMembers));
+  const result = findBestUnitPattern(memberListToICA(freeMembers), UNIT_LIST3);
   let score = calcPreScore(hand) + result.score;
   if (hand.members.includes(myIdol) || hand.plusMember === myIdol) {
     score += 2000;
