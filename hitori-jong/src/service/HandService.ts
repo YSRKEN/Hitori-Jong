@@ -260,18 +260,18 @@ export const getUnitsWithChiFlg = (hand: Hand) => {
 // ユニットに組み込まれていない手牌を選択する
 // addFlg = trueならツモ牌も選択する
 export const selectFreeMembers = (hand: Hand, addFlg: boolean): number[] => {
-  if (addFlg) {
-    return [
-      ...getMembersWithUnit(hand)
-        .filter(pair => pair.unit < 0)
-        .map(pair => pair.member),
-      hand.plusMember,
-    ];
+  const output: number[] = [];
+  const members = hand.members;
+  const units = hand.units;
+  for (let i = 0; i < HAND_TILE_SIZE; i += 1) {
+    if (units[i] < 0) {
+      output.push(members[i]);
+    }
   }
-
-  return getMembersWithUnit(hand)
-    .filter(pair => pair.unit < 0)
-    .map(pair => pair.member);
+  if (addFlg) {
+    output.push(hand.plusMember);
+  }
+  return output;
 };
 
 // 手牌を文字列化する
