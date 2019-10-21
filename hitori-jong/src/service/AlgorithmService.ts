@@ -6,6 +6,7 @@ import {
   isZero,
   minusICA,
   memberListToICA,
+  toHashICA,
 } from 'constant2/ica';
 import { IDOL_LIST, IDOL_LIST_COUNT } from 'constant/idol';
 import {
@@ -116,7 +117,7 @@ export const findBestUnitPattern = (
   memberICA: IdolCountArray,
   preCompletedUnits: { id: number; score: number; ica: IdolCountArray }[] = [],
 ): { unit: number[]; score: number } => {
-  const key = memberICA.map(i => `${i}`).join(',');
+  const key = toHashICA(memberICA);
   if (key in fBPcache) {
     return fBPcache[key];
   }
@@ -384,9 +385,12 @@ calcExpectdValue12 = (
 // どの牌を切るのが良いか・鳴くべきか鳴かざるべきかを判断する
 // evDepth……探索深さ。深いほど正確になるが処理が重くなる
 export const findTradingIdol = (hand: Hand, myIdol: number, evDepth = 3) => {
+  const startTime = Date.now();
+
   // 既にアガリ形でないかを調べる
   const rawScore = calcScore(hand, myIdol);
   if (rawScore >= MILLION_SCORE) {
+    console.log(`処理時間：${Date.now() - startTime}[ms]`);
     const score = rawScore % MILLION_SCORE;
     window.alert(`既にアガリ形です。点数：${score}点`);
 
@@ -404,6 +408,7 @@ export const findTradingIdol = (hand: Hand, myIdol: number, evDepth = 3) => {
     }
   }
   temp.sort((a, b) => b.eValue - a.eValue);
+  console.log(`処理時間：${Date.now() - startTime}[ms]`);
   const temp2 = temp.map(pair => `・${pair.name}―${pair.eValue}`).join('\n');
   const output = `アガリ形ではありません。\n期待値探索深さ：${evDepth}\n打牌―得点期待値：\n${temp2}`;
   window.alert(output);

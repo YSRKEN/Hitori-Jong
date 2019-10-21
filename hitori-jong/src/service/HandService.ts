@@ -333,3 +333,14 @@ export const drawTile = (hand: Hand, nextTile: number): Hand => {
     plusMember: nextTile,
   };
 };
+
+// 手牌をハッシュ化する
+export const toHash = (hand: Hand, plusFlg: boolean): string => {
+  const units = getUnitsWithChiFlg(hand)
+    .map(pair => (pair.chiFlg ? -pair.unit : pair.unit))
+    .sort((a, b) => a - b);
+  const members = selectFreeMembers(hand, plusFlg).sort((a, b) => a - b);
+  const hash = [...units, 10000, ...members];
+
+  return hash.map(i => `${i}`).join(',');
+};
