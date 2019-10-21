@@ -409,7 +409,7 @@ calcExpectdValue12 = (
 
 // どの牌を切るのが良いか・鳴くべきか鳴かざるべきかを判断する
 // evDepth……探索深さ。深いほど正確になるが処理が重くなる
-export const findTradingIdol = (hand: Hand, myIdol: number, evDepth = 3) => {
+export const findTradingIdol = (hand: Hand, myIdol: number) => {
   const startTime = Date.now();
 
   // 既にアガリ形でないかを調べる
@@ -422,20 +422,32 @@ export const findTradingIdol = (hand: Hand, myIdol: number, evDepth = 3) => {
     return;
   }
 
-  // アガリ形ではないので、各手牌を打牌した際の期待値を計算する
-  const temp: { name: string; eValue: number }[] = [];
-  for (let i = calcHandUnitLengthSum(hand); i < HAND_TILE_SIZE_PLUS; i += 1) {
-    const { name } = IDOL_LIST[calcShowMembers(hand)[i]];
-    if (temp.filter(pair => pair.name === name).length === 0) {
-      const newHand = dropTile(hand, i);
-      const eValue = calcExpectdValue12(newHand, myIdol, evDepth);
-      temp.push({ name, eValue });
+  for (let evDepth = 1; evDepth < 8; evDepth += 1) {
+    // アガリ形ではないので、各手牌を打牌した際の期待値を計算する
+    const temp: { name: string; eValue: number }[] = [];
+    for (let i = calcHandUnitLengthSum(hand); i < HAND_TILE_SIZE_PLUS; i += 1) {
+      const { name } = IDOL_LIST[calcShowMembers(hand)[i]];
+      if (temp.filter(pair => pair.name === name).length === 0) {
+        const newHand = dropTile(hand, i);
+        const eValue = calcExpectdValue12(newHand, myIdol, evDepth);
+        temp.push({ name, eValue });
+      }
+    }
+    temp.sort((a, b) => b.eValue - a.eValue);
+
+    // 期待値計算がうまく行ってない際は更にネストを増やす
+    if (temp[temp.length - 1].eValue > 0.0) {
+      console.log(`処理時間：${Date.now() - startTime}[ms]`);
+      console.log(Object.keys(fBPcache).length);
+      const temp2 = temp
+        .map(pair => `・${pair.name}―${pair.eValue}`)
+        .join('\n');
+      const output = `アガリ形ではありません。\n期待値探索深さ：${evDepth}\n打牌―得点期待値：\n${temp2}`;
+      window.alert(output);
+      break;
+    } else {
+      console.log(temp);
+      console.log('探索深度を増加');
     }
   }
-  temp.sort((a, b) => b.eValue - a.eValue);
-  console.log(`処理時間：${Date.now() - startTime}[ms]`);
-  console.log(Object.keys(fBPcache).length);
-  const temp2 = temp.map(pair => `・${pair.name}―${pair.eValue}`).join('\n');
-  const output = `アガリ形ではありません。\n期待値探索深さ：${evDepth}\n打牌―得点期待値：\n${temp2}`;
-  window.alert(output);
 };

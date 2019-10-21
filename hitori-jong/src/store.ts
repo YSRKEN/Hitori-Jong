@@ -223,7 +223,7 @@ const useStore = () => {
         break;
       }
       case 'findDropIdol':
-        findTradingIdol(simulationHand, myIdol, parseInt(action.message, 10));
+        findTradingIdol(simulationHand, myIdol);
         break;
       default:
         break;
