@@ -144,10 +144,9 @@ export const findBestUnitPattern = (
 // 「アガリ牌の可能性がある」一覧を取り出す
 const wantedCache: { [key: string]: number[] } = {};
 const toHashMembers = (members: number[]) => {
-  const sortedMembers = members.sort((a, b) => a - b);
   let x = 0;
-  for (let i = 0; i < sortedMembers.length; i += 1) {
-    x = (x * 137 + sortedMembers[i]) % 4294967296;
+  for (let i = 0; i < members.length; i += 1) {
+    x = (x * 137 + members[i]) % 4294967296;
   }
 
   return `${x}`;
