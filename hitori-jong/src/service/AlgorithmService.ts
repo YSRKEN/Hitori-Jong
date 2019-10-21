@@ -423,6 +423,7 @@ export const findTradingIdol = (hand: Hand, myIdol: number) => {
   }
 
   for (let evDepth = 1; evDepth < 8; evDepth += 1) {
+    const startTime2 = Date.now();
     // アガリ形ではないので、各手牌を打牌した際の期待値を計算する
     const temp: { name: string; eValue: number }[] = [];
     for (let i = calcHandUnitLengthSum(hand); i < HAND_TILE_SIZE_PLUS; i += 1) {
@@ -443,6 +444,15 @@ export const findTradingIdol = (hand: Hand, myIdol: number) => {
         .map(pair => `・${pair.name}―${pair.eValue}`)
         .join('\n');
       const output = `アガリ形ではありません。\n期待値探索深さ：${evDepth}\n打牌―得点期待値：\n${temp2}`;
+      window.alert(output);
+      break;
+    } else if (Date.now() - startTime2 >= 1000.0){
+      console.log(`処理時間：${Date.now() - startTime}[ms]`);
+      console.log(Object.keys(fBPcache).length);
+      const temp2 = temp
+        .map(pair => `・${pair.name}―${pair.eValue}`)
+        .join('\n');
+      const output = `アガリ形ではありません。\n(※探索を途中で打ち切りました)\n期待値探索深さ：${evDepth}\n打牌―得点期待値：\n${temp2}`;
       window.alert(output);
       break;
     } else {
