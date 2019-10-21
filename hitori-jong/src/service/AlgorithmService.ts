@@ -142,14 +142,14 @@ export const findBestUnitPattern = (
 
 // 既に完成しているユニットでもとりあえず「鳴く」ことはできることを利用して、
 // 「アガリ牌の可能性がある」一覧を取り出す
-const wantedCache: { [key: string]: number[] } = {};
+const wantedCache: { [key: number]: number[] } = {};
 const toHashMembers = (members: number[]) => {
   let x = 0;
   for (let i = 0; i < members.length; i += 1) {
     x = (x * 137 + members[i]) % 4294967296;
   }
 
-  return `${x}`;
+  return x;
 };
 const calcRawWantedIdolCandiList = (freeMembers: number[]) => {
   const key = toHashMembers(freeMembers);
@@ -157,10 +157,10 @@ const calcRawWantedIdolCandiList = (freeMembers: number[]) => {
     return wantedCache[key];
   }
 
-  const freeMembersSet = new Set(freeMembers);
+  const freeMembersICA = memberListToICA(freeMembers);
   const wantedIdolCandiSet = new Set<number>();
   for (const unit of UNIT_LIST2) {
-    const nonMembers = unit.member.filter(i => !freeMembersSet.has(i));
+    const nonMembers = unit.member.filter(i => freeMembersICA[i] === 0);
     switch (nonMembers.length) {
       case 0:
         for (const member of unit.member) {
