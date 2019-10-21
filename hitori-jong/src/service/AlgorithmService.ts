@@ -433,7 +433,7 @@ export const findTradingIdol = (hand: Hand, myIdol: number) => {
       const output = `アガリ形ではありません。\n期待値探索深さ：${evDepth}\n打牌―得点期待値：\n${temp2}`;
       window.alert(output);
       break;
-    } else if (Date.now() - startTime2 >= 1000.0){
+    } else if (Date.now() - startTime2 >= 5000.0){
       console.log(`処理時間：${Date.now() - startTime}[ms]`);
       console.log(Object.keys(fBPcache).length);
       const temp2 = temp
