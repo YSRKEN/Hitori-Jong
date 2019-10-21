@@ -395,6 +395,8 @@ calcExpectdValue12 = (
 // どの牌を切るのが良いか・鳴くべきか鳴かざるべきかを判断する
 // evDepth……探索深さ。深いほど正確になるが処理が重くなる
 export const findTradingIdol = (hand: Hand, myIdol: number) => {
+  window.alert('何切る探索を始めます。');
+
   const startTime = Date.now();
 
   // 既にアガリ形でないかを調べる
@@ -414,9 +416,7 @@ export const findTradingIdol = (hand: Hand, myIdol: number) => {
     for (let i = calcHandUnitLengthSum(hand); i < HAND_TILE_SIZE_PLUS; i += 1) {
       const { name } = IDOL_LIST[calcShowMembers(hand)[i]];
       if (temp.filter(pair => pair.name === name).length === 0) {
-        console.log(toStringList(hand, true));
         const newHand = dropTile(hand, i);
-        console.log(toStringList(newHand, true));
         const eValue = calcExpectdValue12(newHand, myIdol, evDepth);
         temp.push({ name, eValue });
       }
