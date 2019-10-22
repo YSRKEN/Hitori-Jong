@@ -425,7 +425,7 @@ export const findTradingIdol = (hand: Hand, myIdol: number) => {
       const newHand = dropTile(hand, i);
       const eValue = calcExpectdValue12(newHand, myIdol, evDepth);
       const elapsedTime2 = Date.now() - startTime2;
-      if (eValue > 0.0 || elapsedTime2 >= 100.0 || evDepth === 7) {
+      if (elapsedTime2 >= 100.0 || evDepth === 7) {
         temp.push({ name, eValue, evDepth });
         break;
       }
@@ -469,7 +469,7 @@ export const calcChiInfo = (hand: Hand, myIdol: number) => {
     defaultEvDepth = evDepth;
     const eValue = calcExpectdValue12(hand, myIdol, evDepth);
     const elapsedTime = Date.now() - startTime;
-    if (eValue > 0.0 || elapsedTime >= 5000.0 || evDepth === 7) {
+    if (elapsedTime >= 5000.0 || evDepth === 7) {
       output2 = `チーする前の期待値(探索深さ＝${evDepth})：${eValue}\n`;
       break;
     }
