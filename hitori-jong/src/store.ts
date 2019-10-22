@@ -76,9 +76,13 @@ const useStore = () => {
     saveSettingForObject('simulationHand', h);
   };
   // 担当
-  const [myIdol] = React.useState<number>(
+  const [myIdol, setMyIdol] = React.useState<number>(
     loadSettingAsInteger('myIdol', DEFAULT_NY_IDOL),
   );
+  const setMyIdol2 = (id: number) => {
+    setMyIdol(id);
+    saveSettingForString('myIdol', '' + id);
+  };
   // 手牌のチェックフラグ
   const [handCheckFlg, setHandCheckFlg] = React.useState<boolean[]>(
     createFilledArray(HAND_TILE_SIZE, false),
@@ -124,7 +128,7 @@ const useStore = () => {
       // シミュレーション画面→キーボード画面への遷移
       case 'changeSceneStoK': {
         const selectIdolIndex = parseInt(action.message, 10);
-        if (calcHandUnitLengthSum(simulationHand) > selectIdolIndex) {
+        if (calcHandUnitLengthSum(simulationHand) > selectIdolIndex && selectIdolIndex >= 0) {
           break;
         }
         setSelectedIdolSortedIndex(selectIdolIndex);
@@ -200,15 +204,19 @@ const useStore = () => {
       case 'selectIdol': {
         const selectIdolIndex = parseInt(action.message, 10);
 
-        // 交換後の手牌を生成する
-        const newHand = changeMember(
-          simulationHand,
-          selectedIdolSortedIndex,
-          selectIdolIndex,
-        );
+        if (selectedIdolSortedIndex >= 0) {
+          // 交換後の手牌を生成する
+          const newHand = changeMember(
+            simulationHand,
+            selectedIdolSortedIndex,
+            selectIdolIndex,
+          );
 
-        // 解除後の手牌をセットする
-        setSimulationHand2(newHand);
+          // 解除後の手牌をセットする
+          setSimulationHand2(newHand);
+        } else {
+          setMyIdol2(selectIdolIndex);
+        }
         setSceneMode2('SimulationScene');
         break;
       }

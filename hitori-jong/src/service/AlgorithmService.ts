@@ -451,6 +451,8 @@ export const findTradingIdol = (hand: Hand, myIdol: number) => {
 
 // チーについての情報を取得する
 export const calcChiInfo = (hand: Hand, myIdol: number) => {
+  window.alert('チー判断を始めます。');
+
   const ronList = findRonList(hand);
   const chiList = findChiList(hand, ronList);
   
