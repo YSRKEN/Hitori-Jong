@@ -214,10 +214,15 @@ const useStore = () => {
 
           // 解除後の手牌をセットする
           setSimulationHand2(newHand);
+          setSceneMode2('SimulationScene');
         } else {
           setMyIdol2(selectIdolIndex);
+          if (selectedIdolSortedIndex === -1) {
+            setSceneMode2('GameScene');
+          } else {
+            setSceneMode2('SimulationScene');
+          }
         }
-        setSceneMode2('SimulationScene');
         break;
       }
       case 'findUnit':

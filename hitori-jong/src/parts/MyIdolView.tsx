@@ -5,11 +5,11 @@ import { IDOL_LIST } from 'constant/idol';
 
 // シミュレーション画面
 const MyIdolView: React.FC = () => {
-  const { myIdol, dispatch } = React.useContext(StateContext);
+  const { sceneMode, myIdol, dispatch } = React.useContext(StateContext);
 
   const idol = IDOL_LIST[myIdol];
 
-  const onClick = () => dispatch({type: 'changeSceneStoK', message: '-1'});
+  const onClick = () => dispatch({type: 'changeSceneStoK', message: sceneMode === 'GameScene' ? '-1' : '-2'});
 
   return (
     <span
