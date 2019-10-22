@@ -384,7 +384,7 @@ calcExpectdValue12 = (
   if (depth <= 1) {
     console.log(
       `期待値(12枚)＝${expectedScore}点 ${toStringList(hand, false)}+${
-        IDOL_LIST[myIdol].name
+      IDOL_LIST[myIdol].name
       }担当`,
     );
   }
@@ -409,44 +409,38 @@ export const findTradingIdol = (hand: Hand, myIdol: number) => {
     return;
   }
 
-  for (let evDepth = 1; evDepth < 8; evDepth += 1) {
+  // アガリ形ではないので、各手牌を打牌した際の期待値を計算する
+  const temp: { name: string; eValue: number; evDepth: number }[] = [];
+  for (let i = calcHandUnitLengthSum(hand); i < HAND_TILE_SIZE_PLUS; i += 1) {
+    // 牌を指定する
+    const { name } = IDOL_LIST[calcShowMembers(hand)[i]];
+    if (temp.filter(pair => pair.name === name).length !== 0) {
+      continue;
+    }
+
+    // 指定した牌を打牌した後の手牌について、期待値を計算する
+    // (期待値計算は、計算値が0でなくなった or 指定時間を過ぎた際に打ち切る)
     const startTime2 = Date.now();
-    // アガリ形ではないので、各手牌を打牌した際の期待値を計算する
-    const temp: { name: string; eValue: number }[] = [];
-    for (let i = calcHandUnitLengthSum(hand); i < HAND_TILE_SIZE_PLUS; i += 1) {
-      const { name } = IDOL_LIST[calcShowMembers(hand)[i]];
-      if (temp.filter(pair => pair.name === name).length === 0) {
-        const newHand = dropTile(hand, i);
-        const eValue = calcExpectdValue12(newHand, myIdol, evDepth);
-        temp.push({ name, eValue });
+    for (let evDepth = 1; evDepth < 8; evDepth += 1) {
+      const newHand = dropTile(hand, i);
+      const eValue = calcExpectdValue12(newHand, myIdol, evDepth);
+      const elapsedTime2 = Date.now() - startTime2;
+      if (eValue > 0.0 || elapsedTime2 >= 100.0 || evDepth === 7) {
+        temp.push({ name, eValue, evDepth });
+        break;
       }
     }
-    temp.sort((a, b) => b.eValue - a.eValue);
-
-    // 期待値計算がうまく行ってない際は更にネストを増やす
-    if (temp[temp.length - 1].eValue > 0.0) {
-      console.log(`処理時間：${Date.now() - startTime}[ms]`);
-      console.log(Object.keys(fBPcache).length);
-      const temp2 = temp
-        .map(pair => `・${pair.name}―${pair.eValue}`)
-        .join('\n');
-      const output = `アガリ形ではありません。\n期待値探索深さ：${evDepth}\n打牌―得点期待値：\n${temp2}`;
-      window.alert(output);
-      break;
-    } else if (Date.now() - startTime2 >= 5000.0){
-      console.log(`処理時間：${Date.now() - startTime}[ms]`);
-      console.log(Object.keys(fBPcache).length);
-      const temp2 = temp
-        .map(pair => `・${pair.name}―${pair.eValue}`)
-        .join('\n');
-      const output = `アガリ形ではありません。\n(※探索を途中で打ち切りました)\n期待値探索深さ：${evDepth}\n打牌―得点期待値：\n${temp2}`;
-      window.alert(output);
-      break;
-    } else {
-      console.log(temp);
-      console.log('探索深度を増加');
-    }
   }
+
+  // 結果を表示する
+  console.log(`処理時間：${Date.now() - startTime}[ms]`);
+  console.log(Object.keys(fBPcache).length);
+  const temp2 = temp
+    .sort((a, b) => b.eValue - a.eValue)
+    .map(pair => `・${pair.name}／${pair.eValue}／${pair.evDepth}`)
+    .join('\n');
+  const output = `アガリ形ではありません。\n打牌／得点期待値／探索深さ：\n${temp2}`;
+  window.alert(output);
 };
 
 // チーについての情報を取得する
@@ -455,7 +449,7 @@ export const calcChiInfo = (hand: Hand, myIdol: number) => {
 
   const ronList = findRonList(hand);
   const chiList = findChiList(hand, ronList);
-  
+
   // チーに関係しない牌を検索する
   const chiSet = new Set<number>();
   for (const chiUnit of chiList) {
@@ -470,25 +464,25 @@ export const calcChiInfo = (hand: Hand, myIdol: number) => {
   // チーする前後の期待値を計算する
   let output2 = '';
   let defaultEvDepth = 1;
-  for(let evDepth = 1; evDepth < 8; evDepth += 1) {
+  const startTime = Date.now();
+  for (let evDepth = 1; evDepth < 8; evDepth += 1) {
     defaultEvDepth = evDepth;
-    const startTime = Date.now();
     const eValue = calcExpectdValue12(hand, myIdol, evDepth);
     const elapsedTime = Date.now() - startTime;
-    if (elapsedTime >= 1000.0) {
+    if (eValue > 0.0 || elapsedTime >= 5000.0 || evDepth === 7) {
       output2 = `チーする前の期待値(探索深さ＝${evDepth})：${eValue}\n`;
       break;
     }
   }
   let output3 = 'チーした後の期待値：\n';
-  const result: {member: string, name: string, eValue: number}[] = [];
+  const result: { member: string, name: string, eValue: number }[] = [];
   for (const chiUnit of chiList) {
     // チーした後の手牌を生成する(余った手牌の中で左端のものはツモ牌に送られる)
     const newHand = chiTile(hand, chiUnit.unit, chiUnit.member);
 
     // 生成した手牌についての期待値を計算する
     const eValue = calcExpectdValue13(newHand, myIdol, defaultEvDepth);
-    result.push({member: IDOL_LIST[chiUnit.member].name, name: UNIT_LIST2[chiUnit.unit].name, eValue});
+    result.push({ member: IDOL_LIST[chiUnit.member].name, name: UNIT_LIST2[chiUnit.unit].name, eValue });
   }
   result.sort((a, b) => b.eValue - a.eValue);
   output3 += result.map(record => `＋${record.member}、${record.name}→${record.eValue}`).join('\n');
