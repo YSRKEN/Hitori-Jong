@@ -102,7 +102,7 @@ const findUnitICAFromMemberICA = (
 
 // 与えられた手牌から完成しているユニットの組み合わせを検索する。
 // 最も高得点な組み合わせを戻り値として返す
-const fBPcache: { [key: string]: { unit: number[]; score: number } } = {};
+const fBPcache: { [key: number]: { unit: number[]; score: number } } = {};
 export const findBestUnitPattern = (
   memberICA: IdolCountArray,
   preCompletedUnits: { id: number; score: number; ica: IdolCountArray }[],

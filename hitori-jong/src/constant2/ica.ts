@@ -91,11 +91,11 @@ export const memberListToICA = (memberList: number[]): IdolCountArray => {
 };
 
 // ICAをハッシュ化する
-export const toHashICA = (a: IdolCountArray): string => {
+export const toHashICA = (a: IdolCountArray): number => {
   let x = 0;
   for (let i = 0; i < IDOL_LIST_COUNT; i += 1) {
     x = (x * 137 + a[i]) % 4294967296;
   }
 
-  return `${x}`;
+  return x;
 };
