@@ -24,6 +24,7 @@ import {
   calcChiInfo,
 } from 'service/AlgorithmService';
 import { Action } from './constant/action';
+import { SORA_INDEX, SIIKA_INDEX } from 'constant2/other';
 
 // 文字で表されたアイドル一覧を数字一覧に変換する
 const stringToNumber = (memberList: string[]) => {
@@ -216,7 +217,9 @@ const useStore = () => {
           setSimulationHand2(newHand);
           setSceneMode2('SimulationScene');
         } else {
-          setMyIdol2(selectIdolIndex);
+          if (selectIdolIndex !== SORA_INDEX && selectIdolIndex !== SIIKA_INDEX) {
+            setMyIdol2(selectIdolIndex);
+          }
           if (selectedIdolSortedIndex === -1) {
             setSceneMode2('GameScene');
           } else {
