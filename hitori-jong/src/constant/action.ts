@@ -17,7 +17,8 @@ export type ActionType =
   | 'selectIdolTile'
   | 'findUnit'
   | 'findWantedIdol'
-  | 'findDropIdol';
+  | 'findDropIdol'
+  | 'calcChiInfo';
 
 // Action
 export interface Action {

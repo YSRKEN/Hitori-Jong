@@ -21,6 +21,7 @@ import {
   findUnit,
   findWantedIdol,
   findTradingIdol,
+  calcChiInfo,
 } from 'service/AlgorithmService';
 import { Action } from './constant/action';
 
@@ -224,6 +225,9 @@ const useStore = () => {
       }
       case 'findDropIdol':
         findTradingIdol(simulationHand, myIdol);
+        break;
+      case 'calcChiInfo':
+        calcChiInfo(simulationHand, myIdol);
         break;
       default:
         break;

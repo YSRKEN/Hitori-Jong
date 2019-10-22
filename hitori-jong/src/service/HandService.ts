@@ -349,3 +349,46 @@ export const toHash = (hand: Hand, plusFlg: boolean): string => {
 
   return hash.map(i => `${i}`).join(',');
 };
+
+// 指定した牌を指定したユニットでチーする
+export const chiTile = (hand: Hand, chiUnit: number, chiMember: number): Hand => {
+  // チーする先の牌を検索する
+  const sortedIndex = calcSortedIndex(hand.units, hand.unitIndexes.length);
+  const otherMember = UNIT_LIST2[chiUnit].member.filter(id => id !== chiMember);
+  const freeMembers = selectFreeMembers(hand, true);
+  const offset = calcHandUnitLengthSum(hand);
+  const otherMemberIndexes = otherMember.map(id => freeMembers.indexOf(id))
+    .filter(index => index >= 0).map(index => index + offset);
+  
+  // 新しい手牌を生成する
+  const newMembers = [...hand.members];
+  const newUnits = [...hand.units];
+  for (const memberIndex of otherMemberIndexes) {
+    newUnits[sortedIndex[memberIndex]] = hand.unitIndexes.length;
+  }
+  let newPlusMember = -1;
+  if (newUnits[HAND_TILE_SIZE - 1] === -1) {
+    // 右端の牌が余っているのでそこを新牌の置き場にする
+    newPlusMember = newMembers[HAND_TILE_SIZE - 1];
+    newMembers[HAND_TILE_SIZE - 1] = chiMember;
+    newUnits[HAND_TILE_SIZE - 1] = hand.unitIndexes.length;
+  } else {
+    // 右端の牌が使用中なので、使用されていないものを検索して処理する
+    for (let i = HAND_TILE_SIZE - 2; i >= 0; i -= 1) {
+      if (newUnits[i] === -1) {
+        newPlusMember = newMembers[i];
+        newMembers[i] = chiMember;
+        newUnits[i] = hand.unitIndexes.length;
+        break;
+      }
+    }
+  }
+
+  return {
+    members: newMembers,
+    units: newUnits,
+    unitIndexes: [...hand.unitIndexes, chiUnit],
+    unitChiFlg: [...hand.unitChiFlg, true],
+    plusMember: newPlusMember,
+  };
+};

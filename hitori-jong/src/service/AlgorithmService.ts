@@ -18,6 +18,7 @@ import {
   dropTile,
   drawTile,
   calcShowMembers,
+  chiTile,
 } from './HandService';
 
 // 後0・1・2枚あれば完成するユニット一覧を生成する
@@ -446,4 +447,49 @@ export const findTradingIdol = (hand: Hand, myIdol: number) => {
       console.log('探索深度を増加');
     }
   }
+};
+
+// チーについての情報を取得する
+export const calcChiInfo = (hand: Hand, myIdol: number) => {
+  const ronList = findRonList(hand);
+  const chiList = findChiList(hand, ronList);
+  
+  // チーに関係しない牌を検索する
+  const chiSet = new Set<number>();
+  for (const chiUnit of chiList) {
+    for (const member of chiUnit.otherMember) {
+      chiSet.add(member);
+    }
+  }
+  const freeMembersSet = new Set<number>(selectFreeMembers(hand, false));
+  const nonChiList = Array.from(freeMembersSet).filter(id => !chiSet.has(id));
+  const output1 = `チーに関係しない牌：${nonChiList.map(id => IDOL_LIST[id].name)}\n`;
+
+  // チーする前後の期待値を計算する
+  let output2 = '';
+  let defaultEvDepth = 1;
+  for(let evDepth = 1; evDepth < 8; evDepth += 1) {
+    defaultEvDepth = evDepth;
+    const startTime = Date.now();
+    const eValue = calcExpectdValue12(hand, myIdol, evDepth);
+    const elapsedTime = Date.now() - startTime;
+    if (elapsedTime >= 1000.0) {
+      output2 = `チーする前の期待値(探索深さ＝${evDepth})：${eValue}\n`;
+      break;
+    }
+  }
+  let output3 = 'チーした後の期待値：\n';
+  const result: {member: string, name: string, eValue: number}[] = [];
+  for (const chiUnit of chiList) {
+    // チーした後の手牌を生成する(余った手牌の中で左端のものはツモ牌に送られる)
+    const newHand = chiTile(hand, chiUnit.unit, chiUnit.member);
+
+    // 生成した手牌についての期待値を計算する
+    const eValue = calcExpectdValue13(newHand, myIdol, defaultEvDepth);
+    result.push({member: IDOL_LIST[chiUnit.member].name, name: UNIT_LIST2[chiUnit.unit].name, eValue});
+  }
+  result.sort((a, b) => b.eValue - a.eValue);
+  output3 += result.map(record => `＋${record.member}、${record.name}→${record.eValue}`).join('\n');
+
+  window.alert(output1 + output2 + output3);
 };
